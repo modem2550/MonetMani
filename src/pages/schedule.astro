@@ -1,0 +1,168 @@
+---
+import MainLayout from "@/app/layouts/MainLayout.astro";
+import EventCard from "@/shared/components/EventCard.astro";
+import { getSupabase } from "@/services/supabase/server";
+import { categorizeEvents } from "@/shared/utils/dateUtils";
+import "@/shared/styles/schedule.scss";
+import type { Event } from "@/types/event";
+
+// ── Cache ──────────────────────────────────────────────────────────────────────
+const CACHE_TTL_SECONDS = 60;
+Astro.response.headers.set(
+    "Cache-Control",
+    `public, max-age=0, s-maxage=${CACHE_TTL_SECONDS}, stale-while-revalidate=${CACHE_TTL_SECONDS}`
+);
+
+// ── Data ──────────────────────────────────────────────────────────────────────
+
+const supabase = getSupabase();
+let rawEvents: Event[] | null = null;
+
+try {
+    if (supabase) {
+        const { data, error } = await supabase
+            .from("event_data")
+            .select("*")
+            .order("date", { ascending: false });
+
+        if (error) console.error("[Schedule] Supabase error:", error);
+        rawEvents = data;
+    }
+} catch (e) {
+    // Error fetching events — rawEvents will remain null and the UI will show an empty state.
+}
+
+
+// ── Process ───────────────────────────────────────────────────────────────────
+
+function toSlug(text: string) {
+    return text
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, "-")
+        .replace(/[()]/g, "")
+        .replace(/[^a-z0-9-]/g, "");
+}
+
+const eventsWithSlug = (rawEvents ?? []).map((event: Event) => ({
+    ...event,
+    generated_slug: `${toSlug(event.title || "event")}-${String(event.id || "0000").substring(0, 8)}`,
+}));
+
+const { upcoming, past } = categorizeEvents(eventsWithSlug);
+---
+
+<MainLayout title="Schedule - Niya BNK48's">
+    <div class="schedule-page container">
+        <header>
+            <div class="page-shell">
+                <h1 class="schedule-page__title mb-2">
+                    <strong>Niya BNK48's Schedule</strong>
+                </h1>
+                <p class="schedule-page__subtitle mb-0">
+                    ตารางงานและกิจกรรมของนีญ่า BNK48
+                </p>
+            </div>
+        </header>
+
+        <div class="page-shell page-main">
+            <section
+                id="upcoming-events-section"
+                class="events-section"
+                aria-labelledby="upcoming-heading"
+            >
+                <h2 id="upcoming-heading" class="visually-hidden">
+                    กิจกรรมที่กำลังจะมาถึง
+                </h2>
+                {
+                    upcoming.length > 0 ? (
+                        <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-4 flex-nowrap overflow-x-scroll">
+                            {upcoming.map((event) => (
+                                <div class="col d-flex justify-content-center">
+                                    <EventCard event={event} isPast={false} />
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div class="empty-state"></div>
+                    )
+                }
+            </section>
+
+            <!-- Back home -->
+            <div class="text-center my-5">
+                <a class="btn btn-primary btn-rounded fw-600 px-4" href="/">
+                    <strong>กลับหน้าหลัก</strong>
+                    <i class="fa-solid fa-arrow-right arrow-icon ms-1"></i>
+                </a>
+            </div>
+
+            <!-- Past -->
+            <section
+                id="past-events-section"
+                class="events-section"
+                aria-labelledby="past-heading"
+            >
+                <h2
+                    id="past-heading"
+                    class="section-heading h1 text-center mb-0"
+                >
+                    Past Events
+                </h2>
+                <p class="text-center mb-5">
+                    กิจกรรมที่จัดไปแล้ว
+                    {
+                        past.length > 0 && (
+                            <span class="event-count">({past.length})</span>
+                        )
+                    }
+                </p>
+
+                {
+                    past.length > 0 ? (
+                        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4 event-past">
+                            {past.map((event) => (
+                                <div class="col d-flex justify-content-center">
+                                    <EventCard
+                                        event={event}
+                                        isPast={true}
+                                        variant="compact"
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div class="empty-state"></div>
+                    )
+                }
+            </section>
+        </div>
+    </div>
+</MainLayout>
+<style>
+    .container {
+        max-width: 1320px !important;
+        margin: 0 auto;
+    }
+</style>
+<script>
+    // Scroll-to-top button
+    const scrollToTopBtn = Object.assign(document.createElement("button"), {
+        id: "scroll-to-top",
+        className: "btn btn-outline-secondary btn-sm",
+        innerHTML: "↑",
+        title: "กลับสู่ด้านบน",
+    });
+    scrollToTopBtn.setAttribute("aria-label", "กลับสู่ด้านบน");
+    document.body.appendChild(scrollToTopBtn);
+
+    const setVisible = (visible: boolean) => {
+        scrollToTopBtn.style.opacity = visible ? "1" : "0";
+        scrollToTopBtn.style.pointerEvents = visible ? "auto" : "none";
+    };
+
+    window.addEventListener("scroll", () => setVisible(window.scrollY > 300));
+    scrollToTopBtn.addEventListener("click", () =>
+        window.scrollTo({ top: 0, behavior: "smooth" }),
+    );
+</script>

@@ -1,0 +1,14 @@
+node_modules
+.vercel
+.astro
+dist
+.env
+path.tree
+public/video/output.mp4
+public/video/BG-video.mp4
+.cache
+**/.DS_Store
+.src.zip
+.image-cache.json
+public/demmo/.DS_Store
+**/.DS_Store

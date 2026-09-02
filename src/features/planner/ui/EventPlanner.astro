@@ -1,0 +1,1593 @@
+---
+// src/components/EventPlanner.astro
+import "@/shared/styles/planner.scss";
+import type {
+    ActivityConfig,
+    DayConfig,
+    PriceConfig,
+    ScheduleEntry,
+} from "@/features/planner/logic/plannerUtils";
+
+import type { Member as MemberRow } from "@/types/member";
+import { Image } from "astro:assets";
+
+interface Props {
+    eventSlug: string;
+    eventName: string;
+    pageTitle?: string;
+    officialLink: string;
+    storageKey: string;
+    heroImage: string;
+    primaryColor: string;
+    primaryHover: string;
+    prices: PriceConfig;
+    days: DayConfig[];
+    activities: ActivityConfig[];
+    members: MemberRow[];
+    schedule: ScheduleEntry[];
+}
+
+const {
+    eventName,
+    officialLink,
+    storageKey,
+    heroImage,
+    prices,
+    days,
+    activities,
+    members,
+    schedule,
+} = Astro.props;
+
+const TEAM_COLOR: Record<string, string> = {
+    "team biii": "var(--c-biii)",
+    "team nv": "var(--c-nv)",
+    "team c": "var(--c-c)",
+    trainee: "var(--c-trainee)",
+};
+
+function resolveTeamColor(team?: string, brand?: string) {
+    const normalized = (team ?? "").trim().toLowerCase();
+    if (TEAM_COLOR[normalized]) return TEAM_COLOR[normalized];
+
+    // Fallback by brand if team label is unexpected/missing.
+    return brand === "CGM48" ? "var(--c-cgm)" : "var(--c-bnk)";
+}
+
+const cfg = JSON.stringify({ activities, days, storageKey, schedule, prices });
+---
+
+<div
+    class="sf-hero sf-hero--cover"
+    style={`--sf-hero-image: url('${heroImage}')`}
+>
+    {/* Hidden img to help browser discovery and LCP */}
+    <img
+        src={heroImage}
+        alt=""
+        {...{ fetchpriority: "high" }}
+        style="display: none;"
+    />
+    <div class="sf-hero__overlay"></div>
+    <div class="container sf-hero__container">
+        <div class="sf-hero-card slide-up">
+            <p class="sf-hero__eyebrow">BNK48 & CGM48</p>
+            <h1 class="sf-hero__title">
+                {eventName}
+            </h1>
+            <div class="sf-hero__meta">
+                <span>รายละเอียด&nbsp;:&nbsp;</span>
+                <a href={officialLink} class="sf-hero__link" target="_blank">
+                    BNK48 & CGM48 Official <i
+                        class="fa-solid fa-arrow-up-right-from-square ms-1 u-fs-10"
+                    ></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TABS -->
+<div class="sf-tabs-wrap">
+    <div class="container px-3">
+        <div class="sf-tabs d-flex justify-content-center overflow-auto">
+            {
+                [
+                    { id: "members", icon: "fa-user-group", label: "Members" },
+                    { id: "planner", icon: "fa-calendar", label: "Planner" },
+                    { id: "happening", icon: "fa-clock", label: "Now" },
+                    { id: "summary", icon: "fa-list-check", label: "Summary" },
+                ].map(({ id, icon, label }) => (
+                    <button
+                        class={`sf-tab${id === "members" ? " active" : ""}`}
+                        data-tab={id}
+                    >
+                        <i class={`fa-solid ${icon}`} />
+                        {label}
+                        {id === "happening" && (
+                            <span
+                                class="tab-badge tab-badge--live d-none"
+                                id="nowBadge"
+                            >
+                                LIVE
+                            </span>
+                        )}
+                        {id === "summary" && (
+                            <span class="tab-badge d-none" id="summaryBadge">
+                                0
+                            </span>
+                        )}
+                    </button>
+                ))
+            }
+        </div>
+    </div>
+</div>
+
+<!-- TAB: MEMBERS -->
+<div class="sf-panel active" id="panel-members">
+    <div class="sf-section-shell mx-auto p-4 pb-0">
+        <div
+            class="d-flex flex-column gap-3 p-4 rounded-4 filter-box mb-4 mx-auto"
+        >
+            <div class="row g-2" id="mBrandGroup">
+                {
+                    [
+                        { v: "all", label: "All", cls: "ftab--all active" },
+                        { v: "BNK48", label: "BNK48", cls: "ftab--bnk" },
+                        { v: "CGM48", label: "CGM48", cls: "ftab--cgm" },
+                    ].map(({ v, label, cls }) => (
+                        <div class="col-4">
+                            <button
+                                class={`ftab ${cls} w-100`}
+                                data-mf="brand"
+                                data-mv={v}
+                            >
+                                {label}
+                            </button>
+                        </div>
+                    ))
+                }
+            </div>
+            <hr
+                class="filter-divider-thick border-top border-secondary border-opacity-25 opacity-50 my-1 m-0"
+            />
+            <div id="mGenGroup"></div>
+            <hr
+                class="filter-divider-thick border-top border-secondary border-opacity-25 opacity-50 my-1 m-0 d-none"
+                id="mGenDivider"
+            />
+            <div id="mTeamGroup"></div>
+        </div>
+        <div class="member-cards-grid" id="memberCardsGrid">
+            {
+                members.map((m: MemberRow) => {
+                    const isBNK = m.brand === "BNK48";
+                    const tc = resolveTeamColor(m.team, m.brand);
+                    return (
+                        <div
+                            class="member-card slide-up"
+                            data-name={m.name}
+                            data-brand={m.brand}
+                            data-gen={m.gen}
+                            data-team={m.team}
+                            data-img={m.profile_image_url ?? ""}
+                        >
+                            <div
+                                class="member-card__img-wrap"
+                                style={`--member-team-color:${tc}`}
+                            >
+                                {m.profile_image_url ? (
+                                    <Image
+                                        src={m.profile_image_url}
+                                        alt={m.name}
+                                        class="member-card__img"
+                                        width={160}
+                                        height={200}
+                                        format="webp"
+                                        loading="lazy"
+                                        onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+                                    />
+                                ) : null}
+                                <div
+                                    class={`member-card__fallback ${isBNK ? "av--bnk" : "av--cgm"}`}
+                                    style={
+                                        m.profile_image_url
+                                            ? "display:none"
+                                            : ""
+                                    }
+                                >
+                                    {m.name[0]}
+                                </div>
+                            </div>
+                            <div class="member-card__info p-2">
+                                <div class="member-card__name">{m.name}</div>
+                                <div class="d-flex align-items-center gap-1 mb-1">
+                                    <span
+                                        class={`brand-badge ${isBNK ? "bb--bnk" : "bb--cgm"}`}
+                                    >
+                                        {m.brand}
+                                    </span>
+                                    <span class="gen-text">{m.gen}</span>
+                                </div>
+                            </div>
+                            <button
+                                class="member-card__select-btn"
+                                data-name={m.name}
+                                onclick="toggleFromMembersTab(this)"
+                                type="button"
+                            >
+                                <i class="fa-solid fa-circle-plus" /> Add to
+                                Planner
+                            </button>
+                        </div>
+                    );
+                })
+            }
+        </div>
+    </div>
+</div>
+
+<!-- TAB: PLANNER -->
+<div class="sf-panel" id="panel-planner">
+    <div class="sf-section-shell mx-auto p-4 pb-0">
+        <div
+            class="planner-empty flex-column align-items-center text-center py-5"
+            id="plannerEmpty"
+        >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="36"
+                height="36"
+                fill="currentColor"
+                viewBox="0 0 16 16"
+                style="opacity:.3"
+                class="mb-3"
+            >
+                <path
+                    d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1zm-7.978-1L7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0M6.936 9.28a6 6 0 0 0-1.23-.247A7 7 0 0 0 5 9c-4 0-5 3-5 4q0 1 1 1h4.216A2.24 2.24 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816M4.92 10A5.5 5.5 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0m3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4"
+                ></path>
+            </svg>
+            <p class="fw-bold mb-1" style="color:var(--c-content)">
+                ยังไม่ได้เลือก Member
+            </p>
+            <p class="mb-3 text-secondary planner-muted-text">
+                ไปที่ Tab Members เพื่อเลือก Member ที่ต้องการ
+            </p>
+            <button class="btn-outline-sf" onclick="APP.switchTab('members')"
+                >ไปที่ Members</button
+            >
+        </div>
+        <div id="plannerContent" class="d-none">
+            <div
+                class="d-flex flex-column gap-3 p-4 rounded-4 filter-box mb-4 pb-0 mx-auto"
+            >
+                <div class="row g-2 mb-0" id="dayFilterRow">
+                    <div class="col-6 col-sm-3">
+                        <button class="day-ftab active w-100" data-day="all"
+                            >All Days</button
+                        >
+                    </div>
+                    {
+                        days.map((d: DayConfig) => (
+                            <div class="col-6 col-sm-3">
+                                <button
+                                    class={`day-ftab day-ftab--${d.key} w-100`}
+                                    data-day={d.key}
+                                >
+                                    {d.label}
+                                </button>
+                            </div>
+                        ))
+                    }
+                </div>
+                <hr
+                    class="filter-divider-thick border-top border-secondary border-opacity-25 opacity-50 my-1 m-0"
+                />
+                <div
+                    class="row g-2 align-items-stretch mb-3"
+                    id="actNameFilterRow"
+                >
+                </div>
+            </div>
+            <div
+                class="d-flex flex-nowrap gap-2 mb-3 overflow-x-auto w-100"
+                id="selectedMembersStrip"
+                style="padding-bottom: 4px; scrollbar-width: none;"
+            >
+            </div>
+            <div id="scheduleBlocks"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TAB: HAPPENING NOW -->
+<div class="sf-panel" id="panel-happening">
+    <div class="sf-section-shell mx-auto p-4 pb-0">
+        <div
+            class="now-section-label now-section-label--live now-section-label--centered"
+        >
+            Live Happening Activities
+        </div>
+        <div id="nowContent"></div>
+    </div>
+</div>
+
+<!-- TAB: SUMMARY -->
+<div class="sf-panel" id="panel-summary">
+    <div class="sf-section mx-auto">
+        <div
+            class="panel-empty text-center py-5 flex-column align-items-center"
+            id="summaryEmpty"
+        >
+            <i class="fa-solid fa-arrow-down-short-wide"></i>
+            <p class="fw-bold mb-1 panel-empty__title">
+                ยังไม่มี Round ที่เลือก
+            </p>
+            <p class="mb-3 panel-empty__lead">
+                กลับไปที่ Planner เพื่อเลือก Round
+            </p>
+            <button class="btn-outline-sf" onclick="APP.switchTab('planner')"
+                >ไปที่ Planner</button
+            >
+        </div>
+        <div id="summaryContent" class="d-none">
+            <div class="row mb-3" id="statGrid"></div>
+            <div
+                class="d-flex justify-content-between align-items-center gap-2 flex-wrap mb-3"
+            >
+                <div
+                    class="d-flex gap-2 flex-wrap flex-1"
+                    id="summaryDayTabsWrap"
+                >
+                    <div class="position-relative" id="summaryDayTabs">
+                        <button
+                            class="sort-toggle-btn"
+                            id="dayToggleBtn"
+                            onclick="APP.toggleDayMenu()"
+                        >
+                            <i class="fa-solid fa-arrow-down-short-wide"
+                            ></i><span
+                                class="sort-active-label"
+                                id="dayActiveLabel">All Days</span
+                            >
+                        </button>
+                        <div class="sort-menu" id="dayMenu">
+                            <button class="sort-menu-item" data-day="all">
+                                <span>All Days</span>
+                            </button>
+                            {
+                                days.map((d: DayConfig) => (
+                                    <button
+                                        class="sort-menu-item day-tab"
+                                        data-day={d.key}
+                                    >
+                                        <span>{d.short}</span>
+                                    </button>
+                                ))
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 align-items-center flex-shrink-0">
+                    <!-- Export Recap button -->
+                    <button
+                        class="btn-outline-sf btn-export-recap"
+                        id="exportRecapBtn"
+                        onclick="APP.exportRecap()"
+                    >
+                        <i class="fa-solid fa-image"></i> Export Recap
+                    </button>
+                    <div class="position-relative" id="sortDropdownWrap">
+                        <button
+                            class="sort-toggle-btn"
+                            id="sortToggleBtn"
+                            onclick="APP.toggleSortMenu()"
+                        >
+                            <i class="fa-solid fa-arrow-down-short-wide"></i>
+                            Sort <span
+                                class="sort-active-label"
+                                id="sortActiveLabel">Day Time ↑</span
+                            >
+                        </button>
+                        <div class="sort-menu" id="sortMenu"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive rounded">
+                <table class="sf-table w-100">
+                    <thead>
+                        <tr>
+                            <th>Member</th><th>Activity</th><th>Day</th>
+                            <th>Time</th><th>Round</th><th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody id="summaryTbody"></tbody>
+                </table>
+            </div>
+            <div class="summary-footer" id="summaryFooter"></div>
+            <div class="d-flex gap-2 flex-wrap mt-3">
+                <button
+                    class="btn-action btn-action--danger"
+                    onclick="APP.resetAll()"
+                >
+                    <i class="fa-solid fa-rotate-left"></i>Reset All
+                </button>
+            </div>
+            <div class="mt-4 pb-0">
+                <div class="sf-disclaimer mx-auto">
+                    <div class="sf-disclaimer__title">
+                        การคำนวณค่าใช้จ่ายใน Planner
+                        อ้างอิงจากราคาต่อรายการดังนี้
+                    </div>
+                    <ul class="sf-disclaimer__list">
+                        <li>Digital Event Ticket — 250 Bath per Ticket</li>
+                        <li>ฮับขวัญได้(ด้าย)ไหมเจ้า? — 200 THB per Set</li>
+                        <li>
+                            ค่าใช้จ่ายที่แสดงเป็นเพียงการประมาณเพื่อช่วยวางแผน
+                            และไม่รวมสินค้า Hachi Cha ( <a
+                                href="https://www.facebook.com/share/p/1Dd4vvEwzx/"
+                                >สามารถตรวจสอบราคาได้ที่ <strong
+                                    >HachiCha</strong
+                                ></a
+                            > ) และ Merchandise
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- DISCLAIMER -->
+<div class="sf-panel" style="display: block;">
+    <div class="sf-section-shell mx-auto p-4 pb-0">
+        <div class="sf-disclaimer">
+            <hr class="filter-divider" />
+            <div class="mx-auto">
+                <div class="sf-disclaimer__title">
+                    <i class="fa-solid fa-circle-info"></i>{" "}
+                    หมายเหตุ
+                </div>
+                <ul class="sf-disclaimer__list">
+                    <li>
+                        ตารางกิจกรรมและรูปแบบกิจกรรมอาจมีการเปลี่ยนแปลงได้ตามความเหมาะสม
+                    </li>
+                    <li>
+                        กิจกรรมอาจมีการปรับรูปแบบหรือเลื่อนเวลาตามความเหมาะสม
+                        โปรดติดตามข้อมูลจาก{" "}
+                        <a href={officialLink} target="_blank">
+                            <strong> BNK48 & CGM48 Official </strong>
+                        </a>
+                    </li>
+                    <li>
+                        เวลาที่แสดงใช้เพื่อประกอบการวางแผนเท่านั้น{" "}
+                        <strong>
+                            ผู้ใช้งานควรบริหารการใช้บัตรกิจกรรมด้วยตนเอง
+                        </strong>
+                    </li>
+                    <li>
+                        ข้อมูลการวางแผนจะถูกบันทึกไว้ในเบราว์เซอร์ของผู้ใช้งาน
+                        (localStorage)
+                        และอาจต้องปรับแก้ด้วยตนเองหากมีการเปลี่ยนแปลงข้อมูล
+                    </li>
+                </ul>
+                <br />
+                <div class="sf-disclaimer__title">
+                    <i class="fa-solid fa-circle-info"></i>
+                    <strong>Disclaimer</strong>
+                </div>
+                <ul class="sf-disclaimer__list">
+                    <li>
+                        เว็บไซต์นี้จัดทำโดยแฟนคลับเพื่อช่วยวางแผนการเข้าร่วมกิจกรรมเท่านั้น
+                        ไม่มีความเกี่ยวข้องหรือการรับรองอย่างเป็นทางการจาก BNK48
+                        หรือ CGM48 หรือหน่วยงานที่เกี่ยวข้อง
+                        หากพบปัญหาสามารถแจ้งได้ที่ —{" "}
+                        <a
+                            href="https://www.facebook.com/profile.php?id=61556940780361"
+                        >
+                            <strong> little nemo of Niya </strong>{" "}
+                            (Niya BNK48 Thailand Fanclub)
+                        </a>{" "}
+                        ทุกช่องทาง
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="sf-toast" id="sfToast"></div>
+
+<!-- Modal for Export Recap -->
+<div id="recapOverlay" class="recap-overlay d-none">
+    <div class="recap-overlay__header">
+        <span class="recap-overlay__hint"
+            ><i class="fa-solid fa-circle-down"></i> กดค้างที่รูปหรือคลิกขวาเพื่อบันทึก</span
+        >
+        <button
+            type="button"
+            class="recap-overlay__close"
+            onclick="APP.closeRecapOverlay()"
+        >
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+    <div class="recap-overlay__content">
+        <img id="recapImage" alt="Recap Image" />
+    </div>
+</div>
+
+<!-- Hidden canvas for Export Recap -->
+<canvas id="recapCanvas" class="d-none"></canvas>
+
+<div id="planner-config" data-cfg={cfg} style="display: none;"></div>
+
+<style is:global>
+    .theme-toggle-v2 {
+        display: none !important;
+    }
+</style>
+
+<script>
+    import {
+        parseTimeRange,
+        nowMinutes,
+        detectTodayKey,
+        findAct,
+        actType,
+        ticketsFor,
+        priceFor,
+        bkkNow,
+        groupSlotsByTime,
+        findCurrentAndNextTime,
+        filterAndSortCart
+    } from "../logic/scheduleUtils";
+    import {
+        buildActInfoHtml,
+        renderActCardsHtml,
+        renderSummaryRowHtml,
+        buildSlotRowHTML,
+        renderSummaryFooterHtml
+    } from "../logic/plannerRenderers";
+    import { drawRecapCanvas } from "../logic/recapCanvas";
+
+    const configEl = document.getElementById("planner-config");
+    const cfgStr = configEl?.dataset.cfg;
+    if (!cfgStr) throw new Error("Planner config missing");
+    
+    const {
+        activities: ACTIVITIES,
+        days: DAYS,
+        storageKey: STORAGE_KEY,
+        schedule: SCHEDULE,
+        prices: PRICES,
+    } = JSON.parse(cfgStr);
+    // ── Bootstrap ────────────────────────────────────────────────────────────
+    
+    // ── Schedule map ─────────────────────────────────────────────────────────
+    const MEMBER_SCHEDULE_MAP = new Map<string, any[]>();
+    let totalSlots = 0;
+    let totalMappings = 0;
+    for (const { activitySlug, slots } of SCHEDULE) {
+        totalSlots += slots.length;
+        const actName =
+            ACTIVITIES.find((a: any) => a.slug === activitySlug)?.name ??
+            activitySlug;
+        for (const { day, time, members, note } of slots) {
+            const slotId = `${activitySlug}__${day}__${time}`;
+            for (const m of members) {
+                totalMappings++;
+                const key = m.trim().toLowerCase();
+                const rows = MEMBER_SCHEDULE_MAP.get(key) ?? [];
+                rows.push({
+                    member_name: m,
+                    activity_slug: activitySlug,
+                    activity_name: actName,
+                    activity_icon: "",
+                    tickets_required: null,
+                    is_merch: false,
+                    slot_id: slotId,
+                    day,
+                    time_range: time,
+                    slot_members: members,
+                    note: note ?? null,
+                });
+                MEMBER_SCHEDULE_MAP.set(key, rows);
+            }
+        }
+    }
+
+
+
+    // ── Full schedule index (day → time → activity → members) ─────────────────
+    // Used by Happening Now
+    const FULL_SCHEDULE: Record<string, any[]> = {}; // day → [ { time, actSlug, actName, members, note } ]
+    for (const { activitySlug, slots } of SCHEDULE) {
+        const actName =
+            ACTIVITIES.find((a: any) => a.slug === activitySlug)?.name ??
+            activitySlug;
+        for (const { day, time, members, note } of slots) {
+            FULL_SCHEDULE[day] ??= [];
+            FULL_SCHEDULE[day].push({
+                time,
+                actSlug: activitySlug,
+                actName,
+                members,
+                note,
+            });
+        }
+    }
+
+    const DAY_SHORT: Record<string, string> = Object.fromEntries(DAYS.map((d: any) => [d.key, d.short]));
+    const DAY_KEYS: string[] = DAYS.map((d: any) => d.key);
+    const DAY_ORDER: Record<string, number> = Object.fromEntries(DAYS.map((d: any, i: number) => [d.key, i]));
+
+    // ── Helpers ──────────────────────────────────────────────────────────────
+    
+    // Parse "HH:MM–HH:MM" → { startMin, endMin }
+    
+    // ── Bangkok time helpers ─────────────────────────────────────────────────
+    
+    
+    // ── Detect today's day key from Bangkok date ──────────────────────────────
+    
+    function updateNowClock() {
+        const b = bkkNow();
+        const hh = String(b.getHours()).padStart(2, "0");
+        const mm = String(b.getMinutes()).padStart(2, "0");
+        const el = document.getElementById("nowClock");
+        if (el) el.textContent = `${hh}:${mm}`;
+
+        const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        const monthNames = [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May",
+            "Jun",
+            "Jul",
+            "Aug",
+            "Sep",
+            "Oct",
+            "Nov",
+            "Dec",
+        ];
+        const meta = document.getElementById("nowClockMeta");
+        if (meta) {
+            meta.textContent = `${dayNames[b.getDay()]} ${b.getDate()} ${monthNames[b.getMonth()]} ${b.getFullYear()}`;
+        }
+    }
+
+    updateNowClock();
+
+    // ── State ────────────────────────────────────────────────────────────────
+    const state: Record<string, any> = {
+        selectedMembers: new Set<string>(),
+        memberCache: new Map<string, any>(),
+        cart: new Map<string, any>(),
+        plannerDay: "all",
+        plannerActNames: new Set<string>(),
+        summaryDay: "all",
+        summarySort: "day",
+        summarySortDir: "asc",
+        mFilterBrand: "all",
+        mFilterGen: "all",
+        mFilterTeam: "all",
+    };
+
+    // ── Storage ──────────────────────────────────────────────────────────────
+    const STATE_KEYS = [
+        "plannerDay",
+        "summaryDay",
+        "summarySort",
+        "summarySortDir",
+        "mFilterBrand",
+        "mFilterGen",
+        "mFilterTeam",
+    ];
+
+    function saveToStorage() {
+        try {
+            localStorage.setItem(
+                STORAGE_KEY,
+                JSON.stringify({
+                    ...Object.fromEntries(STATE_KEYS.map((k) => [k, state[k]])),
+                    cart: [...state.cart.entries()].map(([sid, item]) => ({
+                        sid,
+                        item,
+                    })),
+                    selectedMembers: [...state.selectedMembers],
+                    plannerActNames: [...state.plannerActNames],
+                }),
+            );
+        } catch {}
+    }
+
+    // ── Icons ────────────────────────────────────────────────────────────────
+    const ICON_ADD = `<i class="fa-solid fa-circle-plus"></i>`;
+    const ICON_CHECK = `<i class="fa-solid fa-check"></i>`;
+    const ICON_DEL = `<i class="fa-solid fa-minus"></i>`;
+
+    const memberCard = (n: string) =>
+        document.querySelector(`.member-card[data-name="${CSS.escape(n)}"]`) as HTMLElement | null;
+    const memberImg = (n: string) => memberCard(n)?.dataset.img ?? "";
+    const memberMeta = (n: string) => ({
+        brand: memberCard(n)?.dataset.brand ?? "CGM48",
+    });
+
+    function showToast(msg: string) {
+        const t = document.getElementById("sfToast");
+        if (t) {
+            t.textContent = msg;
+            t.classList.add("show");
+            setTimeout(() => t.classList.remove("show"), 2500);
+        }
+    }
+
+    function fetchSchedule(name: string) {
+        if (state.memberCache.has(name)) return state.memberCache.get(name);
+        const key = name.trim().toLowerCase();
+        const rows = MEMBER_SCHEDULE_MAP.get(key) ?? [];
+        const mappedRows = rows.map((r: any) => ({ ...r, member_name: name }));
+        state.memberCache.set(name, mappedRows);
+        return mappedRows;
+    }
+
+    // ── Cart ─────────────────────────────────────────────────────────────────
+    function setRounds(item: any, newRounds: number) {
+        if (newRounds <= 0) {
+            state.cart.delete(item.sid);
+        } else {
+            const existing = state.cart.get(item.sid);
+            state.cart.set(item.sid, { ...item, rounds: newRounds });
+            if (existing) {
+                const input = document.querySelector(
+                    `.ticket-qty[data-sid="${item.sid}"]`,
+                ) as HTMLInputElement | null;
+                if (input) {
+                    input.value = String(newRounds);
+                    input.previousElementSibling?.toggleAttribute(
+                        "disabled",
+                        newRounds === 0,
+                    );
+                    input
+                        .closest(".slot-row")
+                        ?.classList.toggle("has-rounds", newRounds > 0);
+                }
+                updateSummaryBadge();
+                saveToStorage();
+                return;
+            }
+        }
+        renderPlannerSchedule();
+        updateSummaryBadge();
+        saveToStorage();
+    }
+
+    // ── Tabs ─────────────────────────────────────────────────────────────────
+    function switchTab(tabId: string) {
+        document
+            .querySelectorAll(".sf-tab")
+            .forEach((t) => t.classList.remove("active"));
+        document
+            .querySelectorAll(".sf-panel")
+            .forEach((p) => p.classList.remove("active"));
+        document
+            .querySelector(`.sf-tab[data-tab="${tabId}"]`)
+            ?.classList.add("active");
+        document.getElementById(`panel-${tabId}`)?.classList.add("active");
+        if (tabId === "summary") renderSummaryTab();
+        if (tabId === "happening") renderHappeningNow();
+    }
+    document
+        .querySelectorAll(".sf-tab")
+        .forEach((btn) =>
+            btn.addEventListener("click", () => switchTab((btn as HTMLElement).dataset.tab ?? "")),
+        );
+
+    // ── Member filter ─────────────────────────────────────────────────────────
+    function buildMemberPageChips() {
+        const cards = Array.from(document.querySelectorAll(".member-card")) as HTMLElement[];
+        const gens = new Set<string>(),
+            teams = new Set<string>();
+        cards.forEach((c) => {
+            if (
+                state.mFilterBrand === "all" ||
+                c.dataset.brand === state.mFilterBrand
+            ) {
+                if (c.dataset.gen) gens.add(c.dataset.gen);
+                if (c.dataset.team) teams.add(c.dataset.team);
+            }
+        });
+        const genOrder = [
+            "Gen 2",
+            "Gen 3",
+            "Gen 4",
+            "Gen 5",
+            "Gen 6",
+            "Unknown",
+        ];
+        const teamOrder = ["Team BIII", "Team NV", "Team C", "Trainee"];
+        const sGens = [...gens].sort(
+            (a, b) => genOrder.indexOf(a) - genOrder.indexOf(b),
+        );
+        const sTeams = [...teams].sort(
+            (a, b) => teamOrder.indexOf(a) - teamOrder.indexOf(b),
+        );
+
+        function renderSelect(id: string, items: string[], allLabel: string, cur: string, fk: string) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (!items.length) {
+                el.innerHTML = "";
+                return;
+            }
+            const all = [
+                { v: "all", label: allLabel },
+                ...items.map((v) => ({ v, label: v })),
+            ];
+            const labelText = fk === "gen" ? "Generation" : "Team";
+            el.innerHTML = `<div class="d-flex flex-column gap-2">
+                <label class="fw-bold planner-muted-text" for="mFilter${fk}">${labelText}</label>
+                <select class="form-select form-select-sm" id="mFilter${fk}" data-mf="${fk}">
+                    ${all
+                        .map(
+                            ({ v, label }) =>
+                                `<option value="${v}" ${cur === v ? "selected" : ""}>${label}</option>`,
+                        )
+                        .join("")}
+                </select>
+            </div>`;
+        }
+        renderSelect("mGenGroup", sGens, "All Gen", state.mFilterGen, "gen");
+        renderSelect(
+            "mTeamGroup",
+            sTeams,
+            "All Team",
+            state.mFilterTeam,
+            "team",
+        );
+        document
+            .getElementById("mGenDivider")
+            ?.classList.toggle("d-none", !(sGens.length && sTeams.length));
+
+        document
+            .querySelectorAll("#mGenGroup select, #mTeamGroup select")
+            .forEach((select) =>
+                select.addEventListener("change", () => {
+                    const type = (select as HTMLSelectElement).dataset.mf;
+                    const val = (select as HTMLSelectElement).value;
+                    if (type === "gen") {
+                        state.mFilterGen = val;
+                        state.mFilterTeam = "all";
+                    } else {
+                        state.mFilterTeam = val;
+                    }
+                    buildMemberPageChips();
+                    applyMemberCardFilter();
+                    saveToStorage();
+                }),
+            );
+    }
+
+    function applyMemberCardFilter() {
+        document.querySelectorAll(".member-card").forEach((c) => {
+            const hc = c as HTMLElement;
+            const ok =
+                (state.mFilterBrand === "all" ||
+                    hc.dataset.brand === state.mFilterBrand) &&
+                (state.mFilterGen === "all" ||
+                    hc.dataset.gen === state.mFilterGen) &&
+                (state.mFilterTeam === "all" ||
+                    hc.dataset.team === state.mFilterTeam);
+            c.toggleAttribute("data-hidden", !ok);
+        });
+    }
+
+    document.getElementById("mBrandGroup")?.addEventListener("click", (e) => {
+        const btn = (e.target as HTMLElement | null)?.closest(".ftab") as HTMLElement | null;
+        if (!btn) return;
+        document
+            .querySelectorAll("#mBrandGroup .ftab")
+            .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        state.mFilterBrand = btn.dataset.mv ?? "all";
+        state.mFilterGen = "all";
+        state.mFilterTeam = "all";
+        buildMemberPageChips();
+        applyMemberCardFilter();
+        saveToStorage();
+    });
+
+    buildMemberPageChips();
+
+    // ── Planner day filter ────────────────────────────────────────────────────
+    document.getElementById("dayFilterRow")?.addEventListener("click", (e) => {
+        const btn = (e.target as HTMLElement | null)?.closest(".day-ftab") as HTMLElement | null;
+        if (!btn) return;
+        document
+            .querySelectorAll("#dayFilterRow .day-ftab")
+            .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        state.plannerDay = btn.dataset.day ?? "all";
+        renderPlannerSchedule();
+        saveToStorage();
+    });
+
+    // ── Activity name filter ──────────────────────────────────────────────────
+    function buildActNameFilter() {
+        const allNames = new Map<string, string>();
+        state.selectedMembers.forEach((name: string) =>
+            (state.memberCache.get(name) ?? [])
+                .filter((r: any) => r.member_name === name)
+                .forEach((r: any) => {
+                    if (!allNames.has(r.activity_slug))
+                        allNames.set(r.activity_slug, r.activity_name);
+                }),
+        );
+        state.plannerActNames.forEach((slug: string) => {
+            if (!allNames.has(slug)) state.plannerActNames.delete(slug);
+        });
+        const container = document.getElementById("actNameFilterRow");
+        if (!container) return;
+        if (!allNames.size) {
+            container.innerHTML = "";
+            return;
+        }
+        container.innerHTML = [...allNames.entries()]
+            .map(([slug, name]) => {
+                const cfg = findAct(ACTIVITIES, name, slug);
+                return `<div class="col-3 d-flex"><button class="ftab chip act-chip ${state.plannerActNames.has(slug) ? "active" : ""} w-100 h-100" style="--chip-color:${cfg.color}" data-act-name="${slug}"><i class="${cfg.icon}" style="font-size:14px"></i><span>${name}</span></button></div>`;
+            })
+            .join("");
+    }
+
+    document
+        .getElementById("actNameFilterRow")
+        ?.addEventListener("click", (e) => {
+            const btn = (e.target as HTMLElement | null)?.closest("[data-act-name]") as HTMLElement | null;
+            if (!btn) return;
+            const slug = btn.dataset.actName ?? "";
+            const alreadyActive = state.plannerActNames.has(slug);
+            state.plannerActNames.clear();
+            document
+                .querySelectorAll("#actNameFilterRow [data-act-name]")
+                .forEach((b) => b.classList.remove("active"));
+            if (!alreadyActive) {
+                state.plannerActNames.add(slug);
+                btn.classList.add("active");
+            }
+            renderPlannerSchedule();
+            saveToStorage();
+        });
+
+    // ── Member selection ──────────────────────────────────────────────────────
+    function toggleMember(btn: HTMLElement) {
+        const name = btn.dataset.name ?? "";
+        if (state.selectedMembers.has(name)) {
+            state.selectedMembers.delete(name);
+            if (!state.selectedMembers.size) state.plannerActNames.clear();
+            btn.classList.remove("active");
+            btn.innerHTML = ICON_ADD + " Add to Planner";
+            state.cart.forEach((_: any, sid: string) => {
+                if (sid.endsWith(`__${name}`)) state.cart.delete(sid);
+            });
+        } else {
+            state.selectedMembers.add(name);
+            btn.classList.add("active");
+            btn.innerHTML = ICON_CHECK + " Added";
+            fetchSchedule(name);
+        }
+        renderSelectedMembersStrip();
+        renderPlannerSchedule();
+        updateSummaryBadge();
+        saveToStorage();
+    }
+
+    function removeMemberFromPlanner(name: string) {
+        state.selectedMembers.delete(name);
+        state.cart.forEach((_: any, sid: string) => {
+            if (sid.endsWith(`__${name}`)) state.cart.delete(sid);
+        });
+        const cardBtn = document.querySelector(
+            `.member-card__select-btn[data-name="${CSS.escape(name)}"]`,
+        );
+        if (cardBtn) {
+            cardBtn.classList.remove("active");
+            cardBtn.innerHTML = ICON_ADD + " Add to Planner";
+        }
+        renderSelectedMembersStrip();
+        renderPlannerSchedule();
+        updateSummaryBadge();
+        saveToStorage();
+    }
+
+    function renderSelectedMembersStrip() {
+        const strip = document.getElementById("selectedMembersStrip");
+        if (!strip) return;
+        strip.innerHTML = [
+            ...state.selectedMembers,
+        ]
+            .map((name: string) => {
+                const img = memberImg(name);
+                const imgEl = img
+                    ? `<img src="${img}" alt="${name}" class="sel-pill__img" onerror="this.style.display='none'">`
+                    : `<span class="sel-pill__img" style="display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;background:rgba(255,255,255,.25)">${name[0]}</span>`;
+                return `<div class="sel-pill flex-shrink-0">${imgEl}${name}<button class="sel-pill__rm" onclick="APP.removeMember('${name}')" title="Remove">${ICON_DEL}</button></div>`;
+            })
+            .join("");
+    }
+
+    // ── Planner render ────────────────────────────────────────────────────────
+    function buildGrouped() {
+        const grouped: Record<string, Record<string, Record<string, any>>> = {};
+        state.selectedMembers.forEach((name: string) =>
+            (state.memberCache.get(name) ?? [])
+                .filter((r: any) => r.member_name === name)
+                .forEach((r: any) => {
+                    if (
+                        state.plannerActNames.size > 0 &&
+                        !state.plannerActNames.has(r.activity_slug)
+                    )
+                        return;
+                    const k = String(r.slot_id);
+                    grouped[r.day] ??= {};
+                    grouped[r.day][r.activity_slug] ??= {};
+                    grouped[r.day][r.activity_slug][k] ??= {
+                        row: { ...r, forMember: name },
+                        members: [],
+                    };
+                    const e = grouped[r.day][r.activity_slug][k];
+                    if (!e.members.includes(name)) e.members.push(name);
+                }),
+        );
+        return grouped;
+    }
+
+    function buildActBlockHTML(actSlug: string, slots: any, day: string) {
+        const firstRow = (Object.values(slots)[0] as any).row;
+        const aType = actType(ACTIVITIES, firstRow.activity_name, actSlug);
+        const cfg = findAct(ACTIVITIES, firstRow.activity_name, actSlug);
+
+        const infoHTML = buildActInfoHtml(cfg);
+
+        const slotRows = Object.entries(slots)
+            .sort(([, a]: [string, any], [, b]: [string, any]) =>
+                a.row.time_range.localeCompare(b.row.time_range),
+            )
+            .map(([slotId, entry]) =>
+                buildSlotRowHTML(actSlug, slotId, day, entry, firstRow, aType, { ACTIVITIES, cartQty: (sid: string) => state.cart.get(sid)?.rounds ?? 0 }),
+            )
+            .join("");
+
+        return `<div class="act-block slide-up" style="--act-color: ${cfg.color}">
+            <div class="act-block__header" style="background-color: color-mix(in srgb, ${cfg.color}, transparent 92%)">
+                <div class="act-block__left">
+                    <div class="act-block__icon" style="background: ${cfg.color}"><i class="${cfg.icon}"></i></div>
+                    <span class="act-block__name">${firstRow.activity_name}</span>
+                </div>
+            </div>
+            ${infoHTML}${slotRows}
+        </div>`;
+    }
+
+    async function renderPlannerSchedule() {
+        const empty = document.getElementById("plannerEmpty");
+        const content = document.getElementById("plannerContent");
+        if (!empty || !content) return;
+        if (!state.selectedMembers.size) {
+            empty.style.display = "flex";
+            content.classList.add("d-none");
+            return;
+        }
+        empty.style.display = "none";
+        content.classList.remove("d-none");
+        [...state.selectedMembers]
+            .filter((n: string) => !state.memberCache.has(n))
+            .forEach((n: string) => fetchSchedule(n));
+        buildActNameFilter();
+        const grouped = buildGrouped();
+        const activeDays = DAY_KEYS.filter(
+            (d) => state.plannerDay === "all" || d === state.plannerDay,
+        );
+        const html = activeDays
+            .filter((d) => (grouped as any)[d])
+            .map(
+                (day: string) =>
+                    `<div class="sched-day-block">
+                    <div class="sched-day-header ${day}">${DAY_SHORT[day]}</div>
+                    ${Object.entries((grouped as any)[day])
+                        .map(([slug, slots]) =>
+                            buildActBlockHTML(slug, slots, day),
+                        )
+                        .join("")}
+                </div>`,
+            )
+            .join("");
+        const blocks = document.getElementById("scheduleBlocks");
+        if (blocks) {
+            blocks.innerHTML =
+                html ||
+                `<div class="text-center py-4" style="color:#b0a8c4;font-size:13px">ไม่มีรอบในวันที่เลือก</div>`;
+        }
+    }
+
+    // ── Round controls ────────────────────────────────────────────────────────
+    function changeRounds(
+        sid: string,
+        actSlug: string,
+        slotId: string,
+        memberName: string,
+        actNameEnc: string,
+        day: string,
+        timeEnc: string,
+        aTypeEnc: string,
+        ticketsRawStr: string | null,
+        slotMembersEnc: string,
+        delta: number,
+    ) {
+        const actName = decodeURIComponent(actNameEnc);
+        const time = decodeURIComponent(timeEnc);
+        const aType = decodeURIComponent(aTypeEnc);
+        const slotMembers = decodeURIComponent(slotMembersEnc)
+            .split(",")
+            .filter(Boolean);
+        const ticketsReq =
+            ticketsRawStr === "null" || ticketsRawStr === null
+                ? null
+                : parseInt(String(ticketsRawStr)) || null;
+        const current = state.cart.get(sid)?.rounds ?? 0;
+        const realActSlug = sid.split("__")[0];
+        setRounds(
+            {
+                sid,
+                member: memberName,
+                actSlug: realActSlug,
+                actName,
+                actType: aType,
+                day,
+                dayLabel: DAY_SHORT[day] ?? day,
+                time,
+                members: slotMembers,
+                ticketsReq,
+            },
+            Math.max(0, current + delta),
+        );
+    }
+
+    function setRoundsFromInput(input: any) {
+        const val = Math.max(0, parseInt(input.value) || 0);
+        input.value = String(val);
+        const d = input.dataset,
+            current = state.cart.get(d.sid)?.rounds ?? 0;
+        changeRounds(
+            d.sid,
+            d.sid.split("__")[0],
+            d.slotid,
+            d.member,
+            d.actname,
+            d.day,
+            d.time,
+            d.atype,
+            d.ticketsreq,
+            d.slotmembers,
+            val - current,
+        );
+    }
+
+    function updateSummaryBadge() {
+        const badge = document.getElementById("summaryBadge");
+        if (badge) {
+            let total = 0;
+            state.cart.forEach((c: any) => {
+                total += c.rounds;
+            });
+            badge.textContent = String(total);
+            badge.style.display = total > 0 ? "inline" : "none";
+        }
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // HAPPENING NOW
+    // ════════════════════════════════════════════════════════════════════════
+
+
+    function renderHappeningNow() {
+        const container = document.getElementById("nowContent");
+        if (!container) return;
+
+        const todayKey = detectTodayKey(DAYS);
+        const nowMin = nowMinutes();
+
+        if (!todayKey) {
+            const nowBadge = document.getElementById("nowBadge");
+            if (nowBadge) nowBadge.style.display = "none";
+            container.innerHTML = `<div class="now-nothing-live">
+                <div class="now-nothing-icon"><i class="fa-solid fa-calendar-xmark"></i></div>
+                <div>ไม่มีกิจกรรมตามตารางในเวลานี้</div>
+            </div>`;
+            return;
+        }
+
+        const daySlots = (FULL_SCHEDULE as any)[todayKey] ?? [];
+        const byTime = groupSlotsByTime(daySlots);
+        const sortedTimes = Object.keys(byTime).sort();
+        const { currentTime, nextTime } = findCurrentAndNextTime(sortedTimes, nowMin);
+
+        const nowBadge = document.getElementById("nowBadge");
+        if (nowBadge) nowBadge.style.display = currentTime ? "inline" : "none";
+
+        let html = "";
+
+        if (currentTime) {
+            html += `<div class="now-section-label now-section-label--live">Now Activities</div>
+            <div class="now-time-block">
+                <div class="now-time-label now-time-label--live">${currentTime}<span class="now-live-badge">LIVE</span></div>
+                <div class="now-act-grid">${renderActCardsHtml(currentTime, byTime, { ACTIVITIES, memberImg, isSelected: m => state.selectedMembers.has(m) })}</div>
+            </div>`;
+        } else {
+            html += `<div class="now-nothing-live">
+                <div class="now-nothing-icon"><i class="fa-solid fa-clock"></i></div>
+                <div>ยังไม่มีรอบที่เปิดอยู่ตอนนี้</div>
+            </div>`;
+        }
+
+        if (nextTime) {
+            html += `<div class="now-section-label now-section-label--next">Next Round</div>
+            <div class="now-time-block now-time-block--next">
+                <div class="now-time-label now-time-label--next">${nextTime}</div>
+                <div class="now-act-grid">${renderActCardsHtml(nextTime, byTime, { ACTIVITIES, memberImg, isSelected: m => state.selectedMembers.has(m) })}</div>
+            </div>`;
+        }
+
+        if (!currentTime && !nextTime) {
+            html += `<div class="now-nothing-live" style="margin-top:16px">
+                <div class="now-nothing-icon"><i class="fa-solid fa-flag-checkered"></i></div>
+                <div>กิจกรรมวันนี้จบแล้ว</div>
+            </div>`;
+        }
+
+        container.innerHTML = html;
+    }
+
+    setInterval(() => {
+        if (
+            document
+                .getElementById("panel-happening")
+                ?.classList.contains("active")
+        ) {
+            renderHappeningNow();
+        }
+    }, 60000);
+
+    // ════════════════════════════════════════════════════════════════════════
+    // EXPORT RECAP
+    // ════════════════════════════════════════════════════════════════════════
+
+    async function exportRecap() {
+        const btn = document.getElementById("exportRecapBtn") as HTMLButtonElement | null;
+        const canvas = document.getElementById("recapCanvas") as HTMLCanvasElement | null;
+        if (!canvas) return;
+        if (btn) {
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> กำลังสร้าง...`;
+            btn.disabled = true;
+        }
+
+        try {
+            await drawRecapCanvas(canvas, state.cart, { DAY_ORDER, ACTIVITIES, PRICES, memberImg, memberMeta });
+
+            const dataUrl = canvas.toDataURL("image/png");
+            const overlay = document.getElementById("recapOverlay");
+            const img = document.getElementById("recapImage") as HTMLImageElement | null;
+            if (overlay && img) {
+                img.src = dataUrl;
+                overlay.classList.remove("d-none");
+                document.body.style.overflow = "hidden";
+            }
+        } catch (err) {
+            showToast("เกิดข้อผิดพลาด กรุณาลองใหม่");
+        } finally {
+            if (btn) {
+                btn.innerHTML = `<i class="fa-solid fa-image"></i> Export Recap`;
+                btn.disabled = false;
+            }
+        }
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // SUMMARY
+    // ════════════════════════════════════════════════════════════════════════
+
+    const SORT_OPTIONS = [
+        { key: "day", label: "Time" },
+        { key: "member", label: "Member" },
+        { key: "activity", label: "Activity" },
+        { key: "round", label: "Round" },
+        { key: "price", label: "Price" },
+    ];
+
+    function buildSortBar() {
+        const menu = document.getElementById("sortMenu");
+        if (!menu) return;
+        menu.innerHTML = SORT_OPTIONS.map((o) => {
+            const active = state.summarySort === o.key;
+            const arrow = active
+                ? state.summarySortDir === "asc"
+                    ? "↑"
+                    : "↓"
+                : "";
+            return `<button class="sort-menu-item ${active ? "active" : ""}" onclick="APP.setSort('${o.key}')"><span>${o.label}</span><span class="sort-menu-item__arrow">${arrow}</span></button>`;
+        }).join("");
+        const lbl = document.getElementById("sortActiveLabel");
+        if (lbl)
+            lbl.textContent = `${SORT_OPTIONS.find((o) => o.key === state.summarySort)?.label} ${state.summarySortDir === "asc" ? "↑" : "↓"}`;
+    }
+
+    function toggleSortMenu() {
+        const menu = document.getElementById("sortMenu");
+        const btn = document.getElementById("sortToggleBtn");
+        if (menu && btn) {
+            const open = menu.classList.toggle("open");
+            btn.classList.toggle("open", open);
+        }
+    }
+
+    function toggleDayMenu() {
+        const menu = document.getElementById("dayMenu");
+        const btn = document.getElementById("dayToggleBtn");
+        if (menu && btn) {
+            const open = menu.classList.toggle("open");
+            btn.classList.toggle("open", open);
+        }
+    }
+
+    document.addEventListener("click", (e) => {
+        const sortWrap = document.getElementById("sortDropdownWrap");
+        if (sortWrap && !sortWrap.contains(e.target as Node | null)) {
+            document.getElementById("sortMenu")?.classList.remove("open");
+            document.getElementById("sortToggleBtn")?.classList.remove("open");
+        }
+
+        const dayWrap = document.getElementById("summaryDayTabs");
+        if (dayWrap && !dayWrap.contains(e.target as Node | null)) {
+            document.getElementById("dayMenu")?.classList.remove("open");
+            document.getElementById("dayToggleBtn")?.classList.remove("open");
+        }
+    });
+
+    function setSort(key: string) {
+        state.summarySortDir =
+            state.summarySort === key
+                ? state.summarySortDir === "asc"
+                    ? "desc"
+                    : "asc"
+                : "asc";
+        state.summarySort = key;
+        document.getElementById("sortMenu")?.classList.remove("open");
+        document.getElementById("sortToggleBtn")?.classList.remove("open");
+        buildSortBar();
+        renderSummaryTable();
+        saveToStorage();
+    }
+
+    function renderSummaryTab() {
+        const empty = document.getElementById("summaryEmpty");
+        const content = document.getElementById("summaryContent");
+        if (!empty || !content) return;
+        if (!state.cart.size) {
+            empty.style.display = "flex";
+            content.classList.add("d-none");
+            return;
+        }
+        empty.style.display = "none";
+        content.classList.remove("d-none");
+        let totalRounds = 0,
+            totalTix = 0,
+            totalPrice = 0;
+        const memberSet = new Set();
+        state.cart.forEach((c: any) => {
+            if (!c.actSlug) c.actSlug = c.sid.split("__")[0];
+            totalRounds += c.rounds;
+            totalTix +=
+                ticketsFor(ACTIVITIES, c.actType, c.actName, c.actSlug, c.ticketsReq) *
+                c.rounds;
+            totalPrice +=
+                priceFor(ACTIVITIES, PRICES, c.actType, c.actName, c.actSlug, c.ticketsReq) *
+                c.rounds;
+            memberSet.add(c.member);
+        });
+        const statGrid = document.getElementById("statGrid");
+        if (statGrid) {
+            statGrid.innerHTML = [
+                { label: "Rounds", value: totalRounds, unit: "Round" },
+                { label: "Members", value: memberSet.size, unit: "คน" },
+                { label: "Tickets", value: totalTix, unit: "ใบ" },
+                {
+                    label: "Total",
+                    value: `฿${totalPrice.toLocaleString()}`,
+                    unit: "Bath",
+                },
+            ]
+                .map(
+                    (s) =>
+                        `<div class="col mb-3 slide-up show"><div class="stat-card__label">${s.label}</div><div class="stat-card__value">${s.value}</div><div class="stat-card__unit">${s.unit}</div></div>`,
+                )
+                .join("");
+        }
+        buildSortBar();
+        renderSummaryTable();
+        renderSummaryFooter();
+    }
+
+    function removeFromCart(sid: string) {
+        state.cart.delete(sid);
+        updateSummaryBadge();
+        saveToStorage();
+        renderSummaryTab();
+        renderPlannerSchedule();
+    }
+
+    function renderSummaryTable() {
+        const filtered = filterAndSortCart(state.cart, state.summaryDay, { key: state.summarySort, dir: state.summarySortDir }, { DAY_ORDER, ACTIVITIES, PRICES });
+        const tbody = document.getElementById("summaryTbody");
+        if (!tbody) return;
+        if (!filtered.length) {
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4" style="color:#b0a8c4;font-size:13px">ไม่มี Round ในวันนี้</td></tr>`;
+            return;
+        }
+        tbody.innerHTML = filtered.map(c => renderSummaryRowHtml(c, { ACTIVITIES, PRICES, memberImg, memberMeta })).join("");
+    }
+
+    function renderSummaryFooter() {
+        const footer = document.getElementById("summaryFooter");
+        if (footer) {
+            footer.innerHTML = renderSummaryFooterHtml(state.cart, { ACTIVITIES, PRICES });
+        }
+    }
+
+    document
+        .getElementById("summaryDayTabs")
+        ?.addEventListener("click", (e) => {
+            const btn = (e.target as HTMLElement | null)?.closest(".day-tab") as HTMLElement | null;
+            if (!btn) return;
+            document
+                .querySelectorAll("#summaryDayTabs .day-tab")
+                .forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+            state.summaryDay = btn.dataset.day ?? "all";
+
+            const lbl = document.getElementById("dayActiveLabel");
+            if (lbl) lbl.textContent = btn.textContent?.trim() ?? "";
+
+            document.getElementById("dayMenu")?.classList.remove("open");
+            document.getElementById("dayToggleBtn")?.classList.remove("open");
+
+            renderSummaryTable();
+            saveToStorage();
+        });
+
+    // ── Reset ─────────────────────────────────────────────────────────────────
+    function resetAll() {
+        if (!confirm("Reset ทั้งหมด?")) return;
+        state.cart.clear();
+        state.selectedMembers.forEach((name: string) => {
+            const btn = document.querySelector(
+                `.member-card__select-btn[data-name="${CSS.escape(name)}"]`,
+            );
+            if (btn) {
+                btn.classList.remove("active");
+                btn.innerHTML = ICON_ADD + " Add to Planner";
+            }
+        });
+        state.selectedMembers.clear();
+        state.plannerActNames.clear();
+        localStorage.removeItem(STORAGE_KEY);
+        renderSelectedMembersStrip();
+        renderPlannerSchedule();
+        updateSummaryBadge();
+        renderSummaryTab();
+        showToast("Reset แล้ว");
+    }
+
+    // ── Load from storage ─────────────────────────────────────────────────────
+    async function loadFromStorage() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return;
+            const p = JSON.parse(raw);
+            STATE_KEYS.forEach((k) => {
+                if (p[k] != null) (state as any)[k] = p[k];
+            });
+            const firstSlug = (p.plannerActNames ?? [])[0];
+            if (firstSlug) state.plannerActNames.add(firstSlug);
+            await Promise.all(
+                (p.selectedMembers ?? []).map(async (name: string) => {
+                    state.selectedMembers.add(name);
+                    const btn = document.querySelector(
+                        `.member-card__select-btn[data-name="${CSS.escape(name)}"]`,
+                    );
+                    if (btn) {
+                        btn.classList.add("active");
+                        btn.innerHTML = ICON_CHECK + " Added";
+                    }
+                    fetchSchedule(name);
+                }),
+            );
+            (p.cart ?? []).forEach(({ sid, item }: any) => {
+                if (!item.actSlug) item.actSlug = sid.split("__")[0];
+                state.cart.set(sid, item);
+            });
+
+            document
+                .querySelectorAll("#nowDateRow [data-nowday]")
+                .forEach((b) =>
+                    b.classList.toggle(
+                        "active",
+                        (b as HTMLElement).dataset.nowday === (state as any).nowDay,
+                    ),
+                );
+
+            applyMemberCardFilter();
+            document
+                .querySelectorAll("#mBrandGroup .ftab")
+                .forEach((b) =>
+                    b.classList.toggle(
+                        "active",
+                        (b as HTMLElement).dataset.mv === state.mFilterBrand,
+                    ),
+                );
+            buildMemberPageChips();
+            document
+                .querySelectorAll("#dayFilterRow .day-ftab")
+                .forEach((b) =>
+                    b.classList.toggle(
+                        "active",
+                        (b as HTMLElement).dataset.day === state.plannerDay,
+                    ),
+                );
+            document
+                .querySelectorAll("#summaryDayTabs .day-tab")
+                .forEach((b) => {
+                    const isActive = (b as HTMLElement).dataset.day === state.summaryDay;
+                    b.classList.toggle("active", isActive);
+                    if (isActive) {
+                        const lbl = document.getElementById("dayActiveLabel");
+                        if (lbl) lbl.textContent = b.textContent?.trim() ?? "";
+                    }
+                });
+            renderSelectedMembersStrip();
+            renderPlannerSchedule();
+            updateSummaryBadge();
+        } catch {}
+    }
+
+    function closeRecapOverlay() {
+        const overlay = document.getElementById("recapOverlay");
+        if (overlay) {
+            overlay.classList.add("d-none");
+            document.body.style.overflow = "";
+        }
+    }
+
+    // ── Public API ────────────────────────────────────────────────────────────
+    const APP = {
+        switchTab,
+        toggleMember,
+        removeMember: removeMemberFromPlanner,
+        changeRounds,
+        setRoundsFromInput,
+        resetAll,
+        removeFromCart,
+        setSort,
+        toggleSortMenu,
+        toggleDayMenu,
+        exportRecap,
+        closeRecapOverlay,
+    };
+    (window as any).APP = APP;
+    (window as any).toggleFromMembersTab = (btn: HTMLElement) => APP.toggleMember(btn);
+
+    loadFromStorage();
+</script>

@@ -1,0 +1,1387 @@
+// =============================================================================
+// GE2026 — Senbatsu General Election Tracker
+// Minimalist design using Bootstrap utility classes.
+// =============================================================================
+
+@use 'utilities/mixins' as *;
+
+// ── TAB NAVIGATION ──────────────────────────────────────────────────────────
+main {
+  background: var(--c-bg);
+}
+
+#twitter-widget-0,
+#twitter-widget-1 {
+  width: 100% !important;
+}
+
+.container {
+  margin: 0 auto;
+  max-width: 1320px !important;
+}
+
+.twitter-tweet {
+  display: block !important;
+}
+
+.modal-content {
+  max-width: 598px;
+  min-height: 653.69px;
+}
+
+.tab-pane {
+  padding: 0;
+}
+
+.member-row {
+  padding: 0;
+}
+
+.ge-page {
+  background-color: var(--c-bg);
+  // Horizontal spacing already comes from the Bootstrap .container gutter
+  // (this element also has class="container") — only vertical padding is
+  // needed here, to clear the sticky header + give breathing room at the end.
+  padding-block: calc(70px + 2.25rem) 4.5rem;
+
+  // Shared rank-group gradients (Senbatsu / Under Girls / Next Girls).
+  // Defined once here and consumed via var() everywhere a category color is
+  // needed — the candidate "อันดับที่คาดหวัง" groups, the Result tab rank
+  // headings, and .rank-card's faded center tint — instead of duplicating
+  // the same linear-gradient() strings in multiple places.
+  --ge-grad-senbatsu: linear-gradient(90deg, rgba(223, 197, 120, 1) 0%, rgba(236, 220, 171, 1) 100%);
+  --ge-grad-undergirls: linear-gradient(90deg, rgba(157, 160, 161, 1) 0%, rgba(220, 220, 220, 1) 100%);
+  --ge-grad-nextgirls: linear-gradient(90deg, rgba(215, 153, 91, 1) 0%, rgba(235, 204, 173, 1) 100%);
+}
+
+.ge2026-tabs {
+  position: sticky;
+  top: 60px;
+  z-index: 900;
+  background: color-mix(in srgb, var(--c-bg), transparent 12%);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--c-border);
+  padding: 8px 0;
+
+  .nav-link {
+    color: var(--c-content-muted);
+    transition: all 0.2s ease;
+
+    &:hover {
+      color: var(--c-primary);
+      background: color-mix(in srgb, var(--c-primary) 6%, transparent);
+    }
+
+    &.active {
+      color: var(--c-light) !important;
+      background: var(--c-primary) !important;
+    }
+  }
+}
+
+// ── VIEW / STAGE SWITCH BUTTONS ─────────────────────────────────────────────
+// Shared pill-toggle used by the Candidates view switcher
+// (รายชื่อผู้สมัคร ↔ อันดับที่คาดหวัง) and the Result stage switcher
+// (ผลด่วน#1 / ผลด่วน#2 / ผลจริง). Only one panel is shown at a time; the
+// active button gets the filled/primary treatment, the rest stay outlined.
+.ge2026-view-btn,
+.ge2026-stage-btn {
+  border: 1px solid var(--c-border);
+  color: var(--c-content);
+  background: transparent;
+
+  &:hover {
+    border-color: var(--c-primary);
+    color: var(--c-primary);
+  }
+
+  &.active {
+    border-color: var(--c-primary);
+    background: var(--c-primary) !important;
+    color: var(--c-light) !important;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .ge2026-view-btn {
+    width: 100%;
+  }
+}
+
+.ge2026-view {
+  &.d-none {
+    display: none !important;
+  }
+}
+
+.ge2026-stage-panel {
+  // stage panels are toggled via inline style (display) from JS, this class
+  // just gives every panel consistent spacing above/below.
+  scroll-margin-top: 120px;
+}
+
+// ── LIST ITEM CUSTOMIZATION ─────────────────────────────────────────────────
+
+// ── SONG TAB — MINIMAL, RESPONSIVE REDESIGN ─────────────────────────────────
+
+.song-results__toolbar div{
+  @media (max-width: 643px) {
+    width: 100%;
+  }
+}
+#ge2026-song-sort {
+  @media (min-width: 992px) {
+    width: 100% !important;
+  }
+
+  @media (min-width: 576px) {
+    width: calc(50% - 27px);
+  }
+
+  .song-filter__open {
+    @media (max-width: 767.98px) {
+      width: 100%;
+    }
+  }
+}
+
+.ge-page .btn:hover {
+  background: var(--c-primary) !important;
+  border: 1px solid var(--c-primary) !important;
+  color: var(--c-light) !important;
+}
+
+.ge-page .btn.active {
+  background: var(--c-primary);
+  color: var(--c-light) !important;
+  border: 1px solid var(--c-primary) !important;
+}
+
+.songs-layout {
+  margin: 0 auto;
+  padding-bottom: 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -1.5rem -1.25rem auto;
+    height: 14rem;
+    pointer-events: none;
+    opacity: 0.55;
+    background-image: linear-gradient(135deg,
+        color-mix(in srgb, var(--c-primary) 10%, transparent) 1px,
+        transparent 1px);
+    background-size: 18px 18px;
+    mask-image: linear-gradient(to bottom, #000, transparent 90%);
+  }
+}
+
+// Section header
+.songs-header {
+  padding-top: 0.5rem;
+  position: relative;
+  padding-left: 1rem;
+  border-left: 4px solid var(--c-primary);
+
+  &::after {
+    content: "";
+    display: block;
+    width: 4rem;
+    height: 3px;
+    margin-top: 1rem;
+    background: var(--c-primary);
+    border-radius: var(--r-round);
+  }
+}
+
+.songs-overline {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-primary);
+  margin: 0 0 4px;
+}
+
+.songs-title {
+  font-size: clamp(1.25rem, 4vw, 1.6rem);
+  font-weight: 800;
+  color: var(--c-content);
+  margin: 0 0 14px;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.songs-stats-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.songs-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: var(--r-round);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  background: var(--c-surface);
+  color: var(--c-content-secondary);
+  border: 1px solid var(--c-border);
+  line-height: 1;
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--c-border) 55%, transparent);
+  transition: transform 0.18s ease, border-color 0.18s ease;
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--c-primary) 35%, var(--c-border));
+  }
+
+  strong {
+    color: var(--c-content);
+    font-weight: 800;
+  }
+
+  &--primary {
+    background: color-mix(in srgb, var(--c-primary) 12%, transparent);
+    color: var(--c-primary);
+    border-color: color-mix(in srgb, var(--c-primary) 25%, transparent);
+
+    i {
+      opacity: 0.8;
+    }
+  }
+}
+
+// Block (section)
+.songs-block {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-base);
+  overflow: hidden;
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--c-content) 5%, transparent);
+
+  &__label {
+    font-size: 0.6875rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--c-content-muted);
+    margin: 0;
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid var(--c-border);
+  }
+
+  &--checker {
+    border-color: color-mix(in srgb, var(--c-primary) 25%, var(--c-border));
+  }
+}
+
+// ── Song explorer (filter aside + song cards) ───────────────────────────────
+// Filter aside content is always moved into the modal (see JS), so the
+// results column just stacks vertically — handled by Bootstrap's
+// d-flex flex-column gap-3 utilities directly in the markup.
+
+.serch-box {
+  max-width: 540px;
+  width: 100%;
+
+  @media (max-width: 991.98px) {
+    max-width: 100%;
+  }
+}
+
+.button-panel {
+  @media (max-width: 991.98px) {
+    flex-direction: column !important;
+  }
+}
+
+// Filter aside
+.song-filter {
+  width: 100%;
+  position: sticky;
+  top: 130px;
+
+  @media (max-width: 767.98px) {
+    position: relative;
+    top: auto;
+  }
+
+  &__open {
+    min-height: 42px;
+    flex: 0 0 auto;
+    padding: 6px 24px;
+    border: 1px solid var(--c-border);
+    color: var(--c-content);
+    background: transparent;
+    font-size: 0.8125rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+
+    &:hover,
+    &:focus-visible {
+      border-color: var(--c-primary);
+      color: var(--c-light);
+      background: var(--c-primary);
+    }
+
+    &.is-active {
+      background-color: var(--c-primary);
+      border-color: var(--c-primary);
+      color: var(--c-light);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--c-primary);
+      outline-offset: 2px;
+    }
+
+    @media (max-width: 480px) {
+      width: 100%;
+    }
+  }
+
+  &__summary-row {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  &__eyebrow {
+    display: block;
+    font-size: 0.6875rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--c-content-muted);
+    margin-bottom: 2px;
+  }
+
+  &__summary {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--c-content);
+  }
+
+  // Body is re-parented into the filter modal via JS on all breakpoints,
+  // so it never renders inline in the aside itself.
+  &__body {
+    display: none;
+    border-top: 1px solid var(--c-border);
+    padding: 10px;
+    background: color-mix(in srgb, var(--c-surface-alt) 35%, var(--c-surface));
+
+    &.is-open {
+      display: block;
+    }
+  }
+
+  &__tabs {
+    display: flex;
+    gap: 4px;
+    margin: 0 0 10px;
+    padding-bottom: 8px;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--c-border);
+  }
+
+  &__tab {
+    align-items: center;
+    gap: 6px;
+    border: 0;
+    padding: 8px 8px;
+    border-radius: var(--r-base);
+    color: var(--c-content);
+    background: transparent;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: color 0.15s ease, background 0.15s ease;
+
+    &:hover,
+    &.is-active {
+      border-color: var(--c-primary);
+      color: var(--c-light);
+      background: var(--c-primary);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--c-primary);
+      outline-offset: 2px;
+    }
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 360px;
+    overflow-y: auto;
+  }
+
+  &__chip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 7px 9px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--c-content);
+    background: transparent;
+    border: 1px solid transparent;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+
+    &:focus-visible {
+      outline: 2px solid var(--c-primary);
+      outline-offset: 2px;
+    }
+
+    &:hover {
+      background: var(--c-surface-alt);
+    }
+
+    &.is-active {
+      border-color: var(--c-primary);
+      color: var(--c-light);
+      background: var(--c-primary);
+    }
+  }
+
+  &__chip-dot {
+    display: none;
+  }
+
+  &__chip-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__chip-count {
+    font-size: 0.6875rem;
+    color: var(--c-content-muted);
+    flex-shrink: 0;
+  }
+
+  &__reset {
+    width: 100%;
+    margin-top: 10px;
+    padding: 7px 9px;
+    border: 1px dashed var(--c-border);
+    border-radius: 7px;
+    color: var(--c-content-muted);
+    background: transparent;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+
+    &:hover,
+    &:focus-visible {
+      border-color: var(--c-primary);
+      color: var(--c-light);
+      background: var(--c-primary);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--c-primary);
+      outline-offset: 2px;
+    }
+  }
+}
+
+.song-filter-modal {
+  border-color: var(--c-border);
+
+  .modal-header,
+  .modal-footer {
+    border-color: var(--c-border) !important;
+  }
+
+  .modal-title {
+    color: var(--c-content);
+    font-size: 1rem;
+    font-weight: 800;
+  }
+
+  .song-filter__body {
+    display: block;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  .modal-body {
+    .song-filter__tab {
+      width: 100%;
+      border: 1px solid var(--c-border);
+      border-radius: var(--r-base);
+      padding: 8px 4px;
+      text-align: center;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      background: transparent;
+      color: var(--c-content-muted);
+      transition: all 0.15s ease;
+
+      &:hover {
+        border-color: var(--c-primary);
+        color: var(--c-primary);
+      }
+
+      &.is-active {
+        border-color: var(--c-primary);
+        background: var(--c-primary);
+        color: var(--c-light);
+      }
+    }
+  }
+}
+
+// Results column
+.song-results {
+  min-width: 0;
+
+  &__summary {
+    font-size: 0.8125rem;
+    color: var(--c-content-muted);
+    margin: 0 0 10px;
+    padding-left: 2px;
+  }
+}
+
+.song-results__toolbar {
+  padding: 1.5rem;
+  background: var(--c-bg);
+  border-radius: var(--r-base);
+  border: 1px solid var(--c-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.1rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.song-sort {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+
+  &__dir {
+    border: 0;
+    color: var(--c-content-muted);
+    background: transparent;
+    cursor: pointer;
+    transition: color 0.15s ease, background 0.15s ease;
+    min-height: 42px;
+    min-width: 42px;
+    border: 1px solid var(--c-border);
+    border-radius: 50px;
+    font-size: 0.8125rem;
+
+    &:hover {
+      border-color: var(--c-primary);
+      color: var(--c-light);
+      background: var(--c-primary);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--c-primary);
+      outline-offset: 2px;
+    }
+  }
+}
+
+.song-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.song-card {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--c-bg);
+  border: 1px solid var(--c-border);
+  border-radius: 10px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+
+  &:focus-visible {
+    outline: 2px solid var(--c-primary);
+    outline-offset: 3px;
+  }
+
+  &.is-hidden {
+    display: none;
+  }
+
+  &__art {
+    width: 80px;
+    height: 80px;
+    border-radius: var(--r-base);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--c-surface-alt);
+    color: var(--c-content-muted);
+    overflow: hidden;
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c-border) 70%, transparent);
+    transition: transform 0.2s ease, background 0.2s ease;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    i {
+      font-size: 1rem;
+    }
+
+    @media (max-width: 480px) {
+      width: 56px;
+      height: 56px;
+    }
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+
+    &:hover {
+
+      .song-card__title,
+      .song-card__meta {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  &__title {
+    display: block;
+    color: var(--c-content);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-bottom: 0;
+
+    @media (max-width: 480px) {
+      font-size: 1rem;
+    }
+  }
+
+  &__meta {
+    display: block;
+    font-size: 1rem;
+    color: var(--c-content-secondary);
+    margin-top: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    @media (max-width: 480px) {
+      font-size: 0.8125rem;
+    }
+  }
+
+  &__count {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    width: 50px;
+    gap: 4px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--c-primary);
+
+    i {
+      font-size: 0.6875rem;
+    }
+
+    @media (max-width: 480px) {
+      font-size: 1.1rem;
+    }
+  }
+}
+
+// ── Song detail modal ────────────────────────────────────────────────────────
+
+.song-modal {
+  padding: 1rem;
+  align-items: flex-end;
+  flex-direction: column;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -30px; // ขยายเกินขอบเล็กน้อยเพื่อไม่ให้ขอบเบลอเห็นเป็นเส้นตรง
+    background-image: inherit; // รับค่าจาก inline style ที่ JS เซ็ตไว้
+    background-size: cover;
+    background-position: center;
+    filter: blur(30px);
+    transform: scale(1.1);
+    z-index: 0;
+  }
+
+  >* {
+    position: relative;
+    z-index: 1;
+  }
+
+
+  .modal-header {
+    align-items: flex-start;
+  }
+
+  &__head {
+    display: flex;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  &__art {
+    width: 125px;
+    height: 125px;
+    border-radius: 12px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--c-surface-alt);
+    color: var(--c-content-muted);
+    overflow: hidden;
+    box-shadow: 0 5px 14px color-mix(in srgb, var(--c-content) 12%, transparent);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    i {
+      font-size: 1.25rem;
+    }
+
+    @media (max-width: 480px) {
+      width: 80px;
+      height: 80px;
+    }
+  }
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--c-content);
+    margin: 0 0 2px;
+    line-height: 1.3;
+
+    @media (max-width: 480px) {
+      font-size: 1.1rem;
+    }
+  }
+
+  &__band {
+    font-size: 0.875rem;
+    color: var(--c-content-muted);
+    margin: 0;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: 1fr 3fr;
+    gap: 5px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--c-content);
+    margin-bottom: 14px;
+  }
+
+  &__label {
+    display: block;
+    font-size: 0.6875rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--c-content-secondary);
+    margin-bottom: 3px;
+  }
+
+  &__links {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 14px;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  &__link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--c-content);
+    background: var(--c-surface-alt);
+    border: 1px solid var(--c-border);
+    text-decoration: none;
+  }
+
+  &__links-empty {
+    font-size: 0.8125rem;
+    color: var(--c-content-muted);
+  }
+
+  &__members {
+    border-top: 1px solid var(--c-border);
+    padding-top: 12px;
+  }
+
+  &__member-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+}
+
+// Reuses .pick-chip visual style for member pills inside the modal
+.song-modal-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px 3px 4px;
+  border-radius: var(--r-round);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  background: var(--c-bg);
+  color: var(--c-content-secondary);
+  border: 1px solid var(--c-border);
+  line-height: 1;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+
+  img {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: top;
+    flex-shrink: 0;
+  }
+}
+
+// Probability list
+.prob-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.prob-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--c-border);
+  transition: background 0.15s ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: var(--c-primary);
+  }
+
+  &__idx {
+    flex-shrink: 0;
+    width: 20px;
+    font-size: 0.6875rem;
+    font-weight: 800;
+    color: var(--c-content-muted);
+    text-align: right;
+    margin-top: 3px;
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  &__name {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--c-content);
+    flex: 1;
+    min-width: 0;
+    line-height: 1.3;
+  }
+
+  &__pct {
+    font-size: 0.8125rem;
+    font-weight: 800;
+    color: var(--c-primary);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}
+
+.prob-bar {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--c-border);
+  overflow: hidden;
+
+  &__fill {
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--c-primary), color-mix(in srgb, var(--c-primary) 70%, var(--c-primary-hover)));
+    transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+.songs-disclaimer {
+  font-size: 0.6875rem;
+  color: var(--c-content-muted);
+  line-height: 1.6;
+  padding: 12px 16px 14px;
+  margin: 0;
+  border-top: 1px solid var(--c-border);
+}
+
+// Song Checker
+.songs-checker-desc {
+  font-size: 0.8125rem;
+  color: var(--c-content-muted);
+  line-height: 1.5;
+  padding: 10px 16px 0;
+  margin: 0;
+}
+
+.checker-slot {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  &__label {
+    font-size: 0.6875rem;
+    font-weight: 800;
+    color: var(--c-content);
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+  }
+
+  &__sub {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: var(--c-primary);
+    background: color-mix(in srgb, var(--c-primary) 10%, transparent);
+    border-radius: 4px;
+    padding: 1px 5px;
+  }
+}
+
+.checker-select {
+  width: 100%;
+  padding: 9px 10px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--c-content);
+  background: var(--c-bg);
+  border: 1.5px solid var(--c-border);
+  border-radius: 10px;
+  appearance: auto;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  line-height: 1.4;
+
+  &:focus {
+    outline: none;
+    border-color: var(--c-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-primary) 15%, transparent);
+  }
+}
+
+.checker-result {
+  min-height: 64px;
+  border-top: 1px solid var(--c-border);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  &__placeholder {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--c-content-muted);
+    margin: auto;
+
+    i {
+      font-size: 0.875rem;
+    }
+  }
+}
+
+// Checker result rows (JS-generated)
+.checker-result-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--c-border);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &__img {
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: top;
+    flex-shrink: 0;
+    border: 1.5px solid var(--c-border);
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__category {
+    font-size: 0.6875rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--c-primary);
+    margin-bottom: 2px;
+  }
+
+  &__song {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--c-content);
+    line-height: 1.3;
+    margin-bottom: 2px;
+  }
+
+  &__meta {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: var(--c-content-muted);
+    line-height: 1.4;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .song-results__toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem; // ลดจาก 1.5rem
+  }
+
+  // ── sort group ให้พอดีจอ ──
+  .song-sort {
+    width: 100%;
+  }
+
+  #ge2026-song-sort .song-filter__open {
+    flex: 1 1 0;          // สองปุ่มแบ่งพื้นที่เท่ากัน แทนที่จะใช้ px-4 ตายตัว
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+
+  .song-sort__dir {
+    flex-shrink: 0;
+    min-width: 38px;
+    min-height: 38px;
+  }
+
+  // ── search box + filter button ──
+  .serch-box {
+    flex-wrap: nowrap;
+  }
+
+  .serch-box input[type="search"] {
+    min-width: 0;        // สำคัญ! ป้องกัน input ดัน container ล้น
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  #ge2026-filter-toggle {
+    flex-shrink: 0;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .songs-layout {
+    gap: 0.5rem;
+    padding-bottom: 2.5rem;
+
+    &::before {
+      inset: -1rem -0.5rem auto;
+    }
+  }
+
+  .songs-header {
+    padding-left: 0.75rem;
+  }
+
+  .song-sort {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .song-modal__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.song-modal__link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  background-color: var(--c-bg);
+  border: 1.5px solid transparent;
+  color: var(--c-link-color);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-weight: 600;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: var(--link-color);
+    color: var(--c-bg);
+  }
+}
+
+.song-modal__link-icon {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+/* ── GE2026 Result: rank list design ────────────────────────────────── */
+
+.rank-heading {
+  // background is set inline per category via style={`background: ${cat.bg}`}
+  color: var(--c-light);
+  padding: 1rem 1rem 0.85rem;
+  border-radius: var(--r-base, 12px) var(--r-base, 12px) 0 0;
+  text-align: center;
+
+  h3 {
+    font-size: 1.5rem;
+    margin: 0;
+    color: var(--c-light);
+  }
+
+  .rank-song {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: color-mix(in srgb, var(--c-light) 85%, transparent);
+  }
+}
+
+.rank-grid {
+  // --cat-bg is set inline per category, used by .center below
+  background: var(--c-bg);
+  border: 1px solid var(--c-border, #e5e7eb);
+  border-top: none;
+  border-radius: 0 0 var(--r-base, 12px) var(--r-base, 12px);
+  overflow: hidden;
+}
+
+.rank-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--c-border, #eef0f2);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  // Faded version of the category's own gradient, layered behind the row
+  // content so text/images stay full-strength while the tint stays subtle.
+  &.center::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--cat-bg);
+    opacity: 0.16;
+    z-index: 0;
+  }
+
+  >* {
+    position: relative;
+    z-index: 1;
+  }
+
+  .rank {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #d7dade;
+    color: var(--c-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+
+  .pic {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #d7dade; // shows through whenever there is no <img> (or it fails to load)
+
+    .mem-pic {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top;
+      display: block;
+    }
+  }
+
+  .info {
+    flex: 1;
+    min-width: 0;
+
+    .name {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--c-content, #1f2328);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .token {
+    flex-shrink: 0;
+  }
+}
+
+/* ── Skeleton / loading placeholder (used before results are announced) ── */
+/* If Bootstrap's placeholder utilities are already loaded, these rules are
+   redundant but harmless. Kept here so the shimmer still works even if
+   Bootstrap's CSS (not just its JS) isn't imported in this page. */
+.rank-card .placeholder-wave {
+  margin: 0;
+  width: 100%;
+
+  .placeholder {
+    display: inline-block;
+    width: 70%;
+    height: 0.9rem;
+    border-radius: 4px;
+    background: #dfe2e6;
+    animation: rank-placeholder-glow 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes rank-placeholder-glow {
+  0% {
+    opacity: 0.55;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.55;
+  }
+}
+
+.rank-change {
+  margin-top: 2px;
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 999px;
+    line-height: 1.4;
+
+    &--up {
+      color: #16a34a;
+      background: rgba(22, 163, 74, 0.12);
+    }
+    &--down {
+      color: #dc2626;
+      background: rgba(220, 38, 38, 0.12);
+    }
+    &--same {
+      color: var(--c-content-muted);
+      background: rgba(128, 128, 128, 0.12);
+    }
+    &--new {
+      color: #eab308;
+      background: rgba(234, 179, 8, 0.14);
+    }
+  }
+}
