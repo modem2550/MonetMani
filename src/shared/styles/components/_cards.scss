@@ -4,7 +4,7 @@
 
 #info {
   height: auto;
-  padding: var(2rem) var(--r-large);
+  padding: 2rem var(--r-large);
   background-color: var(--c-surface);
 }
 
@@ -137,7 +137,7 @@
   li {
     counter-increment: achieve-counter;
     display: flex;
-    gap: 1rem;
+    gap: 0.55rem;
     align-items: baseline;
     padding: 1rem 0;
     border-bottom: 1px solid var(--c-border);
