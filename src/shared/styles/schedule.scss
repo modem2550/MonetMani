@@ -1,25 +1,64 @@
 /* =============================================================================
-   SCHEDULE PAGE — LAYOUT
+   SCHEDULE PAGE — Editorial Layout
    ============================================================================= */
 
 .schedule-page {
     background-color: var(--c-bg);
-    padding: calc(70px + 2.25rem) var(--r-large) 4.5rem;
+    padding: 0 var(--r-large) 5rem;
+    min-height: 100svh;
+}
 
+// ── Page header ───────────────────────────────────────────────────────────
+
+.schedule-header {
+    padding: calc(70px + clamp(2.5rem, 6vw, 5rem)) 0 clamp(2rem, 4vw, 3rem);
+    border-bottom: 1px solid var(--c-border);
+    margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+
+.schedule-page {
     &__title {
-        font-size: clamp(1.85rem, 4vw + 0.5rem, 2.75rem);
-        font-weight: 800;
-        line-height: 1.15;
-        color: var(--c-primary);
-        margin: 0 0 0.65rem;
-        letter-spacing: -0.02em;
+        font-size: clamp(2.5rem, 7vw, 5rem);
+        font-weight: 900;
+        line-height: 0.95;
+        color: var(--c-content);
+        margin: 0.5rem 0 0.75rem;
+        letter-spacing: -0.03em;
     }
 
     &__subtitle {
-        color: var(--c-content-secondary);
-        line-height: 1.55;
+        font-size: var(--fs-label);
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--c-content-muted);
         margin: 0;
     }
+}
+
+.schedule-title-sub {
+    font-size: clamp(1.6rem, 4.5vw, 3.5rem);
+    font-weight: 300;
+    letter-spacing: 0.02em;
+    color: var(--c-content-secondary);
+}
+
+// ── Event count inline badge ──────────────────────────────────────────────
+
+.schedule-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--fs-label);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--c-content-muted);
+    border: 1.5px solid var(--c-border);
+    border-radius: 100px;
+    padding: 2px 10px;
+    margin-left: 0.75rem;
+    vertical-align: middle;
+    line-height: 1.6;
 }
 
 main {
@@ -27,12 +66,12 @@ main {
 }
 
 .page-shell.page-main {
-    padding-top: 1.75rem;
+    padding-top: 0;
     padding-bottom: 2.5rem;
 }
 
 .events-section {
-    padding: 1.25rem 0;
+    padding: 1.5rem 0 2.5rem;
 }
 
 .event-count {
@@ -45,6 +84,7 @@ main {
     padding: 0;
     margin: auto;
 }
+
 
 /* =============================================================================
    EVENT CARD — BASE WRAPPER

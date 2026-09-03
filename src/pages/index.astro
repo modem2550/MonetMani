@@ -4,7 +4,6 @@ import MainLayout from "@/app/layouts/MainLayout.astro";
 import EventCard from "@/shared/components/EventCard.astro";
 import { getSupabase } from "@/services/supabase/server";
 import { categorizeEvents } from "@/shared/utils/dateUtils";
-import socialData from "../data/social.json";
 import type { Event } from "@/types/event";
 
 // ── Cache ──────────────────────────────────────────────────────────────────────
@@ -190,7 +189,7 @@ const processedPast = past.map(withSlug);
                 >
               </li>
               <li>
-                <strong>นักแสดง</strong> ภายภาพยนตร์เรื่อง
+                <strong>นักแสดงในบท</strong> ภายภาพยนตร์เรื่อง
                 <a
                   href="https://www.netflix.com/watch/81677623?source=35"
                   class="highlight-link"
@@ -198,7 +197,7 @@ const processedPast = past.map(withSlug);
                 >
               </li>
               <li>
-                <strong>นักแสดงหลัก</strong> ภายในซีรี่ย์ Girls love <a
+                <strong>นักแสดงหลักในบท</strong> ภายในซีรี่ย์ Girls love <a
                   href="https://www.youtube.com/watch?v=B26d-oTWt4A&list=PLPW9IgM1jwdvR5rvRpj5C9ESrtpoV12qV"
                   class="highlight-link">"Shock Me Girls รักช็อตใจยัยช็อตฟิล"</a
                 >

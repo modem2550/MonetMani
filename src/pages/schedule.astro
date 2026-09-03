@@ -51,30 +51,34 @@ const eventsWithSlug = (rawEvents ?? []).map((event: Event) => ({
 const { upcoming, past } = categorizeEvents(eventsWithSlug);
 ---
 
-<MainLayout title="Schedule - Niya BNK48's">
+<MainLayout title="Schedule — Monét BNK48">
     <div class="schedule-page container">
-        <header>
-            <div class="page-shell">
-                <h1 class="schedule-page__title mb-2">
-                    <strong>Niya BNK48's Schedule</strong>
-                </h1>
-                <p class="schedule-page__subtitle mb-0">
-                    ตารางงานและกิจกรรมของนีญ่า BNK48
-                </p>
-            </div>
+        <!-- ── Page header ── -->
+        <header class="schedule-header">
+            <p class="section-label">All Events</p>
+            <h1 class="schedule-page__title">
+                Monét's <span class="schedule-title-sub">Event Schedule</span>
+            </h1>
+            <p class="schedule-page__subtitle">
+                ตารางงานและกิจกรรมของโมเน่ต์ BNK48
+            </p>
         </header>
 
         <div class="page-shell page-main">
-            <section
-                id="upcoming-events-section"
-                class="events-section"
-                aria-labelledby="upcoming-heading"
-            >
-                <h2 id="upcoming-heading" class="visually-hidden">
-                    กิจกรรมที่กำลังจะมาถึง
-                </h2>
-                {
-                    upcoming.length > 0 ? (
+            <!-- ── Upcoming ── -->
+            {
+                upcoming.length > 0 && (
+                    <section
+                        id="upcoming-events-section"
+                        class="events-section"
+                        aria-labelledby="upcoming-heading"
+                    >
+                        <div class="mb-4">
+                            <p class="section-label">Upcoming</p>
+                            <h2 id="upcoming-heading" class="section-title">
+                                Next Events
+                            </h2>
+                        </div>
                         <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-4 flex-nowrap overflow-x-scroll">
                             {upcoming.map((event) => (
                                 <div class="col d-flex justify-content-center">
@@ -82,40 +86,38 @@ const { upcoming, past } = categorizeEvents(eventsWithSlug);
                                 </div>
                             ))}
                         </div>
-                    ) : (
-                        <div class="empty-state" />
-                    )
-                }
-            </section>
+                    </section>
+                )
+            }
 
-            <!-- Back home -->
-            <div class="text-center my-5">
-                <a class="btn btn-primary btn-rounded fw-600 px-4" href="/">
-                    <strong>กลับหน้าหลัก</strong>
-                    <i class="fa-solid fa-arrow-right arrow-icon ms-1"></i>
+            <!-- ── Back home ── -->
+            <div class="my-5">
+                <a class="editorial-link" href="/">
+                    <i class="fa-solid fa-arrow-left me-1" aria-hidden="true"
+                    ></i>
+                    กลับหน้าหลัก
                 </a>
             </div>
 
-            <!-- Past -->
+            <!-- ── Past ── -->
             <section
                 id="past-events-section"
                 class="events-section"
                 aria-labelledby="past-heading"
             >
-                <h2
-                    id="past-heading"
-                    class="section-heading h1 text-center mb-0"
-                >
-                    Past Events
-                </h2>
-                <p class="text-center mb-5">
-                    กิจกรรมที่จัดไปแล้ว
-                    {
-                        past.length > 0 && (
-                            <span class="event-count">({past.length})</span>
-                        )
-                    }
-                </p>
+                <div class="mb-4">
+                    <p class="section-label">Archive</p>
+                    <h2 id="past-heading" class="section-title">
+                        Past Events
+                        {
+                            past.length > 0 && (
+                                <span class="schedule-count">
+                                    {past.length}
+                                </span>
+                            )
+                        }
+                    </h2>
+                </div>
 
                 {
                     past.length > 0 ? (
@@ -138,6 +140,7 @@ const { upcoming, past } = categorizeEvents(eventsWithSlug);
         </div>
     </div>
 </MainLayout>
+
 <style>
     .container {
         max-width: 1320px !important;
