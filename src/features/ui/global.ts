@@ -242,7 +242,7 @@ function initHeader(): void {
 // ============================================================
 
 function initActiveNav(): void {
-  const sectionIds = ['home', 'info', 'event', 'social', 'library', 'fanclub'];
+  const sectionIds = ['home', 'info', 'event', 'social', 'library'];
   const navLinks = document.querySelectorAll('.nav-link, .nav-link-mobile');
   let currentActive = 'home';
 
@@ -391,7 +391,7 @@ function initAnimations(): void {
     { id: 'info', index: 1 },
     { id: 'social', index: 2 },
     { id: 'library', index: 3 },
-    { id: 'fanclub', index: 4 },
+
   ];
 
   sections.forEach(({ id, index }) => {

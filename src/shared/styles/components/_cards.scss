@@ -1,49 +1,227 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   BIO & INFO SECTION
+   INFO SECTION — Editorial Layout
    ═══════════════════════════════════════════════════════════════════════════ */
 
-.hero-half-body-img {
-  height: 100%;
-  width: auto;
-  object-fit: contain;
-  flex-shrink: 0;
+#info {
+  height: auto;
+  padding: var(2rem) var(--r-large);
+  background-color: var(--c-surface);
 }
 
-.bio-info-box {
-  font-size: var(--fs-body);
-  padding: 50px;
-  border-radius: var(--r-large);
-  background-color: var(--c-bg);
+// ── Section header ────────────────────────────────────────────────────────
+
+.info-header {
+  margin-bottom: 3rem;
+}
+
+.info-title-sub {
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  color: var(--c-content-secondary);
+}
+
+// ── 2-column split grid ───────────────────────────────────────────────────
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: start;
+  margin-bottom: 4rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ── Portrait column ───────────────────────────────────────────────────────
+
+.info-portrait {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+
+  @media (max-width: 768px) {
+    align-items: center;
+  }
+
+  &__img-wrap {
+    width: 100%;
+    max-width: 280px;
+    aspect-ratio: 1 / 1;
+    border-radius: var(--r-base);
+    overflow: hidden;
+    border: 1px solid var(--c-border);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+  }
+
+  // __socials — Bootstrap d-flex gap-3 mt-1 handles layout
+  &__socials {
+    gap: 12px;
+    margin-top: 0.25rem;
+  }
+}
+
+.info-social-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   border: 1px solid var(--c-border);
+  color: var(--c-content-muted);
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  text-decoration: none;
 
-  ul {
-    text-align: start;
+  &:hover {
+    background: var(--c-primary);
+    border-color: var(--c-primary);
+    color: var(--c-light);
+    transform: translateY(-2px);
+  }
+}
 
-    li a {
-      color: var(--c-section-text);
+.info-contact {
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--c-content-muted);
+  line-height: 1.7;
+  margin: 0;
+
+  span {
+    font-weight: 400;
+  }
+}
+
+// ── Content column ────────────────────────────────────────────────────────
+
+.info-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.info-intro {
+  font-size: var(--fs-h5);
+  line-height: 1.75;
+  color: var(--c-content-secondary);
+  border-left: 3px solid var(--c-primary);
+  padding-left: 1.25rem;
+  margin: 0;
+  font-style: italic;
+}
+
+// ── Achievement ordered list ──────────────────────────────────────────────
+
+.info-achieve-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  counter-reset: achieve-counter;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+
+  li {
+    counter-increment: achieve-counter;
+    display: flex;
+    gap: 1rem;
+    align-items: baseline;
+    padding: 1rem 0;
+    border-bottom: 1px solid var(--c-border);
+    font-size: var(--fs-body);
+    line-height: 1.6;
+    color: var(--c-content-secondary);
+
+    &:first-child {
+      padding-top: 0;
+    }
+
+    &::before {
+      content: counter(achieve-counter, decimal-leading-zero);
+      font-size: var(--fs-label);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--c-primary);
+      flex-shrink: 0;
+      min-width: 2rem;
+      margin-top: 2px;
+    }
+
+    strong {
+      color: var(--c-content);
+      font-weight: 700;
+    }
+
+    a {
+      color: var(--c-primary);
       text-decoration: none;
+      border-bottom: 1px dashed var(--c-primary);
+      transition: border-color 0.2s, color 0.2s;
 
       &:hover {
-        color: var(--c-primary-hover) !important;
+        color: var(--c-primary-hover);
+        border-color: var(--c-primary-hover);
       }
     }
   }
 }
 
-.bio-section-inner.container {
+// ── Media cards row ───────────────────────────────────────────────────────
+
+// .info-media-row — Bootstrap row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-3 handles layout
+.info-media-card {
   display: flex;
-  align-items: center;
-  height: calc(100vh - 70px);
+  flex-direction: column;
+  gap: 0.75rem;
+
+  &__img {
+    aspect-ratio: 16 / 9;
+    border-radius: var(--r-base);
+    overflow: hidden;
+    border: 1px solid var(--c-border);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+  }
+
+  &__caption {
+    font-size: var(--fs-label);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--c-content-muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+}
+
+// ── Legacy / unused (kept for safety) ────────────────────────────────────
+
+.bio-info-box {
+  display: none;
+}
+
+.bio-section-inner {
+  display: none;
 }
 
 .profile {
-  z-index: 1;
   display: none;
-  width: 150px;
-  height: 150px;
-  object-fit: cover;
-  border-radius: 50%;
-  margin: 0 auto;
-  max-width: none !important;
-  border: 1px solid color-mix(in srgb, var(--c-border) 80%, transparent);
 }

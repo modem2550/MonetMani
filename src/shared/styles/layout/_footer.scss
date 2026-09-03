@@ -1,13 +1,68 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   FOOTER
+   FOOTER — Editorial Colophon
    ═══════════════════════════════════════════════════════════════════════════ */
 
-.collaboration {
-  font-size: 12px;
-  background-color: var(--c-bg);
-  color: var(--c-content-muted);
+footer {
+  border-top: 1px solid var(--c-border);
 }
 
+// .collaboration — layout handled by Bootstrap d-flex justify-content-between align-items-center flex-wrap gap-3 px-4 py-4
+.collaboration {
+  font-size: var(--fs-label);
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  background-color: var(--c-bg);
+  color: var(--c-content-muted);
+
+  .colophon-credit {
+    gap: 2px; // Bootstrap d-flex flex-column handles the rest
+  }
+
+  .colophon-label {
+    font-size: var(--fs-label);
+    color: var(--c-content-muted);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  strong {
+    font-size: 0.8rem;
+    color: var(--c-content-secondary);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+
+    a {
+      color: inherit;
+      text-decoration: none;
+      transition: color 0.2s;
+
+      &:hover {
+        color: var(--c-primary);
+      }
+    }
+  }
+}
+
+// ── Colophon nav ──────────────────────────────────────────────────────────
+
+// .colophon-nav — Bootstrap d-flex flex-wrap align-items-center gap-3 handles layout
+// Hidden on mobile via Bootstrap d-none d-sm-flex
+.colophon-nav {
+  a {
+    font-size: var(--fs-label);
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--c-content-muted);
+    text-decoration: none;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--c-content);
+    }
+  }
+}
 
 
 .img-fluid {
@@ -15,15 +70,15 @@
 }
 
 .footer-bottom {
-  padding: 1rem 0 1.25rem;
-  background: linear-gradient(180deg,
-      color-mix(in srgb, var(--c-surface) 88%, var(--c-primary)) 0%,
-      color-mix(in srgb, var(--c-surface) 94%, var(--c-primary)) 100%);
-  color: var(--c-content-secondary);
+  padding: 0.875rem 0;
+  background: var(--c-bg);
+  border-top: 1px solid var(--c-border);
+  color: var(--c-content-muted);
 }
 
 .footer-license {
-  font-size: var(--fs-xs);
+  font-size: var(--fs-label);
+  letter-spacing: 0.08em;
   max-width: 52ch;
   margin: 0 auto;
   line-height: 1.5;
@@ -36,6 +91,7 @@
     color: var(--c-primary-hover);
   }
 }
+
 
 .site-info {
   padding: 2.5rem 1rem 1rem;

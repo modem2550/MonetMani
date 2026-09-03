@@ -1,17 +1,16 @@
 ---
 // ./pages/index.astro
-import MainLayout from '@/app/layouts/MainLayout.astro';
-import EventCard from '@/shared/components/EventCard.astro';
-import { getSupabase } from '@/services/supabase/server';
-import { categorizeEvents } from '@/shared/utils/dateUtils';
-import socialData from '../data/social.json';
-import type { Event } from '@/types/event';
-import '@/shared/styles/schedule.scss';
+import MainLayout from "@/app/layouts/MainLayout.astro";
+import EventCard from "@/shared/components/EventCard.astro";
+import { getSupabase } from "@/services/supabase/server";
+import { categorizeEvents } from "@/shared/utils/dateUtils";
+import socialData from "../data/social.json";
+import type { Event } from "@/types/event";
 
 // ── Cache ──────────────────────────────────────────────────────────────────────
 const CACHE_TTL_SECONDS = 60;
 Astro.response.headers.set(
-  'Cache-Control',
+  "Cache-Control",
   `public, max-age=0, s-maxage=${CACHE_TTL_SECONDS}, stale-while-revalidate=${CACHE_TTL_SECONDS}`,
 );
 
@@ -20,14 +19,16 @@ Astro.response.headers.set(
 const supabase = getSupabase();
 let allEvents: Event[] = [];
 
-try {
-  const { data } = await supabase
-    .from('events_upcoming')
-    .select('*')
-    .order('date', { ascending: false });
-  allEvents = data ?? [];
-} catch (e) {
-  // Error fetching upcoming events — allEvents will remain empty
+if (supabase) {
+  try {
+    const { data } = await supabase
+      .from("events_upcoming")
+      .select("*")
+      .order("date", { ascending: false });
+    allEvents = data ?? [];
+  } catch (e) {
+    // Error fetching upcoming events — allEvents will remain empty
+  }
 }
 
 // ── Categorize & process ──────────────────────────────────────────────────────
@@ -38,173 +39,225 @@ function toSlug(text: string) {
   return text
     .toLowerCase()
     .trim()
-    .replace(/\s+/g, '-')
-    .replace(/[()]/g, '')
-    .replace(/[^a-z0-9-]/g, '');
+    .replace(/\s+/g, "-")
+    .replace(/[()]/g, "")
+    .replace(/[^a-z0-9-]/g, "");
 }
 
 const withSlug = (event: Event) => ({
   ...event,
-  generated_slug: `${toSlug(event.title || 'event')}-${event.id}`,
+  generated_slug: `${toSlug(event.title || "event")}-${event.id}`,
 });
 
 const processedUpcoming = upcoming.map(withSlug);
 const processedPast = past.map(withSlug);
 ---
 
-<MainLayout title="Niya BNK48 - Fan Website">
+<MainLayout title="Monet BNK48 - Fan Website">
   <!-- ── Hero ── -->
   <section id="home">
-    <div class="video-container">
-      <video
-        autoplay
-        muted
-        loop
-        playsinline
-        class="w-100 h-100 position-absolute top-0 start-0 d-none d-md-block"
-        style="object-fit:cover"
-        id="heroVideo"
-      >
-        <source
-          src="https://pub-f5a38bcc427b4a21b2e5b9667de7cfdc.r2.dev/output.mp4"
-          type="video/mp4"
-        />
-      </video>
+    <div class="hero-container">
       <img
         src="/img/BG-img.webp"
         alt="Background"
-        class="w-100 h-100 position-absolute top-0 start-0 d-md-none"
-        style="object-fit:cover"
+        class="w-100 h-100 position-absolute top-0 start-0"
+        style="object-fit:cover; object-position: center top;"
         width="1440"
         height="1920"
       />
       <div class="overlay"></div>
-      <div class="hero-text-wrapper d-flex justify-content-center align-items-end h-100">
-        <h1 class="display-1 hero-title">
-          <strong>Niya</strong> BNK48
-          <span class="h3 d-block mt-2 mb-0">Suvibha Laithomya</span>
-        </h1>
+      <div class="hero-text-wrapper">
+        <div class="hero-title">
+          <p class="hero-eyebrow">BNK48 &mdash; Fan Site</p>
+          <strong class="hero-name">Monet</strong>
+          <span class="hero-sub">Parita Rirermkul &nbsp;/&nbsp; BNK48</span>
+        </div>
+      </div>
+      <div class="hero-scroll-hint" aria-hidden="true">
+        <span>Scroll</span>
+        <span class="hero-scroll-hint__line"></span>
       </div>
     </div>
   </section>
 
   <!-- ── Events ── -->
-  <section id="event">
-    <div class="mb-4 text-center">
-      <h2 class="fw-bold">Niya's event soon</h2>
-      <p>ติดตามผลงานนีญ่าได้ที่</p>
+  <section
+    id="event"
+    style={processedUpcoming.length === 0 ? "display:none" : ""}
+  >
+    <div class="mb-5">
+      <p class="section-label">Events &amp; Schedule</p>
+      <h2 class="section-title">Monet's<br />Upcoming Events</h2>
     </div>
 
     <section class="container" id="upcoming-events-section" style="padding:0">
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-4 flex-nowrap overflow-x-scroll">
+      <div
+        class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-4 flex-nowrap overflow-x-scroll"
+      >
         {
-          processedUpcoming.length > 0 ? (
-            processedUpcoming.map((event) => (
-              <div class="col d-flex justify-content-center" data-event-date={event.date}>
-                <EventCard event={event} />
-              </div>
-            ))
-          ) : (
-            <div class="w-100 text-center py-5">
-              <p>ยังไม่มีกิจกรรมประกาศในขณะนี้</p>
+          processedUpcoming.map((event) => (
+            <div
+              class="col d-flex justify-content-center"
+              data-event-date={event.date}
+            >
+              <EventCard event={event} />
             </div>
-          )
+          ))
         }
       </div>
     </section>
 
-    <div class="text-center mt-5">
-      <a class="btn btn-primary btn-rounded fw-600 px-4" href="schedule" id="moreEventsBtn">
-        <strong>More Event</strong>
-        <i class="fa-solid fa-arrow-right arrow-icon ms-1"></i>
+    <div class="mt-5">
+      <a class="editorial-link" href="schedule" id="moreEventsBtn">
+        View all events
+        <i class="fa-solid fa-arrow-right ms-2" aria-hidden="true"></i>
       </a>
     </div>
   </section>
 
   <!-- ── Info ── -->
   <section id="info">
-    <div class="container bio-section-inner">
-      <img
-        alt="half-body"
-        class="hero-half-body-img fade-in"
-        loading="lazy"
-        src="/img/h-body.webp"
-        width="1080"
-        height="1920"
-      />
-      <img
-        alt="profile"
-        class="profile"
-        loading="lazy"
-        src="/img/profile.webp"
-        width="1080"
-        height="1080"
-      />
-      <div class="slide-right bio-info-box">
-        <div class="fw-bold h3">Niya - Suvibha Laithomya</div>
-        <div class="social-circle d-flex align-items-center">
-          <span class="social-box -facebook social-link">
-            <i class="fa-brands fa-facebook-f"
-              ><a
-                href="https://www.facebook.com/niya.bnk48official"
-                aria-label="Niya BNK48 on Facebook"></a></i
+    <div class="container">
+      <!-- Header row -->
+      <div class="info-header">
+        <p class="section-label">About</p>
+        <h2 class="section-title">
+          Monet<br /><span class="info-title-sub">Parita Rirermkul</span>
+        </h2>
+      </div>
+
+      <!-- 2-column split -->
+      <div class="info-grid">
+        <!-- Left: portrait -->
+        <div class="info-portrait slide-right">
+          <div class="info-portrait__img-wrap">
+            <img
+              alt="Monet BNK48 — profile"
+              loading="lazy"
+              src="/img/profile.webp"
+              width="1080"
+              height="1080"
+            />
+          </div>
+          <div class="info-portrait__socials d-flex gap-3">
+            <a
+              href="https://www.facebook.com/monet.bnk48official"
+              aria-label="Facebook"
+              class="info-social-icon"
             >
-          </span>
-          <span class="social-box -instagram social-link">
-            <i class="fa-brands fa-instagram"
-              ><a
-                href="https://www.instagram.com/niya.bnk48official/"
-                aria-label="Niya BNK48 on Instagram"></a></i
+              <i class="fa-brands fa-facebook-f"></i>
+            </a>
+            <a
+              href="https://www.instagram.com/monet.bnk48official/"
+              aria-label="Instagram"
+              class="info-social-icon"
             >
-          </span>
-          <span class="social-box -tiktok social-link">
-            <i class="fa-brands fa-tiktok"
-              ><a
-                href="https://www.tiktok.com/@niya.bnk48.official"
-                aria-label="Niya BNK48 on TikTok"></a></i
+              <i class="fa-brands fa-instagram"></i>
+            </a>
+            <a
+              href="https://www.tiktok.com/@monet.bnk48.official"
+              aria-label="TikTok"
+              class="info-social-icon"
             >
-          </span>
+              <i class="fa-brands fa-tiktok"></i>
+            </a>
+          </div>
+          <p class="info-contact">
+            &#x2661; contact for work<br />
+            <span>083-525-3564 &nbsp;&middot;&nbsp; @iamofficialartist</span>
+          </p>
         </div>
-        <p>
-          สวัสดีค่ะ ชื่อนีญ่า ชื่อจริง สุวิภาส์ ลายถมยา แปลว่า "ผู้หญิงที่สวย"
-          ชอบกินไดฟูกุรสชาเขียว, แซลมอน, และของเค็มทุกชนิด ชอบสีพาสเทลทุกสีงานอดิเรก เล่นรูบิค, ฟัง
-          The Ghost Radio ความสามารถพิเศษเล่นรูบิค, เล่นอูคูเลเล่
-        </p>
-        <ul>
-          <li>
-            ตำแหน่ง Center จากการเลือกตั้ง BNK48 & CGM48 Thai-Chinese Cultural Ambassador ในเพลง <a
-              href="https://music.apple.com/th/album/sky-lantern-wish-single/1870195856"
-              >Sky Lantern Wish</a
-            >
-          </li>
-          <li>
-            ได้รับคัดเลือกให้เป็นเซ็มบัตสึในซิงเกิลที่ 20 ของ BNK48 <a
-              href="https://music.apple.com/th/album/masaka-no-confession-%E0%B8%84%E0%B8%B3%E0%B8%AA%E0%B8%B2%E0%B8%A3%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%97-%E0%B9%84%E0%B8%A1-%E0%B8%84%E0%B8%B2%E0%B8%94%E0%B8%9F-%E0%B8%99/1846837749?i=1846837864"
-              class="highlight-link">Masaka No Confession</a
-            >
-          </li>
-          <li>
-            ได้รับคัดเลือกเป็นเซ็มบัตสึในเพลงรอง <a
-              href="https://music.apple.com/th/album/saikyou-twintail-%E0%B8%AA%E0%B8%94%E0%B8%A2%E0%B8%AD%E0%B8%94%E0%B9%80%E0%B8%A5%E0%B8%A2/1801922410?i=1801922635"
-              class="highlight-link">Saikyou Twintail</a
-            >
-          </li>
-          <li>
-            ตำแหน่ง Under Girls อันดับที่ 24<sup>th</sup> จากการเลือกตั้ง BNK48 & CGM48 Senbatsu General
-            Election 2025
-          </li>
-          <li>
-            เป็นนักแสดงหลักใน Official Music Video จากเพลง <a
-              href="https://www.youtube.com/watch?v=nfSijlfo6Rs">เล็กๆลึกๆ (Left of us)</a
-            > จากศิลปิน TWO POPETORN
-          </li>
-          <li>
-            มีผลงานในฐานะเซ็มบัตสึในซิงเกิลและอัลบั้มต่าง ๆ ของ <a
-              href="https://tpop.fandom.com/wiki/Niya"
-              class="highlight-link">BNK48</a
-            > อย่างต่อเนื่อง
-          </li>
-        </ul>
+
+        <!-- Right: content -->
+        <div class="info-content slide-right d-flex flex-column gap-4">
+          <p class="info-intro">
+            สวัสดีค่ะ ชื่อโมเน่ต์ นะคะ ถ้าหนูยื่นมือให้ทุกคน ให้ทุกคนพูดว่า
+            โมเน่ต์ โมเน่ต์นะคะ ทุกคนอย่าเพิ่งไปไหน มานี่ก่อน มานี่ มานี่
+            โมเน่ต์ โมเน่ต์ มานี่มานี่ โมเน่ต์ โมเน่ต์ อีกรอบนะคะ มานี่ มานี่
+            มานี่ โมเน่ต์ โมเน่ต์
+          </p>
+
+          <div class="info-achievements d-flex flex-column gap-0">
+            <p class="section-label" style="margin-bottom:1.25rem">
+              Achievements
+            </p>
+            <ol class="info-achieve-list">
+              <li>
+                ตำแหน่ง <strong>Center</strong> จากการเลือกตั้ง BNK48 &amp; CGM48
+                Required Hour ในเพลง <a
+                  href="https://music.apple.com/th/album/rumor-single/1801922426"
+                  >Rumor</a
+                >
+              </li>
+              <li>
+                <strong>เซ็มบัตสึ</strong> ซิงเกิลที่ 20 ของ BNK48&nbsp;
+                <a
+                  href="https://music.apple.com/th/album/masaka-no-confession-%E0%B8%84%E0%B8%B3%E0%B8%AA%E0%B8%B2%E0%B8%A3%E0%B8%A0%E0%B8%B2%E0%B8%9E%E0%B8%97-%E0%B9%84%E0%B8%A1-%E0%B8%84%E0%B8%B2%E0%B8%94%E0%B8%9F-%E0%B8%99/1846837749?i=1846837864"
+                  class="highlight-link">Masaka No Confession</a
+                >
+              </li>
+              <li>
+                <strong>เซ็มบัตสึ</strong> เพลงรอง <a
+                  href="https://music.apple.com/th/album/saikyou-twintail-%E0%B8%AA%E0%B8%94%E0%B8%A2%E0%B8%AD%E0%B8%94%E0%B9%80%E0%B8%A5%E0%B8%A2/1801922410?i=1801922635"
+                  class="highlight-link">Saikyou Twintail</a
+                >
+              </li>
+              <li>
+                Under Girls อันดับที่ <strong>24<sup>th</sup></strong> จากการเลือกตั้ง
+                BNK48 &amp; CGM48 Senbatsu General Election 2025
+              </li>
+              <li>
+                นักแสดงหลัก Official MV เพลง <a
+                  href="https://www.youtube.com/watch?v=nfSijlfo6Rs"
+                  >เล็กๆลึกๆ (Left of us)</a
+                > จากศิลปิน TWO POPETORN
+              </li>
+              <li>
+                เซ็มบัตสึในซิงเกิลและอัลบั้มของ <a
+                  href="https://tpop.fandom.com/wiki/Monet_(BNK48)"
+                  class="highlight-link">BNK48</a
+                > อย่างต่อเนื่อง
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <!-- Media cards row -->
+      <div
+        class="info-media-row row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-3"
+      >
+        {
+          [
+            {
+              src: "/img/GE-2023.jpg",
+              alt: "General Election 2023",
+              caption: "General Election 2023 — อันดับที่ 13",
+            },
+            {
+              src: "/img/ILoveYouTwoThousand.jpg",
+              alt: "I Love You Two Thousand",
+              caption: 'นักแสดง "ซาร่า" — I Love You Two Thousand',
+            },
+            {
+              src: "/img/ShockMeGirls.jpg",
+              alt: "Shock Me Girls",
+              caption: 'นักแสดงหลัก "จอจี้" — Shock Me Girls',
+            },
+            {
+              src: "/img/Rumor.jpg",
+              alt: "Rumor Center",
+              caption: "Center Position — Rumor",
+            },
+          ].map(({ src, alt, caption }) => (
+            <div class="info-media-card slide-right col">
+              <div class="info-media-card__img">
+                <img src={src} alt={alt} loading="lazy" />
+              </div>
+              <p class="info-media-card__caption">{caption}</p>
+            </div>
+          ))
+        }
       </div>
     </div>
   </section>
@@ -212,14 +265,14 @@ const processedPast = past.map(withSlug);
   <!-- ── Social ── -->
   <section id="social">
     <div class="container">
-      <h2 class="fw-bold text-center display-5 section-heading mb-1">Social Media</h2>
-      <p class="fw-bold h5 mb-5 text-center">ช่องทางติดตามโซเชีลยลนีญ่า</p>
+      <p class="section-label">Follow Monet</p>
+      <h2 class="section-title mb-5">Social Media</h2>
 
       <div class="embed-row">
         <!-- Instagram embed -->
         <div class="slide-right embed-block" data-embed-type="instagram">
           <a
-            href="https://www.instagram.com/yourstellaloulover/"
+            href="https://www.instagram.com/monet.bnk48official/"
             target="_blank"
             class="social-link"
             style="color:inherit"
@@ -231,13 +284,14 @@ const processedPast = past.map(withSlug);
                 Instagram
               </div>
               <div class="fw-bold h3">
-                yourstellaloulover <i class="fa-solid fa-arrow-right arrow-icon ms-1"></i>
+                monet.bnk48official <i
+                  class="fa-solid fa-arrow-right arrow-icon ms-1"></i>
               </div>
             </div>
           </a>
           <div class="embed-ig">
             <iframe
-              data-src="https://www.instagram.com/yourstellaloulover/embed/?cr=1&v=14"
+              data-src="https://www.instagram.com/monet.bnk48official/embed/?cr=1&v=14"
               title="Instagram feed"
               height="559"
               loading="lazy"
@@ -249,10 +303,10 @@ const processedPast = past.map(withSlug);
           </div>
         </div>
 
-        <!-- TikTok embed (official creator embed) -->
+        <!-- TikTok embed -->
         <div class="slide-right embed-block" data-embed-type="tiktok">
           <a
-            href="https://www.tiktok.com/@niya.bnk48.official"
+            href="https://www.tiktok.com/@monet.bnk48official"
             target="_blank"
             rel="noopener noreferrer"
             class="social-link"
@@ -265,15 +319,15 @@ const processedPast = past.map(withSlug);
                 TikTok
               </div>
               <div class="fw-bold h3">
-                niya.bnk48.official <i class="fa-solid fa-arrow-right arrow-icon ms-1"></i>
+                monét <i class="fa-solid fa-arrow-right arrow-icon ms-1"></i>
               </div>
             </div>
           </a>
           <div class="embed-tiktok">
             <blockquote
               class="tiktok-embed"
-              cite="https://www.tiktok.com/@niya.bnk48.official"
-              data-unique-id="niya.bnk48.official"
+              cite="https://www.tiktok.com/@monet.bnk48official"
+              data-unique-id="monet.bnk48official"
               data-embed-type="creator"
               style="max-width: 780px; min-width: 288px; margin: 0"
             >
@@ -281,8 +335,8 @@ const processedPast = past.map(withSlug);
                 <a
                   target="_blank"
                   rel="noopener noreferrer"
-                  href="https://www.tiktok.com/@niya.bnk48.official?refer=creator_embed"
-                  >@niya.bnk48.official</a
+                  href="https://www.tiktok.com/@monet.bnk48official?refer=creator_embed"
+                  >@monet.bnk48official</a
                 >
               </section>
             </blockquote>
@@ -292,93 +346,89 @@ const processedPast = past.map(withSlug);
 
       <script is:inline async src="https://www.tiktok.com/embed.js"></script>
 
-      <!-- Social boxes -->
-      <div class="mb-4 row">
+      <!-- Social links — editorial separator style -->
+      <div class="social-editorial-list">
         {
           [
             {
-              href: 'https://www.instagram.com/niya.bnk48official/',
-              cls: '-instagram',
-              icon: 'icon-instagram',
-              label: 'instagram',
-              name: 'Niya BNK48',
+              href: "https://www.instagram.com/monet.bnk48official/",
+              cls: "-instagram",
+              icon: "icon-instagram",
+              label: "Instagram",
+              name: "monet.bnk48official",
             },
             {
-              href: 'https://www.facebook.com/niya.bnk48official',
-              cls: '-facebook',
-              icon: 'icon-facebook',
-              label: 'Facebook',
-              name: 'Niya BNK48',
+              href: "https://www.facebook.com/bnk48official.monet",
+              cls: "-facebook",
+              icon: "icon-facebook",
+              label: "Facebook",
+              name: "Monet BNK48",
             },
           ].map(({ href, cls, icon, label, name }) => (
-            <div class="col-12 col-lg-4">
-              <a
-                href={href}
-                class={`slide-right social-box ${cls} social-link`}
-                target="_blank"
-                title={label}
+            <a
+              href={href}
+              class={`slide-right social-box ${cls} social-link`}
+              target="_blank"
+              title={label}
+            >
+              <svg
+                class="svg-inline--fa front"
+                viewBox="0 0 448 512"
+                role="img"
+                aria-hidden="true"
               >
-                <svg
-                  class="svg-inline--fa front"
-                  viewBox="0 0 448 512"
-                  role="img"
-                  aria-hidden="true"
-                >
-                  <use href={`#${icon}`} />
-                </svg>
-                <svg
-                  class="svg-inline--fa back"
-                  viewBox="0 0 448 512"
-                  role="img"
-                  aria-hidden="true"
-                >
-                  <use href={`#${icon}`} />
-                </svg>
-                <div>
-                  <div class="fw-bold social-label h6">
-                    {label} <i class="fa-solid fa-arrow-right arrow-icon" />
-                  </div>
-                  <div class="fw-bold social-label h4">{name}</div>
+                <use href={`#${icon}`} />
+              </svg>
+              <svg
+                class="svg-inline--fa back"
+                viewBox="0 0 448 512"
+                role="img"
+                aria-hidden="true"
+              >
+                <use href={`#${icon}`} />
+              </svg>
+              <div>
+                <div class="fw-bold social-label h6">
+                  {label} <i class="fa-solid fa-arrow-right arrow-icon" />
                 </div>
-              </a>
-            </div>
+                <div class="fw-bold social-label h4">{name}</div>
+              </div>
+            </a>
           ))
         }
 
-        <!-- iAM48 — custom SVG path -->
-        <div class="col-12 col-lg-4">
-          <a
-            href="https://app.bnk48.com/member-profile/131"
-            class="slide-right social-box -iam48 social-link"
-            target="_blank"
-            title="iAM48"
+        <!-- iAM48 -->
+        <a
+          href="https://app.bnk48.com/member-profile/88"
+          class="slide-right social-box -iam48 social-link"
+          target="_blank"
+          title="iAM48"
+        >
+          <svg
+            viewBox="0 0 512 512"
+            class="svg-inline--fa fa-iam48 front"
+            role="img"
+            aria-hidden="true"
           >
-            <svg
-              viewBox="0 0 512 512"
-              class="svg-inline--fa fa-iam48 front"
-              role="img"
-              aria-hidden="true"
-            >
-              <path
-                d="M 146.29372,3.75e-7 124.34009,5.1686694 5.995921e-7,366.34064 3.5268006,381.1544 211.05007,330.63881 c 0,0 6.56149,22.98403 13.12297,49.74399 12.95894,52.69908 17.716,65.50445 31.00301,82.57827 30.67492,40.05788 80.70623,57.46007 129.2612,45.14719 43.44872,-16.5308 52.81111,-23.86406 78.08164,-56.96753 7.70974,-13.29789 14.5993,-33.9835 16.40371,-50.89318 7.21763,-63.37022 -37.40045,-122.47201 -100.22664,-132.81481 -6.56148,-0.98504 -12.30278,-2.13422 -12.63086,-2.46256 -0.32807,-0.16419 4.26497,-5.58185 10.17031,-11.82036 23.29325,-24.62575 32.15126,-57.95257 24.11344,-89.47349 -4.59304,-18.0589 -11.97471,-31.19261 -25.42574,-44.65468 -19.0283,-19.372256 -41.50138,-28.565856 -69.71576,-28.565856 -46.75056,0 -84.9712,30.371736 -96.9459,76.832296 -3.93689,15.76046 -3.93687,27.74498 0.16403,43.66963 4.59304,18.05888 12.13875,31.19259 25.42576,44.65468 12.63084,12.6412 28.87053,21.99898 44.7821,25.61077 4.59304,1.14918 8.3659,2.62673 8.20186,3.11926 -0.32808,0.65668 -5.24918,4.76098 -11.15452,9.19359 -9.67818,7.22354 -19.66531,8.47674 -19.66531,8.47674 l -32.00636,8.1046 z M 134.60881,27.578094 205.80089,315.20668 18.142491,362.65225 Z m 170.08456,76.276826 c 5.3107,-0.0206 10.60226,0.71963 17.4098,2.19717 62.99023,13.2979 86.77561,93.24947 41.50138,139.54585 -33.1355,33.81932 -84.80717,33.81932 -118.27073,-0.16419 -45.76633,-46.29639 -21.98096,-125.42708 41.82945,-139.21748 6.88956,-1.55962 12.21941,-2.34081 17.5301,-2.36135 z m 47.71839,175.01238 c 9.65511,-0.20008 19.59969,0.79623 29.72898,3.01255 27.0661,6.07434 55.28048,28.23751 68.73152,54.17662 22.80115,44.32633 15.74756,95.3837 -17.716,128.7105 -21.81693,21.67065 -42.64963,31.02843 -72.66841,32.50597 -10.66242,0.49252 -21.65289,0 -27.88631,-1.31336 -40.18908,-7.88024 -74.47282,-41.53542 -83.98698,-82.90665 -3.77284,-15.76046 -3.49685,-41.48294 2.13249,-57.14265 4.75708,-14.28292 13.94315,-32.00252 25.42574,-43.65868 20.91473,-21.42442 47.27361,-32.78405 76.23897,-33.3843 z m -99.92591,40.16729 c 0,0 -5.26957,6.02265 -10.18671,15.85352 -4.91715,9.83086 -7.79176,18.2422 -7.79176,18.24219 l -7.02079,-27.26068 z"
-                fill="currentColor"></path>
-            </svg>
-            <svg
-              viewBox="0 0 512 512"
-              class="svg-inline--fa back fa-iam48"
-              role="img"
-              aria-hidden="true"
-            >
-              <use href="#icon-iam48"></use>
-            </svg>
-            <div>
-              <div class="fw-bold social-label h6">
-                iAM48 <i class="fa-solid fa-arrow-right arrow-icon ms-1"></i>
-              </div>
-              <div class="fw-bold social-label h4">Niya</div>
+            <path
+              d="M 146.29372,3.75e-7 124.34009,5.1686694 5.995921e-7,366.34064 3.5268006,381.1544 211.05007,330.63881 c 0,0 6.56149,22.98403 13.12297,49.74399 12.95894,52.69908 17.716,65.50445 31.00301,82.57827 30.67492,40.05788 80.70623,57.46007 129.2612,45.14719 43.44872,-16.5308 52.81111,-23.86406 78.08164,-56.96753 7.70974,-13.29789 14.5993,-33.9835 16.40371,-50.89318 7.21763,-63.37022 -37.40045,-122.47201 -100.22664,-132.81481 -6.56148,-0.98504 -12.30278,-2.13422 -12.63086,-2.46256 -0.32807,-0.16419 4.26497,-5.58185 10.17031,-11.82036 23.29325,-24.62575 32.15126,-57.95257 24.11344,-89.47349 -4.59304,-18.0589 -11.97471,-31.19261 -25.42574,-44.65468 -19.0283,-19.372256 -41.50138,-28.565856 -69.71576,-28.565856 -46.75056,0 -84.9712,30.371736 -96.9459,76.832296 -3.93689,15.76046 -3.93687,27.74498 0.16403,43.66963 4.59304,18.05888 12.13875,31.19259 25.42576,44.65468 12.63084,12.6412 28.87053,21.99898 44.7821,25.61077 4.59304,1.14918 8.3659,2.62673 8.20186,3.11926 -0.32808,0.65668 -5.24918,4.76098 -11.15452,9.19359 -9.67818,7.22354 -19.66531,8.47674 -19.66531,8.47674 l -32.00636,8.1046 z M 134.60881,27.578094 205.80089,315.20668 18.142491,362.65225 Z m 170.08456,76.276826 c 5.3107,-0.0206 10.60226,0.71963 17.4098,2.19717 62.99023,13.2979 86.77561,93.24947 41.50138,139.54585 -33.1355,33.81932 -84.80717,33.81932 -118.27073,-0.16419 -45.76633,-46.29639 -21.98096,-125.42708 41.82945,-139.21748 6.88956,-1.55962 12.21941,-2.34081 17.5301,-2.36135 z m 47.71839,175.01238 c 9.65511,-0.20008 19.59969,0.79623 29.72898,3.01255 27.0661,6.07434 55.28048,28.23751 68.73152,54.17662 22.80115,44.32633 15.74756,95.3837 -17.716,128.7105 -21.81693,21.67065 -42.64963,31.02843 -72.66841,32.50597 -10.66242,0.49252 -21.65289,0 -27.88631,-1.31336 -40.18908,-7.88024 -74.47282,-41.53542 -83.98698,-82.90665 -3.77284,-15.76046 -3.49685,-41.48294 2.13249,-57.14265 4.75708,-14.28292 13.94315,-32.00252 25.42574,-43.65868 20.91473,-21.42442 47.27361,-32.78405 76.23897,-33.3843 z m -99.92591,40.16729 c 0,0 -5.26957,6.02265 -10.18671,15.85352 -4.91715,9.83086 -7.79176,18.2422 -7.79176,18.24219 l -7.02079,-27.26068 z"
+              fill="currentColor"></path>
+          </svg>
+          <svg
+            viewBox="0 0 512 512"
+            class="svg-inline--fa back fa-iam48"
+            role="img"
+            aria-hidden="true"
+          >
+            <use href="#icon-iam48"></use>
+          </svg>
+          <div>
+            <div class="fw-bold social-label h6">
+              iAM48 <i class="fa-solid fa-arrow-right arrow-icon ms-1"></i>
             </div>
-          </a>
-        </div>
+            <div class="fw-bold social-label h4">Monet</div>
+          </div>
+        </a>
       </div>
     </div>
   </section>
@@ -386,59 +436,77 @@ const processedPast = past.map(withSlug);
   <!-- ── Library ── -->
   <section id="library">
     <div class="container">
-      <div class="fw-bold text-center display-5 section-heading mb-1">Selected Highlights</div>
-      <p class="fw-bold h5 text-center mb-5">ไฮไลต์ผลงานทที่โดดเด่นนีญ่า</p>
+      <p class="section-label">Selected Work</p>
+      <h2 class="section-title mb-5">Highlights</h2>
 
-      <!-- Main video -->
-      <div class="slide-right mb-4 youtube-block" data-video-id="VlVJWXXZCOQ">
-        <div class="info p-4">
-          <p class="h5 mb-0 bnk48-color">
-            <i class="fa-solid fa-star me-2"></i>Double Center Position
+      <!-- Main video — featured split layout -->
+      <div
+        class="slide-right mb-5 youtube-block youtube-block--featured"
+        data-video-id="VlVJWXXZCOQ"
+      >
+        <div class="info">
+          <p class="video-badge">
+            <i class="fa-solid fa-star" aria-hidden="true"></i>
+            Center Position
           </p>
-          <h3 class="fw-700 mb-2 h1">Sky Lantern Wish (天灯愿)</h3>
-          <p class="mb-0">Original Special Single Lead Song</p>
+          <h3 class="video-title h1">RUMOR</h3>
+          <p class="video-sub">BNK48 Special Single</p>
         </div>
         <div class="ratio ratio-16x9">
           <iframe
-            data-src="https://www.youtube.com/embed/HpQ9B13uv0w?si=ILXAznZNwq0MSsZM"
+            data-src="https://www.youtube.com/embed/Pcbp5MYnHJA?si=p9HNfoCaMnNwOIgk"
             allowfullscreen
             frameborder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             loading="lazy"
-            title="Sky Lantern Wish"
+            title="Rumor — Center Position"
             data-lazy-iframe
             style="background:#111"></iframe>
         </div>
       </div>
 
       <!-- Sub videos -->
-      <div class="mb-4 row">
+      <div class="mb-4 row g-4">
         {
           [
             {
-              videoId: 'a5bPbwk0F7k',
-              embed: 'a5bPbwk0F7k?si=wVBylsY6I8FZKeQ_',
-              badge: 'FIRST TIME SENBATSU',
-              title: 'Masaka no Confession',
-              sub: 'BNK48 20<sup>th</sup> Single Song',
+              videoId: "g3RrDbY7FEk",
+              embed: "g3RrDbY7FEk?si=u-PQfSMUySXjGpIW",
+              badge: "SENBATSU",
+              title: "Ponytail to Shushu",
+              sub: "BNK48 6<sup>th</sup> ALBUM LEAD",
             },
             {
-              videoId: 'nfSijlfo6Rs',
-              embed: 'nfSijlfo6Rs?si=1ePmd4CjMVE7cPlW',
-              badge: 'Main Actors Mucis Video',
-              title: 'เล็กๆลึกๆ (Left of us)',
-              sub: `Songs by TWO POPETORN`,
+              videoId: "ymTOSdkUWBs",
+              embed: "ymTOSdkUWBs?si=2oFdElnq6lkmvU8l",
+              badge: "SENBATSU",
+              title: "#Sukinanda",
+              sub: `BNK48 5<sup>th</sup> Album Lead Song`,
+            },
+            {
+              videoId: "5Z-gvAGQueA",
+              embed: "5Z-gvAGQueA?si=YsV8wPStFoQkmrHN",
+              badge: "SENBATSU",
+              title: "Kiss Me! (ให้ฉันได้รู้)",
+              sub: "BNK48 16<sup>th</sup> Single Song",
+            },
+            {
+              videoId: "vFkKaOmLEoY",
+              embed: "vFkKaOmLEoY?si=3nJhY0NYHBZCzjvm",
+              badge: "First Time Senbatsu",
+              title: "Iiwake Maybe",
+              sub: "BNK48 13<sup>th</sup> Single Song",
             },
           ].map(({ videoId, embed, badge, title, sub }) => (
-            <div class="slide-right col-12 col-xl-6" data-video-id={videoId}>
-              <div class="mb-4 youtube-block">
-                <div class="info p-4">
-                  <p class="fw-bold bnk48-color mb-0">
-                    <i class="fa-solid fa-star me-2" />
+            <div class="slide-right col-sm-12 col-md-6" data-video-id={videoId}>
+              <div class="youtube-block h-100">
+                <div class="info p-3">
+                  <p class="video-badge">
+                    <i class="fa-solid fa-star" aria-hidden="true" />
                     {badge}
                   </p>
-                  <h3 class="h3 fw-700 mb-2">{title}</h3>
-                  <p class="mb-0" style="font-size:14px" set:html={sub} />
+                  <h3 class="video-title h5">{title}</h3>
+                  <p class="video-sub" set:html={sub} />
                 </div>
                 <div class="ratio ratio-16x9">
                   <iframe
@@ -460,115 +528,14 @@ const processedPast = past.map(withSlug);
     </div>
   </section>
 
-  <!-- ── Fanclub ── -->
-  <section id="fanclub">
-    <div class="container">
-      <h2 class="fw-bold text-center display-5 section-heading mb-1">Fan's Newsline</h2>
-      <p class="fw-bold h5 text-center mb-5">ช่องทางติดตามข่าวสารจากแฟนคลับ</p>
-
-      <div class="row">
-        <div class="slide-in col-12 col-xl-6">
-          <img
-            alt="Nemo and Niya Art"
-            class="mb-4 img-fluid"
-            loading="lazy"
-            src="/img/lit-img.webp"
-            width="2940"
-            height="1912"
-          />
-        </div>
-        <div class="fade-right col-12 col-xl-6">
-          <h3 class="h1">Little Nemo of Niya</h3>
-          <p>แฟนด้อมที่มากกว่าการติดตาม</p>
-          <p>
-            ไม่ใช่เพียงแค่การชื่นชมผลงานจากระยะไกล แต่คือการได้ก้าวเข้ามาเป็นส่วนหนึ่งในเส้นทางของ
-            Niya อย่างแท้จริง คุณจะได้สัมผัสทุกเบื้องหลังของการสร้างสรรค์
-            รับรู้ถึงหยดเหงื่อและความตั้งใจที่ซ่อนอยู่ในแต่ละรายละเอียด
-            ร่วมเดินไปพร้อมกับทุกความท้าทายและทุกก้าวแห่งความสำเร็จ
-          </p>
-          <div class="row">
-            <div class="col-12 col-xl-6 mb-3">
-              <div class="fanclub-btn line">
-                <a
-                  href="https://line.me/ti/g2/YYQYpuFlsvlTQz6KyvKM7m0zmLJ39JlzdphDqA"
-                  class="fc-link"
-                >
-                  <div class="fw-bold h5 text-center mb-0">เข้าร่วมพูดคุย</div>
-                </a>
-              </div>
-            </div>
-            <div class="col-12 col-xl-6 mb-3">
-              <button onclick="openPopup()" class="fc-link fanclub-btn" id="moreInfoBtn">
-                <div class="fw-bold h5 text-center mb-0">เพิ่มเติม</div>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Popup -->
-    <div id="popup-overlay">
-      <div class="popup-container">
-        <button class="popup-close" onclick="closePopup()" id="closePopupBtn">
-          <svg
-            viewBox="0 0 460.775 460.775"
-            height="25px"
-            width="25px"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M285.08,230.397L456.218,59.27c6.076-6.077,6.076-15.911,0-21.986L423.511,4.565c-2.913-2.911-6.866-4.55-10.992-4.55c-4.127,0-8.08,1.639-10.993,4.55l-171.138,171.14L59.25,4.565c-2.913-2.911-6.866-4.55-10.993-4.55c-4.126,0-8.08,1.639-10.992,4.55L4.558,37.284c-6.077,6.075-6.077,15.909,0,21.986l171.138,171.128L4.575,401.505c-6.074,6.077-6.074,15.911,0,21.986l32.709,32.719c2.911,2.911,6.865,4.55,10.992,4.55c4.127,0,8.08-1.639,10.994-4.55l171.117-171.12l171.118,171.12c2.913,2.911,6.866,4.55,10.993,4.55c4.128,0,8.081-1.639,10.992-4.55l32.709-32.719c6.074-6.075,6.074-15.909,0-21.986L285.08,230.397z"
-            >
-            </path>
-          </svg>
-        </button>
-        <div>
-          <div class="fw-bold text-center display-5 section-heading mb-5">ช่องทางติดตามข่าวสาร</div>
-          {
-            socialData.map((social) => {
-              const slug = social.platform
-                .toLowerCase()
-                .replace(/[^\w\s-]/g, '')
-                .replace(/\s+/g, '-')
-                .trim();
-              return (
-                <div class="d-grid">
-                  <a
-                    href={social.url}
-                    class={`social-box -${slug} social-link`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title={social.platform}
-                  >
-                    <svg
-                      viewBox="0 0 512 512"
-                      class={`svg-inline--fa fa-${slug}`}
-                      role="img"
-                      aria-hidden="true"
-                    >
-                      <use href={`#${social.iconId}`} />
-                    </svg>
-                    <div>
-                      <div class="fw-bold social-label h6">
-                        {social.platform} <i class="fa-solid fa-arrow-right arrow-icon ms-1" />
-                      </div>
-                      <div class="fw-bold social-label h4">{social.username}</div>
-                    </div>
-                  </a>
-                </div>
-              );
-            })
-          }
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- Promo Popup -->
   <div id="promo-popup-overlay">
     <div class="promo-popup-container p-0">
-      <button class="promo-popup-close" onclick="closePromoPopup()" id="promoCloseBtn">
+      <button
+        class="promo-popup-close"
+        onclick="closePromoPopup()"
+        id="promoCloseBtn"
+      >
         <svg
           viewBox="0 0 460.775 460.775"
           height="15.5px"
@@ -588,8 +555,13 @@ const processedPast = past.map(withSlug);
           style="object-fit: cover;"
         />
       </div>
-      <div class="promo-footer d-flex justify-content-center p-3 position-absolute">
-        <button class="btn btn-outline-secondary rounded-pill" onclick="neverShowPromoPopup()">
+      <div
+        class="promo-footer d-flex justify-content-center p-3 position-absolute"
+      >
+        <button
+          class="btn btn-outline-secondary rounded-pill"
+          onclick="neverShowPromoPopup()"
+        >
           ไม่แสดงอีก (Do not show again)
         </button>
       </div>
@@ -597,27 +569,27 @@ const processedPast = past.map(withSlug);
   </div>
 
   <script is:inline>
-    document.addEventListener('DOMContentLoaded', () => {
-      const promoOverlay = document.getElementById('promo-popup-overlay');
+    document.addEventListener("DOMContentLoaded", () => {
+      const promoOverlay = document.getElementById("promo-popup-overlay");
       if (!promoOverlay) return;
 
       // Check local storage and date
-      const hidePromo = localStorage.getItem('hidePromoPopup');
+      const hidePromo = localStorage.getItem("hidePromoPopup");
       const currentDate = new Date();
       // Set expiry date to 12 November 2026, 23:59:59
-      const expiryDate = new Date('2026-11-12T23:59:59+07:00');
+      const expiryDate = new Date("2026-11-12T23:59:59+07:00");
 
       if (!hidePromo && currentDate <= expiryDate) {
-        promoOverlay.classList.add('active');
+        promoOverlay.classList.add("active");
       }
 
       window.closePromoPopup = () => {
-        promoOverlay.classList.remove('active');
+        promoOverlay.classList.remove("active");
       };
 
       window.neverShowPromoPopup = () => {
-        localStorage.setItem('hidePromoPopup', 'true');
-        promoOverlay.classList.remove('active');
+        localStorage.setItem("hidePromoPopup", "true");
+        promoOverlay.classList.remove("active");
       };
     });
   </script>

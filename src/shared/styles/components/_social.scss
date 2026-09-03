@@ -1,10 +1,10 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   SOCIAL EMBEDS — Instagram & TikTok
+   SOCIAL EMBEDS — Instagram & TikTok — Editorial Layout
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .ig-banner,
 .tiktok-banner {
-  padding: var(--r-large);
+  padding: 1.5rem var(--r-large);
   width: 100%;
   border-top-left-radius: var(--r-base);
   border-top-right-radius: var(--r-base);
@@ -18,7 +18,7 @@
   }
 
   &:hover {
-    opacity: 0.9;
+    opacity: 0.92;
   }
 }
 
@@ -30,38 +30,53 @@
   background: var(--c-dark);
 }
 
+// ── Embed row: IG featured (60%) + TikTok sidebar (40%) ──────────────────
+
 .embed-row {
   width: 100%;
-  padding: 15px 0;
-  gap: 25px;
+  padding: 0;
+  gap: 20px;
   overflow: hidden;
   display: flex;
+  align-items: stretch;
+  margin-bottom: 3rem;
 }
 
 .embed-block {
-  width: 50%;
-  max-height: 582px;
-  margin-bottom: 20px;
   background-color: var(--c-light);
-  border-radius: var(--r-large);
+  border-radius: var(--r-base);
   border: 1px solid var(--c-border);
   overflow: hidden;
+  max-height: 582px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+
+  &[data-embed-type="instagram"] {
+    flex: 5; // 60%
+  }
+
+  &[data-embed-type="tiktok"] {
+    flex: 5; // 40%
+  }
 }
 
 .embed-ig {
   background-color: #fff;
   width: 100%;
-  min-height: 559px;
+  flex: 1;
 
   iframe {
     min-width: 0 !important;
-    border-radius: var(--r-base);
+    width: 100% !important;
+    min-height: 480px;
   }
 }
 
 .embed-tiktok {
   width: 100%;
   position: relative;
+  flex: 1;
   overflow: hidden;
 
   iframe {
@@ -86,15 +101,142 @@
   max-height: 478px;
 }
 
+// ── Social links — editorial separator list ───────────────────────────────
+
+.social-editorial-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-bottom: 3rem;
+
+  .social-box {
+    margin-bottom: 0;
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid var(--c-border);
+    padding: 1.25rem 0.5rem;
+    background: transparent;
+    transition: padding-left 0.25s ease;
+    position: relative;
+    z-index: 1;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--bg);
+      -webkit-mask-image: linear-gradient(to right, black 0%, transparent 100%);
+      mask-image: linear-gradient(to right, black 0%, transparent 100%);
+      opacity: 0;
+      z-index: -1;
+      transition: opacity 0.25s ease;
+    }
+
+    &:first-child {
+      border-top: 1px solid var(--c-border);
+    }
+
+    &:hover {
+      padding-left: 1rem;
+      &::before {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+// ── Responsive embeds ─────────────────────────────────────────────────────
+
+@media (max-width: 768px) {
+  .embed-row {
+    flex-direction: column;
+  }
+
+  .embed-block {
+
+    &[data-embed-type="instagram"],
+    &[data-embed-type="tiktok"] {
+      flex: unset;
+      width: 100%;
+      max-height: 520px;
+    }
+  }
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
-   LIBRARY & YOUTUBE
+   LIBRARY & YOUTUBE — Editorial
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .youtube-block {
-  border-radius: var(--r-large);
+  border-radius: var(--r-base);
   overflow: hidden;
   background-color: var(--c-bg);
   border: 1px solid var(--c-border);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  // ── Featured: info left + video right ─────────────────────────────────
+
+  &.youtube-block--featured {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    flex-direction: column;
+    border-radius: var(--r-large);
+
+    .info {
+      flex: 0 0 36%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 2.5rem 2rem;
+      border-right: 1px solid var(--c-border);
+    }
+
+    .ratio {
+      flex: 1;
+    }
+
+    @media (max-width: 900px) {
+      .info {
+        flex: unset;
+        border-right: none;
+        border-bottom: 1px solid var(--c-border);
+        padding: 1.5rem;
+      }
+    }
+  }
+}
+
+// ── Video info typography ─────────────────────────────────────────────────
+
+.youtube-block .info {
+  .video-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--fs-label);
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--c-bnk);
+    margin-bottom: 0.75rem;
+  }
+
+  .video-title {
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+  }
+
+  .video-sub {
+    font-size: var(--fs-label);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--c-content-muted);
+    margin-bottom: 0;
+  }
 }
 
 .bnk48-color {

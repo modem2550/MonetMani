@@ -28,7 +28,6 @@
     --text: var(--c-dark);
     --bg-hover: var(--c-dark);
     --text-hover: var(--c-light);
-
     padding: 15px 20px;
     border-radius: var(--r-round);
     background: var(--bg);
@@ -45,12 +44,12 @@
 
     &:hover {
         background: var(--bg-hover);
-        color: var(--text-hover) !important;
-        fill: var(--text-hover);
+        color: var(--text) !important;
+        fill: var(--text);
         text-decoration: none;
 
         .icon-tiktok {
-            fill: var(--text-hover);
+            fill: var(--text);
             transition: var(--t-duration);
         }
     }
@@ -111,6 +110,10 @@
         svg path {
             fill: var(--text-hover);
         }
+
+        &:hover svg path {
+            fill: var(--text-hover) !important;
+        }
     }
 }
 
@@ -124,7 +127,7 @@
     }
 
     &:hover svg path {
-        fill: var(--text-hover) !important;
+        fill: var(--text);
     }
 }
 }

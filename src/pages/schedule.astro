@@ -3,14 +3,14 @@ import MainLayout from "@/app/layouts/MainLayout.astro";
 import EventCard from "@/shared/components/EventCard.astro";
 import { getSupabase } from "@/services/supabase/server";
 import { categorizeEvents } from "@/shared/utils/dateUtils";
-import "@/shared/styles/schedule.scss";
 import type { Event } from "@/types/event";
+import { use } from "react";
 
 // ── Cache ──────────────────────────────────────────────────────────────────────
 const CACHE_TTL_SECONDS = 60;
 Astro.response.headers.set(
     "Cache-Control",
-    `public, max-age=0, s-maxage=${CACHE_TTL_SECONDS}, stale-while-revalidate=${CACHE_TTL_SECONDS}`
+    `public, max-age=0, s-maxage=${CACHE_TTL_SECONDS}, stale-while-revalidate=${CACHE_TTL_SECONDS}`,
 );
 
 // ── Data ──────────────────────────────────────────────────────────────────────
@@ -31,7 +31,6 @@ try {
 } catch (e) {
     // Error fetching events — rawEvents will remain null and the UI will show an empty state.
 }
-
 
 // ── Process ───────────────────────────────────────────────────────────────────
 
@@ -84,7 +83,7 @@ const { upcoming, past } = categorizeEvents(eventsWithSlug);
                             ))}
                         </div>
                     ) : (
-                        <div class="empty-state"></div>
+                        <div class="empty-state" />
                     )
                 }
             </section>
@@ -132,7 +131,7 @@ const { upcoming, past } = categorizeEvents(eventsWithSlug);
                             ))}
                         </div>
                     ) : (
-                        <div class="empty-state"></div>
+                        <div class="empty-state" />
                     )
                 }
             </section>

@@ -1,8 +1,8 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
-let supabaseInstance = null;
+let supabaseInstance: SupabaseClient | null = null;
 
-export function getSupabase() {
+export function getSupabase(): SupabaseClient | null {
   if (supabaseInstance) return supabaseInstance;
 
   const url = import.meta.env.SUPABASE_URL;

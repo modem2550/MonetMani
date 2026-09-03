@@ -1,25 +1,27 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   SECTION BLOCKS
+   SECTION BLOCKS — Editorial
    ═══════════════════════════════════════════════════════════════════════════ */
 
+// .section-intro — Bootstrap mx-auto mb-5 handles centering & spacing
 .section-intro {
-  text-align: center;
-  max-width: 36rem;
-  margin: 0 auto 2.25rem;
+  max-width: 40rem;
 
   &__title {
-    font-size: var(--fs-h2);
-    font-weight: 800;
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 900;
     color: var(--c-content);
     margin: 0 0 0.5rem;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.03em;
+    line-height: 1;
   }
 
   &__lead {
     margin: 0;
-    font-size: var(--fs-h5);
-    color: var(--c-content-secondary);
-    line-height: 1.55;
+    font-size: var(--fs-label);
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--c-content-muted);
   }
 }
 
@@ -29,8 +31,43 @@ section {
   color: var(--c-content);
 }
 
+// ── Editorial section heading ─────────────────────────────────────────────
+
 .section-heading {
   color: var(--c-section-text) !important;
+}
+
+// ── Section label (small caps above big title) ────────────────────────────
+
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--fs-label);
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--c-content-muted);
+  margin-bottom: 0.75rem;
+
+  &::before {
+    content: '';
+    display: block;
+    width: 28px;
+    height: 1.5px;
+    background: currentColor;
+    flex-shrink: 0;
+  }
+}
+
+// ── Section big title ─────────────────────────────────────────────────────
+
+.section-title {
+  font-size: clamp(2rem, 4.5vw, 3.25rem);
+  font-weight: 900;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  margin-bottom: 0;
 }
 
 // Section variants
@@ -41,12 +78,19 @@ section {
 
 #event {
   min-height: 562px;
-}
+  background: var(--g-event-stage);
+  color: var(--c-content);
+  border-top: 2px solid var(--c-event-accent-2);
 
-#info {
-  padding: 0 var(--r-large);
-  background-color: var(--c-surface);
-  height: calc(100vh - 70px);
+  // Section title & lead inherit the accent spotlight feel
+  .section-title,
+  .section-label {
+    color: var(--c-event-accent);
+  }
+
+  .section-label::before {
+    background: var(--c-event-accent);
+  }
 }
 
 #library {

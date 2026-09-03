@@ -4,6 +4,7 @@
 import type { ThemeConfig } from "@/types/event";
 
 import "@/shared/styles/main.scss";
+import "@/shared/styles/schedule.scss";
 import IconSprite from "@/shared/components/IconSprite.astro";
 import { Image } from "astro:assets";
 import logoWhite from "@/shared/assets/logo/WHITE.png";
@@ -20,15 +21,15 @@ interface Props {
 
 
 const {
-    title = "Niya BNK48 - Fan Website",
-    description = "ติดตามและเป็นกำลังใจให้กับ Niya BNK48 ผ่านเว็บไซต์แฟนคลับอย่างเป็นทางการนี้ ที่นี่คุณจะได้พบกับข่าวสารล่าสุด ตารางงาน กิจกรรม และคลังรูปภาพของ Niya BNK48 ที่ทำไว้เพื่อแฟนคลับทุกคน",
+    title = "Monet BNK48 - Fan Website",
+    description = "ติดตามและเป็นกำลังใจให้กับ Monet BNK48 ผ่านเว็บไซต์แฟนคลับอย่างเป็นทางการนี้ ที่นี่คุณจะได้พบกับข่าวสารล่าสุด ตารางงาน กิจกรรม และคลังรูปภาพของ Monet BNK48 ที่ทำไว้เพื่อแฟนคลับทุกคน",
     theme,
     forcedTheme,
     socialImage,
 } = Astro.props;
 
 const defaultSocialImage =
-    "https://little-nemo-of-niya.vercel.app/logo/apple-touch-icon.png";
+    "https://monimonetfans.vercel.app/logo/apple-touch-icon.png";
 const resolvedSocialImage = socialImage
     ? /^https?:\/\//i.test(socialImage)
         ? socialImage
@@ -52,47 +53,44 @@ const schemaData = {
     personSchema: {
         "@context": "https://schema.org",
         "@type": "Person",
-        "@id": "https://little-nemo-of-niya.vercel.app/#person",
-        name: "Niya",
-        alternateName: ["นีญ่า", "Niya BNK48", "นีญ่า บีเอ็นเค48", "Suvibha Laithomya", "สุวิภาส์ ลายถมยา"],
+        "@id": "https://monimonetfans.vercel.app/#person",
+        name: "Monet",
+        alternateName: ["โมเน่ต์", "Monet BNK48", "โมเน่ต์ บีเอ็นเค48", "Manimonet BNK48", "โมเน่ต์โมนต์ บีเอ็นเค48"],
         description: "สมาชิกของวง BNK48",
         memberOf: {
             "@type": "Organization",
-            "@id": "https://little-nemo-of-niya.vercel.app/",
-            name: "Niya BNK48 Fan Website",
+            "@id": "https://monimonetfans.vercel.app/",
+            name: "Monimonet BNK48 Fan Website",
             logo: "/logo/icon.png",
-            url: "https://little-nemo-of-niya.vercel.app/",
+            url: "https://monimonetfans.vercel.app/",
         },
-        url: "https://little-nemo-of-niya.vercel.app/",
+        url: "https://monimonetfans.vercel.app/",
         sameAs: [
-            "https://www.instagram.com/niya.bnk48official/",
-            "https://www.facebook.com/niya.bnk48official",
-            "https://www.tiktok.com/@niya.bnk48.official",
-            "https://www.youtube.com/@niya.bnk48official",
-            "https://x.com/niya_bnk48",
-            "https://www.facebook.com/niya.bnk48official",
+            "https://www.instagram.com/monet.bnk48official/",
+            "https://www.facebook.com/bnk48official.monet",
+            "https://www.tiktok.com/@monet.bnk48official",
         ],
     },
 
     websiteSchema: {
         "@context": "https://schema.org",
         "@type": "WebSite",
-        "@id": "https://little-nemo-of-niya.vercel.app/#website",
-        name: "Niya BNK48 - Fan Website",
+        "@id": "https://monimonetfans.vercel.app/#website",
+        name: "Monet BNK48 - Fan Website",
         description: description,
-        url: "https://little-nemo-of-niya.vercel.app/",
+        url: "https://monimonetfans.vercel.app/",
         potentialAction: {
             "@type": "SearchAction",
             target: {
                 "@type": "EntryPoint",
                 urlTemplate:
-                    "https://little-nemo-of-niya.vercel.app/?search={search_term_string}",
+                    "https://monimonetfans.vercel.app/?search={search_term_string}",
             },
             "query-input": "required name=search_term_string",
         },
         author: {
             "@type": "Person",
-            name: "Niya BNK48 Fan Community",
+            name: "Monet BNK48 Fan Community",
         },
     },
 
@@ -104,49 +102,37 @@ const schemaData = {
                 "@type": "ListItem",
                 position: 1,
                 name: "home",
-                item: "https://little-nemo-of-niya.vercel.app/",
+                item: "https://monimonetfans.vercel.app/",
             },
             {
                 "@type": "ListItem",
                 position: 2,
                 name: "event",
-                item: "https://little-nemo-of-niya.vercel.app/#event",
+                item: "https://monimonetfans.vercel.app/#event",
             },
             {
                 "@type": "ListItem",
                 position: 3,
                 name: "info",
-                item: "https://little-nemo-of-niya.vercel.app/#info",
+                item: "https://monimonetfans.vercel.app/#info",
             },
             {
                 "@type": "ListItem",
                 position: 4,
                 name: "social",
-                item: "https://little-nemo-of-niya.vercel.app/#social",
+                item: "https://monimonetfans.vercel.app/#social",
             },
             {
                 "@type": "ListItem",
                 position: 5,
                 name: "library",
-                item: "https://little-nemo-of-niya.vercel.app/#library",
+                item: "https://monimonetfans.vercel.app/#library",
             },
             {
                 "@type": "ListItem",
                 "position": 6,
                 "name": "schedule",
-                "item": "https://little-nemo-of-niya.vercel.app/schedule"
-            },
-            {
-                "@type": "ListItem",
-                "position": 7,
-                "name": "planner",
-                "item": "https://little-nemo-of-niya.vercel.app/planner"
-            },
-            {
-                "@type": "ListItem",
-                "position": 8,
-                "name": "game",
-                "item": "https://little-nemo-of-niya.vercel.app/game"
+                "item": "https://monimonetfans.vercel.app/schedule"
             }
         ],
     },
@@ -154,22 +140,14 @@ const schemaData = {
     organizationSchema: {
         "@context": "https://schema.org",
         "@type": "Organization",
-        "@id": "https://little-nemo-of-niya.vercel.app/#organization",
-        name: "Niya BNK48 Official Fan Site",
-        url: "https://little-nemo-of-niya.vercel.app/",
-        logo: "https://little-nemo-of-niya.vercel.app/logo/android-chrome-512x512.png",
-        description: "Niya BNK48 แฟนคลับอย่างเป็นทางการ",
-        sameAs: [
-            "https://line.me/ti/g2/YYQYpuFlsvlTQz6KyvKM7m0zmLJ39JlzdphDqA",
-            "https://www.instagram.com/niyabnk48_thfc/",
-            "https://www.facebook.com/profile.php?id=61556940780361",
-            "https://www.tiktok.com/@niya.bnk48.thfc",
-            "https://x.com/niyabnk48_thfc",
-            "https://www.youtube.com/@NiyaBNK48ThailandFanclub",
-        ],
+        "@id": "https://monimonetfans.vercel.app/#organization",
+        name: "Monet - Parita Rirermkul Fansite",
+        url: "https://monimonetfans.vercel.app/",
+        logo: "https://monimonetfans.vercel.app/logo/android-chrome-512x512.png",
+        description: "Monet - Parita Rirermkul Fansite",
         founder: {
             "@type": "Person",
-            name: "Niya (นีญ่า) BNK48",
+            name: "Monet (โมเน่ต์) BNK48",
         },
     },
 };
@@ -185,7 +163,7 @@ const schemaData = {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="title" content={title} />
         <meta name="description" content={description} />
-        <meta name="keywords" content="niya, niya bnk48, นีญ่า, นีญ่า bnk48, bnk48 niya, niya thai idol, บีเอ็นเค48" />
+        <meta name="keywords" content="monet, monet bnk48, นีญ่า, นีญ่า bnk48, bnk48 monet, monet thai idol, บีเอ็นเค48" />
         <meta name="robots" content="index, follow" />
 
         <meta property="og:title" content={title} />
@@ -193,7 +171,7 @@ const schemaData = {
         <meta property="og:url" content={Astro.url} />
         <meta property="og:type" content="website" />
         <meta property="og:image" content={resolvedSocialImage} />
-        <meta property="og:site_name" content="Niya BNK48 - Fan Website" />
+        <meta property="og:site_name" content="Monet BNK48 - Fan Website" />
 
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={title} />
@@ -210,7 +188,7 @@ const schemaData = {
 
             (() => {
                 try {
-                    const storageKey = "niya-theme";
+                    const storageKey = "monet-theme";
                     let theme = "light";
 
                     if (isForcedLightMode) {
@@ -394,30 +372,24 @@ const schemaData = {
         <header class="site-header">
             <div class="header-container d-flex align-items-center justify-content-between w-100">
                 <!-- Logo & Branding -->
-                <a href="/" class="logo-brand d-flex align-items-center" aria-label="Niya BNK48 — Home">
+                <a href="/" class="logo-brand d-flex align-items-center" aria-label="Monet BNK48 — Home">
                     <span class="logo-brand__mark" aria-hidden="true">
                         <Image src={logoWhite} alt="white-logo" class="logo-img logo-img--on-hero" width={100}
                             loading="eager" />
                         <Image src={logoBlack} alt="black-logo" class="logo-img logo-img--on-bar" width={100}
                             loading="eager" />
                     </span>
-                    <span class="logo-text">Niya BNK48</span>
+                    <span class="logo-text">Monet BNK48</span>
                 </a>
 
                 <nav class="nav-desktop align-items-center flex-wrap justify-content-end" aria-label="Main">
                     <a href="/#home" class="nav-link">Home</a>
-                    <a href="/#info" class="nav-link">About Niya's</a>
+                    <a href="/#info" class="nav-link">About Monet's</a>
                     <a href="/#social" class="nav-link">Social Media</a>
                     <a href="/#library" class="nav-link">Highlights</a>
-                    <a href="/#fanclub" class="nav-link">Fanclub</a>
+
                     <a href="/schedule" class="nav-link nav-link--app"><i class="fa-solid fa-calendar nav-icon"
                             aria-hidden="true"></i>Schedule</a>
-                    <a href="/planner" class="nav-link nav-link--app"><i class="fa-solid fa-calendar-week nav-icon"
-                            aria-hidden="true"></i>Planner</a>
-                    <a href="/election" class="nav-link nav-link--app"><i class="fa-solid fa-vote-yea nav-icon" 
-                            aria-hidden="true"></i>Election</a>
-                    <a href="/game" class="nav-link nav-link--app"><i class="fa-solid fa-gamepad nav-icon"
-                            aria-hidden="true"></i>Game</a>
                     {!forcedTheme && (
                         <label class="theme-toggle-v2">
                             <input type="checkbox" class="theme-toggle-input" data-theme-toggle aria-label="Switch theme" />
@@ -471,7 +443,7 @@ const schemaData = {
                     <span>Home</span>
                 </a>
                 <a href="/#info" class="nav-link-mobile d-flex align-items-center">
-                    <span>About Niya's</span>
+                    <span>About Monet's</span>
                 </a>
                 <a href="/#social" class="nav-link-mobile d-flex align-items-center">
                     <span>Social Media</span>
@@ -482,25 +454,11 @@ const schemaData = {
                 <a href="/#library" class="nav-link-mobile d-flex align-items-center">
                     <span>Highlights</span>
                 </a>
-                <a href="/#fanclub" class="nav-link-mobile d-flex align-items-center">
-                    <span>Fanclub</span>
-                </a>
+
                 <hr class="nav-mobile-divider" />
                 <a href="/schedule" class="nav-link-mobile d-flex align-items-center">
                     <i class="fa-solid fa-calendar nav-icon" aria-hidden="true"></i>
                     <span>Schedule</span>
-                </a>
-                <a href="/planner" class="nav-link-mobile d-flex align-items-center">
-                    <i class="fa-solid fa-calendar-week nav-icon" aria-hidden="true"></i>
-                    <span>Planner</span>
-                </a>
-                <a href="/election" class="nav-link-mobile d-flex align-items-center">
-                    <i class="fa-solid fa-vote-yea nav-icon" aria-hidden="true"></i>
-                    <span>Election</span>
-                </a>
-                <a href="/game" class="nav-link-mobile d-flex align-items-center">
-                    <i class="fa-solid fa-gamepad nav-icon" aria-hidden="true"></i>
-                    <span>Game</span>
                 </a>
             </nav>
 
@@ -513,61 +471,24 @@ const schemaData = {
         </main>
 
         <footer class="mt-auto">
-            <div class="collaboration text-center py-2 px-4">
-                Collaboration Project<br />
-                <strong class="text-nowrap">
-                    Little nemo of niya × <a href="https://napheao.vercel.app/">Baby Naphaeo's</a>
-                </strong>
-            </div>
-
-            <div class="site-info footer-surface">
-                <nav class="navbar-footer">
-                    <Image src={logoNavy} alt="Niya Logo" class="footer-logo footer-logo--dark" width={180} />
-                    <Image src={logoWhite} alt="Niya Logo" class="footer-logo footer-logo--light" width={180} />
-                    <ul class="mt-4">
-                        <li>
-                            <a href="/cookies-policy">นโยบายเกี่ยวกับคุกกี้</a>
-                        </li>
-                        <li>
-                            <a href="/privacy-policy">นโยบายความเป็นส่วนตัว</a>
-                        </li>
-                        <li>
-                            <a href="/disclaimer">คำชี้แจงสำหรับแฟนไซต์</a>
-                        </li>
-                    </ul>
-                    <ul class="mt-4">
-                        <li>
-                            <a href="https://www.facebook.com/profile.php?id=61556940780361" target="_blank"
-                                rel="noopener noreferrer" aria-label="Niya BNK48 Fanclub Facebook"><i class="fab fa-facebook" aria-hidden="true"></i></a>
-                        </li>
-                        <li>
-                            <a href="https://www.instagram.com/niyabnk48_thfc/" target="_blank" rel="noopener noreferrer" aria-label="Niya BNK48 Fanclub Instagram"><i
-                                    class="fab fa-instagram" aria-hidden="true"></i></a>
-                        </li>
-                        <li>
-                            <a href="https://www.youtube.com/@NiyaBNK48ThailandFanclub" target="_blank"
-                                rel="noopener noreferrer" aria-label="Niya BNK48 Fanclub YouTube"><i class="fab fa-youtube" aria-hidden="true"></i></a>
-                        </li>
-                        <li>
-                            <a href="https://x.com/niyabnk48_thfc" target="_blank" rel="noopener noreferrer" aria-label="Niya BNK48 Fanclub X (Twitter)"><i
-                                    class="fa-brands fa-x-twitter" aria-hidden="true"></i></a>
-                        </li>
-                        <li>
-                            <a href="https://www.tiktok.com/@niya.bnk48.thfc" target="_blank" rel="noopener noreferrer" aria-label="Niya BNK48 Fanclub TikTok"><i
-                                    class="fab fa-tiktok" aria-hidden="true"></i></a>
-                        </li>
-                        <li>
-                            <a href="https://line.me/ti/g2/YYQYpuFlsvlTQz6KyvKM7m0zmLJ39JlzdphDqA?utm_" aria-label="Niya BNK48 Fanclub LINE Group"><i
-                                    class="fa-solid fa-comment-dots" aria-hidden="true"></i></a>
-                        </li>
-                    </ul>
+        <div class="collaboration d-flex justify-content-between align-items-center flex-wrap gap-3 px-4 py-4">
+                <div class="colophon-credit d-flex flex-column">
+                    <span class="colophon-label">Fan's Project</span>
+                    <strong>Made with &#x2665; by <a href="https://x.com/wishyoubestyour">dem._.mo</a></strong>
+                </div>
+                <nav class="colophon-nav d-none d-sm-flex flex-wrap align-items-center gap-3" aria-label="Footer navigation">
+                    <a href="/#home">Home</a>
+                    <a href="/#info">About</a>
+                    <a href="/#social">Social</a>
+                    <a href="/#library">Highlights</a>
+                    <a href="/schedule">Schedule</a>
                 </nav>
             </div>
 
             <section class="footer-bottom text-center py-3">
                 <div class="container">
                     <p class="mb-0 footer-license">
-                        Original Content & Artist © by Independent Artist
+                        Original Content &amp; Artist &copy; by Independent Artist
                         Management (iAM).
                     </p>
                 </div>

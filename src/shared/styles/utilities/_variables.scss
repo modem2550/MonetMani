@@ -6,22 +6,23 @@
 
 :root {
     // ── Colors ────────────────────────────────────────────────────────────────
-    --c-glass: #bbbbbc;
+    --c-glass: #c7d0da;
     --c-light: #fff;
     --c-dark: #000;
-    --c-content: #222233;
-    --c-primary: #fc809f;
-    --c-primary-hover: #fb4774;
+    --c-content: #1F2A37;
+    --c-primary: #1E3A8A;
+    --c-primary-hover: #14235A;
+    --c-primary-active: #0C1736;
 
     // ── Backgrounds ───────────────────────────────────────────────────────────
-    --c-bg: #F7F7F8;
-    --c-surface: #f4ebef;
-    --c-surface-alt: #e7e7e7;
-    --c-border: #D8D8DA;
+    --c-bg: #FAF6EC;
+    --c-surface: #fafbf6;
+    --c-surface-alt: #E3E9F0;
+    --c-border: #D6DEE8;
 
     // ── Text hierarchy ────────────────────────────────────────────────────────
-    --c-content-secondary: #55556A;
-    --c-content-muted: #888899;
+    --c-content-secondary: #4F6070;
+    --c-content-muted: #8A97A3;
 
     // ── Group / team colors ───────────────────────────────────────────────────
     --c-bnk: #cb96c2;
@@ -70,8 +71,15 @@
     // ── Section heading ───────────────────────────────────────────────────────
     --c-section-text: var(--c-primary);
 
+    // ── Event / performance section ───────────────────────────────────────────
+    --c-event-bg: #EEF0FA; // soft indigo tint — feels like stage lighting
+    --c-event-accent: #4F46E5; // vivid indigo — spotlight / neon
+    --c-event-accent-2: #7C3AED; // violet secondary
+    --g-event-stage: linear-gradient(160deg, #EEF0FA 0%, #F5EEF8 100%);
+
     // ── Golden Ratio Type Scale (φ = 1.618, base = 16px) ─────────────────────
     --fs-display: clamp(2.6rem, 5.5vw + 1rem, 4.235rem);
+    --fs-editorial: clamp(4rem, 11vw + 1rem, 9rem);   /* hero masthead */
     --fs-h1: 2.618rem;
     --fs-h2: 1.618rem;
     --fs-h3: 1.272rem;
@@ -80,6 +88,7 @@
     --fs-body: 1rem;
     --fs-small: 0.618rem;
     --fs-xs: 0.618rem;
+    --fs-label: 0.6875rem;  /* editorial label / eyebrow caps */
 
     // ── Animation defaults (JS overrides via inline style) ────────────────────
     --anim-delay: 0ms;
@@ -90,7 +99,7 @@
 
     // ── Page layout & UX ──────────────────────────────────────────────────────
     --page-max-width: 1200px;
-    --section-pad-y: clamp(3.25rem, 7vw, 5.25rem);
+    --section-pad-y: clamp(4.5rem, 9vw, 7rem);        /* more breathing room */
     --shadow-soft: 0 4px 28px color-mix(in srgb, var(--c-dark) 7%, transparent);
     --shadow-card:
         0 1px 0 color-mix(in srgb, var(--c-light) 80%, transparent),
@@ -101,16 +110,24 @@
 // Dark mode overrides neutral UI tokens only.
 // Group/team colors and day-of-week accent colors intentionally stay untouched.
 :root[data-theme="dark"] {
-    --c-glass: #6b6f7e;
-    --c-light: #f5f7fb;
-    --c-dark: #05070d;
-    --c-content: #e7ebf4;
-    --c-bg: #0f131c;
-    --c-surface: #171c28;
-    --c-surface-alt: #1f2533;
-    --c-border: #2a3243;
-    --c-content-secondary: #c3cada;
-    --c-content-muted: #98a2b8;
+    --c-glass: #4a4a4a;
+    --c-light: #f5f5f5;
+    --c-dark: #000000;
+    --c-content: #F2F2F2;
+    --c-primary: #E23B3B;
+    --c-primary-hover: #B82727;
+    --c-bg: #000000;
+    --c-surface: #121212;
+    --c-surface-alt: #1C1C1C;
+    --c-border: #2A2A2A;
+    --c-content-secondary: #B8B8B8;
+    --c-content-muted: #8A8A8A;
+
+    // ── Event / performance section (dark) ────────────────────────────────────
+    --c-event-bg: #0D0B1A; // deep stage-dark indigo
+    --c-event-accent: #818CF8; // neon indigo — stage light
+    --c-event-accent-2: #A78BFA; // violet glow
+    --g-event-stage: linear-gradient(160deg, #0D0B1A 0%, #120A22 100%);
     --glass-reflex-dark: 0.85;
     --glass-reflex-light: 0.55;
     --shadow-soft: 0 10px 34px color-mix(in srgb, #000 34%, transparent);
