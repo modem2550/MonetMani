@@ -30,7 +30,7 @@
   align-items: start;
   margin-bottom: 4rem;
 
-  @media (max-width: 768px) {
+  @media (max-width: 992px) {
     grid-template-columns: 1fr;
   }
 }
@@ -43,7 +43,7 @@
   align-items: flex-start;
   gap: 1rem;
 
-  @media (max-width: 768px) {
+  @media (max-width: 992px) {
     align-items: center;
   }
 
@@ -88,7 +88,24 @@
     background: var(--c-primary);
     border-color: var(--c-primary);
     color: var(--c-light);
-    transform: translateY(-2px);
+  }
+
+  &.-facebook:hover {
+    background: #1877F2;
+    border-color: #1877F2;
+    color: var(--c-light);
+  }
+
+  &.-instagram:hover {
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    border-color: transparent;
+    color: var(--c-light);
+  }
+
+  &.-tiktok:hover {
+    background: var(--c-dark);
+    border-color: var(--c-dark);
+    color: var(--c-light);
   }
 }
 
