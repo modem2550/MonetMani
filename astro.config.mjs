@@ -3,7 +3,7 @@ import vercel from '@astrojs/vercel';
 import react from '@astrojs/react';
 
 export default defineConfig({
-  site: 'https://little-nemo-of-niya.vercel.app',
+  site: 'https://monimonetfans.vercel.app',
   output: 'server',
   adapter: vercel({
     webAnalytics: { enabled: true },
