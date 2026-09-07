@@ -56,9 +56,49 @@ const eventsWithSlug = (rawEvents ?? []).map((event: Event) => ({
 }));
 
 const { upcoming, past } = categorizeEvents(eventsWithSlug);
+
+const eventSchemas = upcoming.slice(0, 10).map((evt) => ({
+    "@context": "https://schema.org",
+    "@type": "Event",
+    name: evt.title || "Monet BNK48 Event",
+    startDate: evt.date,
+    ...(evt.end_date ? { endDate: evt.end_date } : {}),
+    description: evt.description || `${evt.title || "Event"} - Monet BNK48`,
+    location: {
+        "@type": "Place",
+        name: evt.location || "Thailand",
+        address: evt.location || "Thailand",
+    },
+    ...(evt.image_url || evt.image_urls?.large
+        ? { image: [evt.image_urls?.large || evt.image_url] }
+        : {}),
+    performer: {
+        "@type": "Person",
+        name: "Monet BNK48",
+        url: "https://monimonetfans.vercel.app/#person",
+    },
+    organizer: {
+        "@type": "Organization",
+        name: "BNK48",
+        url: "https://www.bnk48.com/",
+    },
+}));
 ---
 
-<MainLayout title="Schedule — Monét BNK48">
+<MainLayout
+    title="Monet BNK48 - Schedule & Events"
+    description="อัปเดตตารางงาน กิจกรรม งานแฟนมีต และตารางออกงานล่าสุดของ Monet BNK48 (โมเน่ต์ ภาริตา ริเริ่มกุล)"
+>
+    {
+        eventSchemas.map((schema) => (
+            <script
+                is:inline
+                type="application/ld+json"
+                set:html={JSON.stringify(schema)}
+                slot="head"
+            />
+        ))
+    }
     <div class="schedule-page container">
         <!-- ── Page header ── -->
         <header class="schedule-header">

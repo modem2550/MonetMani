@@ -17,6 +17,7 @@ interface Props {
   theme?: ThemeConfig;
   forcedTheme?: "light" | "dark";
   socialImage?: string;
+  noindex?: boolean;
 }
 
 const {
@@ -25,6 +26,7 @@ const {
   theme,
   forcedTheme,
   socialImage,
+  noindex = false,
 } = Astro.props;
 
 const defaultSocialImage =
@@ -34,6 +36,11 @@ const resolvedSocialImage = socialImage
     ? socialImage
     : new URL(socialImage, Astro.url).href
   : defaultSocialImage;
+
+const canonicalURL = new URL(
+  Astro.url.pathname,
+  Astro.site ?? "https://monimonetfans.vercel.app"
+).href;
 
 /** `/_vercel/speed-insights/script.js` exists only on the Vercel platform, not in `astro dev` / local preview. */
 const enableVercelSpeedInsights =
@@ -49,15 +56,24 @@ const schemaData = {
     "@context": "https://schema.org",
     "@type": "Person",
     "@id": "https://monimonetfans.vercel.app/#person",
-    name: "Monet",
+    name: "Monet BNK48",
     alternateName: [
+      "Monet",
       "โมเน่ต์",
-      "Monet BNK48",
+      "โมเน่ต์ BNK48",
       "โมเน่ต์ บีเอ็นเค48",
       "Manimonet BNK48",
-      "โมเน่ต์โมนต์ บีเอ็นเค48",
+      "Parita Rirermkul",
+      "ภาริตา ริเริ่มกุล",
     ],
-    description: "สมาชิกของวง BNK48",
+    description: "สมาชิกวง BNK48 (Idol, Artist, Actress)",
+    jobTitle: "Idol / Artist",
+    image: "https://monimonetfans.vercel.app/img/profile.webp",
+    worksFor: {
+      "@type": "Organization",
+      name: "BNK48",
+      url: "https://www.bnk48.com/",
+    },
     memberOf: {
       "@type": "Organization",
       "@id": "https://monimonetfans.vercel.app/#organization",
@@ -74,8 +90,10 @@ const schemaData = {
     "@type": "WebSite",
     "@id": "https://monimonetfans.vercel.app/#website",
     name: "Monet BNK48 - Fan Website",
+    alternateName: ["โมเน่ต์ BNK48 แฟนคลับ", "Monet Fansite"],
     description: description,
     url: "https://monimonetfans.vercel.app/",
+    inLanguage: "th-TH",
     potentialAction: {
       "@type": "SearchAction",
       target: {
@@ -157,21 +175,26 @@ const schemaData = {
     <meta name="description" content={description} />
     <meta
       name="keywords"
-      content="monet, monet bnk48, นีญ่า, นีญ่า bnk48, bnk48 monet, monet thai idol, บีเอ็นเค48"
+      content="monet, monet bnk48, โมเน่ต์, โมเน่ต์ bnk48, bnk48 monet, monet thai idol, บีเอ็นเค48, ตารางงานโมเน่ต์, รูปโมเน่ต์"
     />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content={noindex ? "noindex, follow" : "index, follow"} />
 
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:url" content={Astro.url} />
+    <meta property="og:url" content={canonicalURL} />
     <meta property="og:type" content="website" />
+    <meta property="og:locale" content="th_TH" />
     <meta property="og:image" content={resolvedSocialImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={title} />
     <meta property="og:site_name" content="Monet BNK48 - Fan Website" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={resolvedSocialImage} />
+    <meta name="twitter:site" content="@monet_bnk48" />
 
     <meta name="theme-color" content="#ffffff" id="themeColorMeta" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -180,14 +203,6 @@ const schemaData = {
       name="apple-mobile-web-app-status-bar-style"
       content="black-translucent"
     />
-    <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": "Monet BNK48 Fan Website",
-  "url": "https://monimonetfans.vercel.app/"
-}
-</script>
 
     <script
       is:inline
@@ -232,8 +247,8 @@ const schemaData = {
       })();
     </script>
 
-    <link rel="canonical" href={Astro.url.href} />
-    <link rel="alternate" hreflang="th" href={Astro.url.href} />
+    <link rel="canonical" href={canonicalURL} />
+    <link rel="alternate" hreflang="th" href={canonicalURL} />
 
     <link rel="icon" href="/logo/logo 32x32.png" sizes="32x32" />
     <link rel="apple-touch-icon" href="/logo/apple-touch-icon.png" />

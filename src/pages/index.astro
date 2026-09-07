@@ -45,9 +45,39 @@ const withSlug = (event: Event) => ({
 
 const processedUpcoming = upcoming.map(withSlug);
 const processedPast = past.map(withSlug);
+
+const eventSchemas = processedUpcoming.slice(0, 10).map((evt) => ({
+  "@context": "https://schema.org",
+  "@type": "Event",
+  name: evt.title || "Monet BNK48 Event",
+  startDate: evt.date,
+  ...(evt.end_date ? { endDate: evt.end_date } : {}),
+  description: evt.description || `${evt.title || "Event"} - Monet BNK48`,
+  location: {
+    "@type": "Place",
+    name: evt.location || "Thailand",
+    address: evt.location || "Thailand",
+  },
+  ...(evt.image_url || evt.image_urls?.large
+    ? { image: [evt.image_urls?.large || evt.image_url] }
+    : {}),
+  performer: {
+    "@type": "Person",
+    name: "Monet BNK48",
+    url: "https://monimonetfans.vercel.app/#person",
+  },
+  organizer: {
+    "@type": "Organization",
+    name: "BNK48",
+    url: "https://www.bnk48.com/",
+  },
+}));
 ---
 
-<MainLayout title="Monet BNK48 - Fan Website">
+<MainLayout
+  title="Monet BNK48 (โมเน่ต์ BNK48) - Fan Website"
+  description="ติดตามและเป็นกำลังใจให้กับ Monet BNK48 ภาริตา ริเริ่มกุล ผ่านเว็บไซต์แฟนคลับอย่างเป็นทางการ ข่าวสารล่าสุด ตารางงาน กิจกรรม และคลังรูปภาพ Monet BNK48"
+>
   <link
     rel="preload"
     as="image"
@@ -55,13 +85,23 @@ const processedPast = past.map(withSlug);
     fetchpriority="high"
     slot="head"
   />
+  {
+    eventSchemas.map((schema) => (
+      <script
+        is:inline
+        type="application/ld+json"
+        set:html={JSON.stringify(schema)}
+        slot="head"
+      />
+    ))
+  }
 
   <!-- ── Hero ── -->
   <section id="home">
     <div class="hero-container">
       <img
         src="/img/BG-img.webp"
-        alt="Background"
+        alt="Monet BNK48 Hero Background"
         class="w-100 h-100 position-absolute top-0 start-0"
         style="object-fit:cover; object-position: center top;"
         width="1440"
@@ -655,7 +695,7 @@ const processedPast = past.map(withSlug);
       <div class="promo-image-wrapper">
         <img
           src="https://pbs.twimg.com/media/HOoSsuGawAAQkoR?format=jpg&name=large"
-          alt="Promo"
+          alt="Monet BNK48 Special Announcement"
           class="img-fluid w-100"
           style="object-fit: cover;"
         />
