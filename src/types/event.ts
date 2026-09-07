@@ -13,6 +13,9 @@ export interface Event {
     image_urls?: {
         medium?: string;
         large?: string;
+        storage_medium?: string;
+        storage_large?: string;
+        synced_at?: string;
     };
     [key: string]: any;
 }

@@ -1,5 +1,13 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
+/**
+ * IMPORTANT: this client uses the public anon key, which is inherently
+ * exposed (it ships to the browser/build). Do not rely on this file for
+ * access control — make sure Row Level Security (RLS) is enabled on
+ * `events_upcoming` / `events_past` (and any other table reachable via
+ * this key) in the Supabase dashboard, with policies that only allow
+ * read access and never allow writes from the anon role.
+ */
 let supabaseInstance: SupabaseClient | null = null;
 
 export function getSupabase(): SupabaseClient | null {

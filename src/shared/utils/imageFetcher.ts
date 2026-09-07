@@ -11,6 +11,12 @@ const MANIFEST_PATH = path.resolve(process.cwd(), '.image-cache.json');
 const PUBLIC_DEMMO_DIR = path.resolve(process.cwd(), 'public/demmo');
 const PUBLIC_PREFIX = '/demmo';
 
+// Guardrails for downloading external images during the build.
+// Without these, a slow endpoint can hang the build indefinitely, and an
+// unexpectedly huge or non-image response can blow up memory/disk.
+const FETCH_TIMEOUT_MS = 15_000;
+const MAX_IMAGE_BYTES = 20 * 1024 * 1024; // 20 MB
+
 /**
  * Loads the disk cache manifest.
  */
@@ -21,6 +27,7 @@ function loadManifest(): Record<string, string> {
       return JSON.parse(data);
     } catch (e) {
       // Failed to parse image cache manifest. Returning empty cache.
+      console.error('[imageFetcher] Failed to parse image cache manifest:', e);
       return {};
     }
   }
@@ -35,7 +42,7 @@ function saveManifest(manifest: Record<string, string>) {
     fs.writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2), 'utf-8');
   } catch (e) {
     // Failed to write image cache manifest — non-critical build error
-    // Error: ${e}
+    console.error('[imageFetcher] Failed to write image cache manifest:', e);
   }
 }
 
@@ -87,13 +94,35 @@ export async function processImage(url: string, alt: string): Promise<string> {
       const destPath = path.join(PUBLIC_DEMMO_DIR, fileName);
       const publicPath = `${PUBLIC_PREFIX}/${fileName}`;
 
-      // 3. Fetch image
-      const response = await fetch(url);
+      // 3. Fetch image (with timeout + size/content-type guardrails)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+
+      let response: Response;
+      try {
+        response = await fetch(url, { signal: controller.signal });
+      } finally {
+        clearTimeout(timeoutId);
+      }
+
       if (!response.ok) {
         throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
       }
 
+      const contentType = response.headers.get('content-type') ?? '';
+      if (!contentType.startsWith('image/')) {
+        throw new Error(`Refusing to process non-image content-type: ${contentType || 'unknown'}`);
+      }
+
+      const contentLength = Number(response.headers.get('content-length') ?? 0);
+      if (contentLength > MAX_IMAGE_BYTES) {
+        throw new Error(`Image exceeds max allowed size (${contentLength} > ${MAX_IMAGE_BYTES} bytes)`);
+      }
+
       const copyBuffer = Buffer.from(await response.arrayBuffer());
+      if (copyBuffer.byteLength > MAX_IMAGE_BYTES) {
+        throw new Error(`Image exceeds max allowed size after download (${copyBuffer.byteLength} bytes)`);
+      }
 
       // 4. Convert and save as WebP
       await sharp(copyBuffer)
@@ -106,8 +135,7 @@ export async function processImage(url: string, alt: string): Promise<string> {
 
       return publicPath;
     } catch (error) {
-      // [imageFetcher] Error processing image ${url} — falling back to original URL
-      // Error: ${error}
+      console.error(`[imageFetcher] Error processing image ${url} — falling back to original URL:`, error);
       // Fallback: Return original URL if anything fails
       return url;
     }

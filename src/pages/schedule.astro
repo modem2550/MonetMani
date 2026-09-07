@@ -3,13 +3,15 @@ import MainLayout from "@/app/layouts/MainLayout.astro";
 import EventCard from "@/shared/components/EventCard.astro";
 import { getSupabase } from "@/services/supabase/server";
 import { categorizeEvents } from "@/shared/utils/dateUtils";
+import { toEventSlug } from "@/shared/utils/slug";
 import type { Event } from "@/types/event";
 
 // ── Cache ──────────────────────────────────────────────────────────────────────
-const CACHE_TTL_SECONDS = 60;
+const CACHE_TTL_SECONDS = 300;
+const STALE_TTL_SECONDS = 86400;
 Astro.response.headers.set(
     "Cache-Control",
-    `public, max-age=0, s-maxage=${CACHE_TTL_SECONDS}, stale-while-revalidate=${CACHE_TTL_SECONDS}`,
+    `public, max-age=0, s-maxage=${CACHE_TTL_SECONDS}, stale-while-revalidate=${STALE_TTL_SECONDS}`,
 );
 
 // ── Data ──────────────────────────────────────────────────────────────────────
@@ -42,22 +44,15 @@ try {
     }
 } catch (e) {
     // Error fetching events — rawEvents will remain empty and the UI will show an empty state.
+    // Log it so this doesn't fail silently in production.
+    console.error("[schedule.astro] Error fetching events:", e);
 }
 
 // ── Process ───────────────────────────────────────────────────────────────────
 
-function toSlug(text: string) {
-    return text
-        .toLowerCase()
-        .trim()
-        .replace(/\s+/g, "-")
-        .replace(/[()]/g, "")
-        .replace(/[^a-z0-9-]/g, "");
-}
-
 const eventsWithSlug = (rawEvents ?? []).map((event: Event) => ({
     ...event,
-    generated_slug: `${toSlug(event.title || "event")}-${String(event.id || "0000").substring(0, 8)}`,
+    generated_slug: toEventSlug(event.title, event.id),
 }));
 
 const { upcoming, past } = categorizeEvents(eventsWithSlug);

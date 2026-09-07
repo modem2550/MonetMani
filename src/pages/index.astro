@@ -4,13 +4,15 @@ import MainLayout from "@/app/layouts/MainLayout.astro";
 import EventCard from "@/shared/components/EventCard.astro";
 import { getSupabase } from "@/services/supabase/server";
 import { categorizeEvents } from "@/shared/utils/dateUtils";
+import { toEventSlug } from "@/shared/utils/slug";
 import type { Event } from "@/types/event";
 
 // ── Cache ──────────────────────────────────────────────────────────────────────
-const CACHE_TTL_SECONDS = 60;
+const CACHE_TTL_SECONDS = 300;
+const STALE_TTL_SECONDS = 86400;
 Astro.response.headers.set(
   "Cache-Control",
-  `public, max-age=0, s-maxage=${CACHE_TTL_SECONDS}, stale-while-revalidate=${CACHE_TTL_SECONDS}`,
+  `public, max-age=0, s-maxage=${CACHE_TTL_SECONDS}, stale-while-revalidate=${STALE_TTL_SECONDS}`,
 );
 
 // ── Data fetching ─────────────────────────────────────────────────────────────
@@ -26,7 +28,9 @@ if (supabase) {
       .order("date", { ascending: false });
     allEvents = data ?? [];
   } catch (e) {
-    // Error fetching upcoming events — allEvents will remain empty
+    // Error fetching upcoming events — allEvents will remain empty.
+    // Log it so this doesn't fail silently in production.
+    console.error("[index.astro] Error fetching upcoming events:", e);
   }
 }
 
@@ -34,18 +38,9 @@ if (supabase) {
 
 const { upcoming, past } = categorizeEvents(allEvents);
 
-function toSlug(text: string) {
-  return text
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, "-")
-    .replace(/[()]/g, "")
-    .replace(/[^a-z0-9-]/g, "");
-}
-
 const withSlug = (event: Event) => ({
   ...event,
-  generated_slug: `${toSlug(event.title || "event")}-${event.id}`,
+  generated_slug: toEventSlug(event.title, event.id),
 });
 
 const processedUpcoming = upcoming.map(withSlug);
@@ -53,6 +48,14 @@ const processedPast = past.map(withSlug);
 ---
 
 <MainLayout title="Monet BNK48 - Fan Website">
+  <link
+    rel="preload"
+    as="image"
+    href="/img/BG-img.webp"
+    fetchpriority="high"
+    slot="head"
+  />
+
   <!-- ── Hero ── -->
   <section id="home">
     <div class="hero-container">
@@ -63,6 +66,8 @@ const processedPast = past.map(withSlug);
         style="object-fit:cover; object-position: center top;"
         width="1440"
         height="1920"
+        fetchpriority="high"
+        decoding="async"
       />
       <div class="overlay"></div>
       <div class="hero-text-wrapper">
@@ -70,6 +75,18 @@ const processedPast = past.map(withSlug);
           <p class="hero-eyebrow">BNK48 &mdash; Fan Site</p>
           <strong class="hero-name">Monét</strong>
           <span class="hero-sub">Parita Rirermkul &nbsp;/&nbsp; BNK48</span>
+          <div class="mt-4">
+            <a
+              href="https://monet3rdonelasttime.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="editorial-link"
+              style="color: white!important"
+            >
+              <span>Special Fan Project &mdash; Monet 3rd One Last Time</span>
+              <i class="fa-solid fa-arrow-right ms-2" aria-hidden="true"></i>
+            </a>
+          </div>
         </div>
       </div>
       <div class="hero-scroll-hint" aria-hidden="true">
@@ -162,8 +179,27 @@ const processedPast = past.map(withSlug);
           </div>
           <p class="info-contact">
             &#x2661; contact for work<br />
-            <span>083-525-3564 &nbsp;&middot;&nbsp; @iamofficialartist</span>
+            <span
+              id="contact-phone"
+              data-phone-1="083"
+              data-phone-2="525"
+              data-phone-3="3564"
+              >&nbsp;</span
+            > &nbsp;&middot;&nbsp; @iamofficialartist
           </p>
+          <script is:inline>
+            // Assemble the phone number on the client instead of shipping it
+            // as plain text, to make it a bit harder for scrapers/bots to
+            // harvest it straight from the HTML source.
+            document.addEventListener("DOMContentLoaded", () => {
+              const el = document.getElementById("contact-phone");
+              if (!el) return;
+              const { phone1, phone2, phone3 } = el.dataset;
+              if (phone1 && phone2 && phone3) {
+                el.textContent = `${phone1}-${phone2}-${phone3}`;
+              }
+            });
+          </script>
         </div>
 
         <!-- Right: content -->
@@ -526,6 +562,84 @@ const processedPast = past.map(withSlug);
     </div>
   </section>
 
+  <!-- ── Community ── -->
+  <section id="community">
+    <div class="container">
+      <p class="section-label">Community</p>
+      <h2 class="section-title mb-5">Monet's Fan Community</h2>
+
+      <div class="social-editorial-list">
+        <!-- LINE OpenChat -->
+        <a
+          href="https://line.me/ti/g2/MYo3l6qJus2XwQ4ZEU2Id93CiclaiTRQfNPVsA?utm_source=invitation&utm_medium=link_copy&utm_campaign=default"
+          class="slide-right social-box -line social-link"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="LINE OpenChat - โมนี่ของโมเน่ต์"
+        >
+          <svg
+            class="svg-inline--fa front"
+            viewBox="0 0 512 512"
+            role="img"
+            aria-hidden="true"
+          >
+            <use href="#icon-line"></use>
+          </svg>
+          <svg
+            class="svg-inline--fa back"
+            viewBox="0 0 512 512"
+            role="img"
+            aria-hidden="true"
+          >
+            <use href="#icon-line"></use>
+          </svg>
+          <div>
+            <div class="fw-bold social-label h6">
+              LINE OpenChat <i class="fa-solid fa-arrow-right arrow-icon ms-1"
+              ></i>
+            </div>
+            <div class="fw-bold social-label h4">
+              โมนี่ของโมเน่ต์ - Monet BNK48 Supporters
+            </div>
+          </div>
+        </a>
+
+        <!-- X (Twitter) Fanclub -->
+        <a
+          href="https://x.com/MonetBNK48FC"
+          class="slide-right social-box -x-twitter social-link"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="X (Twitter) - MonetBNK48FC"
+        >
+          <svg
+            class="svg-inline--fa front"
+            viewBox="0 0 512 512"
+            role="img"
+            aria-hidden="true"
+          >
+            <use href="#icon-x-twitter"></use>
+          </svg>
+          <svg
+            class="svg-inline--fa back"
+            viewBox="0 0 512 512"
+            role="img"
+            aria-hidden="true"
+          >
+            <use href="#icon-x-twitter"></use>
+          </svg>
+          <div>
+            <div class="fw-bold social-label h6">
+              X (Twitter) Fanclub <i
+                class="fa-solid fa-arrow-right arrow-icon ms-1"></i>
+            </div>
+            <div class="fw-bold social-label h4">@MonetBNK48FC</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
   <!-- Promo Popup -->
   <div id="promo-popup-overlay">
     <div class="promo-popup-container p-0">
@@ -547,7 +661,7 @@ const processedPast = past.map(withSlug);
       </button>
       <div class="promo-image-wrapper">
         <img
-          src="https://pbs.twimg.com/media/HPXazOjaMAAMtmv?format=jpg&name=900x900"
+          src="https://pbs.twimg.com/media/HOoSsuGawAAQkoR?format=jpg&name=large"
           alt="Promo"
           class="img-fluid w-100"
           style="object-fit: cover;"

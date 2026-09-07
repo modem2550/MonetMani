@@ -1,6 +1,7 @@
 ---
 // ./components/EventCard.astro
 import { formatEventDate } from "@/shared/utils/dateUtils";
+import { safeHref, safeImageUrl, cssUrlEscape } from "@/shared/utils/urlSafety";
 import type { Event } from "@/types/event";
 
 interface Props {
@@ -12,15 +13,22 @@ interface Props {
 const { event, isPast = false, variant = "default" } = Astro.props;
 
 function resolveImages(event: Event) {
-    // Use explicit field from database if available
-    const medium =
-        event.image_urls?.medium ?? event.image_url ?? "/img/placeholder.jpg";
-    const hover = event.image_urls?.large ?? medium;
-
+    const medium = safeImageUrl(
+        event.image_urls?.storage_medium ??
+            event.image_urls?.medium ??
+            event.image_url,
+    );
+    const hover = safeImageUrl(
+        event.image_urls?.storage_large ?? event.image_urls?.large,
+        medium,
+    );
     return { bg: medium, hover };
 }
 
 const { bg: backgroundImage, hover: hoverImage } = resolveImages(event);
+// event.link มาจาก DB เช่นกัน — ถ้าไม่ใช่ http(s) URL ที่ถูกต้อง จะไม่ render เป็น href
+// (ป้องกัน scheme อันตราย เช่น javascript:)
+const eventLink = safeHref(event.link);
 const formattedDate = formatEventDate(event.date, event.end_date);
 
 const cardClasses = [
@@ -41,15 +49,17 @@ const statusLabel = isPast ? "อีเวนต์ที่ผ่านมา" 
 >
     <!-- ภาพปกหลัก -->
     <a
-        href={event.link}
+        href={eventLink ?? "#"}
         class="card-detail-link"
-        target="_blank"
-        rel="noopener noreferrer"
+        target={eventLink ? "_blank" : undefined}
+        rel={eventLink ? "noopener noreferrer" : undefined}
+        aria-disabled={eventLink ? undefined : "true"}
+        onclick={eventLink ? undefined : "event.preventDefault()"}
         aria-label={`ดูรายละเอียดเพิ่มเติม: ${event.title} (เปิดในหน้าต่างใหม่)`}
     >
         <div
             class="card-cover-img"
-            style={`background-image:url('${backgroundImage}')`}
+            style={`background-image:url('${cssUrlEscape(backgroundImage)}')`}
             role="img"
             aria-label={`ภาพปกอีเวนต์: ${event.title}`}
         >

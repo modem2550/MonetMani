@@ -3,7 +3,7 @@
 // ============================================================
 
 // Make this file a module so `declare global` is valid
-export {};
+export { };
 
 declare global {
   interface Window {
@@ -39,7 +39,7 @@ const ANIMATION_CONFIG: AnimConfig = {
   offsetY: 30,
   duration: 500,
 };
-const THEME_STORAGE_KEY = 'niya-theme';
+const THEME_STORAGE_KEY = 'monet-theme';
 const THEME_COLORS: Record<Theme, string> = {
   light: '#ffffff',
   dark: '#10131a',
@@ -70,7 +70,7 @@ function updateThemeToggles(theme: Theme): void {
 
 function applyTheme(theme: Theme, { persist = true } = {}): void {
   const root = document.documentElement;
-  
+
   // ✅ IMPORTANT: If page has a forced theme, do NOT apply anything else
   const forcedTheme = root.getAttribute('data-forced-theme');
   if (forcedTheme === 'light' || forcedTheme === 'dark') {
