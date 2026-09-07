@@ -84,12 +84,12 @@ const processedPast = past.map(withSlug);
     id="event"
     style={processedUpcoming.length === 0 ? "display:none" : ""}
   >
-    <div class="mb-5">
-      <p class="section-label">Events &amp; Schedule</p>
-      <h2 class="section-title">Monet's<br />Upcoming Events</h2>
-    </div>
-
     <section class="container" id="upcoming-events-section" style="padding:0">
+      <div class="mb-5">
+        <p class="section-label">Events &amp; Schedule</p>
+        <h2 class="section-title">Monet' Upcoming Events</h2>
+      </div>
+
       <div
         class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-4 flex-nowrap overflow-x-scroll"
       >
@@ -104,14 +104,13 @@ const processedPast = past.map(withSlug);
           ))
         }
       </div>
+      <div class="mt-5">
+        <a class="editorial-link" href="schedule" id="moreEventsBtn">
+          View all events
+          <i class="fa-solid fa-arrow-right ms-2" aria-hidden="true"></i>
+        </a>
+      </div>
     </section>
-
-    <div class="mt-5">
-      <a class="editorial-link" href="schedule" id="moreEventsBtn">
-        View all events
-        <i class="fa-solid fa-arrow-right ms-2" aria-hidden="true"></i>
-      </a>
-    </div>
   </section>
 
   <!-- ── Info ── -->
@@ -500,7 +499,7 @@ const processedPast = past.map(withSlug);
             <div class="slide-right col-sm-12 col-md-6" data-video-id={videoId}>
               <div class="youtube-block h-100">
                 <div class="info p-3">
-                  <p class="video-badge">
+                  <p class="video-badge mb-1">
                     <i class="fa-solid fa-star" aria-hidden="true" />
                     {badge}
                   </p>

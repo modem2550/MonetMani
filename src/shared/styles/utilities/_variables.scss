@@ -71,15 +71,10 @@
     // ── Section heading ───────────────────────────────────────────────────────
     --c-section-text: var(--c-primary);
 
-    // ── Event / performance section ───────────────────────────────────────────
-    --c-event-bg: #EEF0FA; // soft indigo tint — feels like stage lighting
-    --c-event-accent: #4F46E5; // vivid indigo — spotlight / neon
-    --c-event-accent-2: #7C3AED; // violet secondary
-    --g-event-stage: linear-gradient(160deg, #EEF0FA 0%, #F5EEF8 100%);
-
     // ── Golden Ratio Type Scale (φ = 1.618, base = 16px) ─────────────────────
     --fs-display: clamp(2.6rem, 5.5vw + 1rem, 4.235rem);
-    --fs-editorial: clamp(4rem, 11vw + 1rem, 9rem);   /* hero masthead */
+    --fs-editorial: clamp(4rem, 11vw + 1rem, 9rem);
+    /* hero masthead */
     --fs-h1: 2.618rem;
     --fs-h2: 1.618rem;
     --fs-h3: 1.272rem;
@@ -88,7 +83,8 @@
     --fs-body: 1rem;
     --fs-small: 0.618rem;
     --fs-xs: 0.618rem;
-    --fs-label: 0.6875rem;  /* editorial label / eyebrow caps */
+    --fs-label: 0.6875rem;
+    /* editorial label / eyebrow caps */
 
     // ── Animation defaults (JS overrides via inline style) ────────────────────
     --anim-delay: 0ms;
@@ -99,7 +95,8 @@
 
     // ── Page layout & UX ──────────────────────────────────────────────────────
     --page-max-width: 1200px;
-    --section-pad-y: clamp(4.5rem, 9vw, 7rem);        /* more breathing room */
+    --section-pad-y: clamp(4.5rem, 9vw, 7rem);
+    /* more breathing room */
     --shadow-soft: 0 4px 28px color-mix(in srgb, var(--c-dark) 7%, transparent);
     --shadow-card:
         0 1px 0 color-mix(in srgb, var(--c-light) 80%, transparent),

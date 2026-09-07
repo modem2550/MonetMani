@@ -55,20 +55,12 @@ const statusLabel = isPast ? "อีเวนต์ที่ผ่านมา" 
         >
         </div>
 
-        <!-- Hover overlay — ขยายลงถึง card-info ตอน hover -->
-        <div
-            class="card-cover-img--hover"
-            style={`background-image:url('${hoverImage}')`}
-            aria-hidden="true"
-        >
-        </div>
-
         <!-- ข้อมูลอีเวนต์ -->
         <div
             class="card-info position-relative z-1"
             style="transition: background 0.2s ease;"
         >
-            <div class="card-content d-flex flex-column p-4">
+            <div class="card-content d-flex flex-column py-4">
                 <h3 class="h5 event-title fw-bold">
                     {event.title}
                 </h3>

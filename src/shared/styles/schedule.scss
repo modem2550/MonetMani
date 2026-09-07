@@ -95,45 +95,28 @@ main {
     position: relative;
     overflow: hidden;
     background: var(--c-bg);
-    border-radius: var(--r-large);
-    border: 1px solid var(--c-border);
+    border-radius: var(--r-base);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0, 1);
     will-change: transform;
+
+    &:hover {
+        .event-title {
+            text-decoration: underline;
+        }
+    }
 }
 
 /* =============================================================================
    EVENT CARD — COVER IMAGE
    ============================================================================= */
 
-.card-cover-img,
-.card-cover-img--hover {
+.card-cover-img {
     width: 100%;
     aspect-ratio: 1 / 1;
+    border-radius: var(--r-base);
     background-size: cover;
     background-position: top;
     background-repeat: no-repeat;
-}
-
-.card-cover-img--hover {
-    position: absolute;
-    inset: 0;
-    height: 0;
-    opacity: 0;
-    padding-bottom: 100%;
-    transition:
-        opacity 0.4s cubic-bezier(0.175, 0.885, 0.32, 1),
-        height 0.4s cubic-bezier(0.175, 0.885, 0.32, 1),
-        padding-bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1);
-    will-change: opacity, height;
-
-    &::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background-color: color-mix(in srgb, var(--c-glass) 36%, transparent);
-        opacity: 0;
-        transition: opacity 0.4s cubic-bezier(0.175, 0.885, 0.32, 1);
-    }
 }
 
 .event-card-wrapper:hover {
@@ -211,7 +194,6 @@ main {
         background-color: var(--c-surface);
         background-color: transparent !important;
         box-shadow: none !important;
-        border-radius: 5px;
 
         &:hover {
             color: var(--c-content);
@@ -219,8 +201,7 @@ main {
         }
     }
 
-    .card-cover-img,
-    .card-cover-img--hover {
+    .card-cover-img {
         aspect-ratio: 1 / 1;
         height: 100px;
         width: 100px;
@@ -243,10 +224,6 @@ main {
         .card-content .h5 {
             text-decoration: underline;
             text-decoration-color: var(--c-primary);
-        }
-
-        .card-cover-img--hover {
-            opacity: 0;
         }
     }
 }
