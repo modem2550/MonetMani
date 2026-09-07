@@ -12,3 +12,4 @@ public/video/BG-video.mp4
 .image-cache.json
 public/demmo/.DS_Store
 **/.DS_Store
+.env*
