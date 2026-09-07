@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/assets/images/:path*",
+      "destination": "https://ekiockkaoxakovrdssva.supabase.co/storage/v1/object/public/event-images/:path*"
+    },
+    {
       "source": "/",
       "has": [
         {

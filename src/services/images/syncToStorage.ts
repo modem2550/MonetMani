@@ -11,8 +11,7 @@ function hashUrl(url: string): string {
 }
 
 function publicUrl(path: string): string {
-    const base = import.meta.env.SUPABASE_URL.replace(/\/$/, '');
-    return `${base}/storage/v1/object/public/${BUCKET}/${path}`;
+    return `/assets/images/${path}`;
 }
 
 /**

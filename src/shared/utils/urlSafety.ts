@@ -36,11 +36,30 @@ export function safeHref(value: unknown): string | undefined {
 }
 
 /**
+ * แปลง URL ของ Supabase storage ให้เป็น proxied asset URL
+ * เช่น https://ekiockkaoxakovrdssva.supabase.co/storage/v1/object/public/event-images/369/medium-xxx.webp
+ * -> /assets/images/369/medium-xxx.webp
+ */
+export function normalizeStorageUrl(url: string): string {
+  if (typeof url !== 'string') return url;
+  return url
+    .replace(
+      /^https:\/\/[^/]+\.supabase\.co\/storage\/v1\/object\/public\/event-images\//,
+      '/assets/images/'
+    )
+    .replace(
+      /^https:\/\/monimonetfans\.vercel\.app\/assets\/images\//,
+      '/assets/images/'
+    );
+}
+
+/**
  * คืนค่า URL รูปภาพที่ปลอดภัย พร้อม escape สำหรับใช้ใน CSS url('...')
  * ถ้า URL ไม่ผ่านการตรวจสอบ จะคืนค่า fallback แทน
  */
 export function safeImageUrl(value: unknown, fallback = '/img/placeholder.jpg'): string {
-  return isSafeHttpUrl(value) ? (value as string) : fallback;
+  if (!isSafeHttpUrl(value)) return fallback;
+  return normalizeStorageUrl(value as string);
 }
 
 /**
