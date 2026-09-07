@@ -38,39 +38,39 @@ export const POST: APIRoute = async ({ request }) => {
         });
     }
 
-    const admin = getSupabaseAdmin();
+    try {
+        const admin = getSupabaseAdmin();
 
-    // ดึงข้อมูล event ถ้ายังไม่ได้ส่ง URL มา
-    let mediumUrl = body.sourceUrls?.medium ?? body.sourceUrl;
-    let largeUrl = body.sourceUrls?.large;
+        // ดึงข้อมูล event ถ้ายังไม่ได้ส่ง URL มา
+        let mediumUrl = body.sourceUrls?.medium ?? body.sourceUrl;
+        let largeUrl = body.sourceUrls?.large;
 
-    if (!mediumUrl) {
-        const { data, error } = await admin
-            .from(table)
-            .select('image_url, image_urls')
-            .eq('id', eventId)
-            .single();
+        if (!mediumUrl) {
+            const { data, error } = await admin
+                .from(table)
+                .select('image_url, image_urls')
+                .eq('id', eventId)
+                .single();
 
-        if (error || !data) {
-            return new Response(JSON.stringify({ error: 'Event not found' }), {
-                status: 404,
+            if (error || !data) {
+                return new Response(JSON.stringify({ error: 'Event not found' }), {
+                    status: 404,
+                    headers: { 'Content-Type': 'application/json' },
+                });
+            }
+
+            mediumUrl =
+                data.image_urls?.medium ?? data.image_url ?? undefined;
+            largeUrl = data.image_urls?.large ?? undefined;
+        }
+
+        if (!mediumUrl) {
+            return new Response(JSON.stringify({ error: 'No image URL' }), {
+                status: 400,
                 headers: { 'Content-Type': 'application/json' },
             });
         }
 
-        mediumUrl =
-            data.image_urls?.medium ?? data.image_url ?? undefined;
-        largeUrl = data.image_urls?.large ?? undefined;
-    }
-
-    if (!mediumUrl) {
-        return new Response(JSON.stringify({ error: 'No image URL' }), {
-            status: 400,
-            headers: { 'Content-Type': 'application/json' },
-        });
-    }
-
-    try {
         const storageMedium = await syncImageToStorage(mediumUrl, {
             eventId,
             variant: 'medium',
