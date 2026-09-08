@@ -9,7 +9,6 @@ import IconSprite from "@/shared/components/IconSprite.astro";
 import { Image } from "astro:assets";
 import logoWhite from "@/shared/assets/logo/WHITE.png";
 import logoBlack from "@/shared/assets/logo/BLACK.png";
-import logoNavy from "@/shared/assets/logo/NAVY.png";
 
 interface Props {
   title?: string;
@@ -160,7 +159,7 @@ const schemaData = {
     description: "Monet - Parita Rirermkul Fansite",
     founder: {
       "@type": "Person",
-      name: "Monet (โมเน่ต์) BNK48",
+      name: "Monet BNK48",
     },
   },
 };
@@ -283,10 +282,10 @@ const schemaData = {
       set:html={JSON.stringify(schemaData.organizationSchema)}
     />
 
-    <!-- Preconnect & Preload critical resources -->
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <!-- Preconnect & DNS Prefetch critical resources -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
 
     <link
