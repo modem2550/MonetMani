@@ -89,12 +89,17 @@ const schemaData = {
     "@type": "WebSite",
     "@id": "https://monimonetfans.vercel.app/#website",
     name: "Monet BNK48 - Fan Website",
-    alternateName: ["โมเน่ต์ BNK48 แฟนคลับ", "Monet Fansite"],
-    description: description,
+    "alternateName": ["Monet BNK48 Fan Website", "โมเน่ต์ BNK48 แฟนคลับ", "Monet Fansite"],    description: description,
     url: "https://monimonetfans.vercel.app/",
     inLanguage: "th-TH",
+    publisher: {
+      "@type": "Organization",
+      "name": "Monet BNK48 Fan Website",
+      "logo": "https://monimonetfans.vercel.app/logo/android-chrome-512x512.png"
+    },
     potentialAction: {
       "@type": "SearchAction",
+      
       target: {
         "@type": "EntryPoint",
         urlTemplate:
@@ -201,8 +206,7 @@ const schemaData = {
     <meta name="twitter:image" content={resolvedSocialImage} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="google-site-verification" content="nVWvhyIP60uv985UsYOMtwbOjNhvWyVoHaxPBdwnfzc" />
-    <meta name="google-site-verification" content="jvFIlDAIZOYAECa80icojQE5lQrIAYu9Mmgg_sKxLA8">
-    
+        
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
