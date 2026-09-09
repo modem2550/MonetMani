@@ -170,38 +170,68 @@ const schemaData = {
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="title" content={title} />
-    <meta name="description" content={description} />
-    <meta
-      name="keywords"
-      content="monet, monet bnk48, โมเน่ต์, โมเน่ต์ bnk48, bnk48 monet, monet thai idol, บีเอ็นเค48, ตารางงานโมเน่ต์, รูปโมเน่ต์"
-    />
+    <title>{title}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Noto+Sans+Thai:wght@100..900&display=swap"
+      rel="stylesheet" media="print" onload="this.setAttribute('media','all')" crossorigin="anonymous" />
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Noto+Sans+Thai:wght@100..900&display=swap"
+        rel="stylesheet" crossorigin="anonymous" />
+    </noscript>
+    <link rel="canonical" href="https://monimonetfans.vercel.app" />
+    <meta name="description" content="เว็บไซต์แฟนคลับของ โมเน่ต์ - ภาริตา ริเริ่มกุล (Monet BNK48) ที่รวบรวมข้อมูลข่าวสาร ไฮไลท์ผลงาน อัปเดตกิจกรรม และช่องทางการติดตาม" />
+    
     <meta name="robots" content={noindex ? "noindex, follow" : "index, follow"} />
 
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonicalURL} />
-    <meta property="og:type" content="website" />
     <meta property="og:locale" content="th_TH" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" 
+      content="เว็บไซต์แฟนคลับของ โมเน่ต์ - ภาริตา ริเริ่มกุล (Monet BNK48) ที่รวบรวมข้อมูลข่าวสาร ไฮไลท์ผลงาน อัปเดตกิจกรรม และช่องทางการติดตาม" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:site_name" content="Monet BNK48 - Fan Website" />
     <meta property="og:image" content={resolvedSocialImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content={title} />
-    <meta property="og:site_name" content="Monet BNK48 - Fan Website" />
-
-    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:image:type" content="image/jpeg" />
+    
     <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
+    <meta name="twitter:description" content="เว็บไซต์แฟนคลับของ โมเน่ต์ - ภาริตา ริเริ่มกุล (Monet BNK48) ที่รวบรวมข้อมูลข่าวสาร ไฮไลท์ผลงาน อัปเดตกิจกรรม และช่องทางการติดตาม" />
     <meta name="twitter:image" content={resolvedSocialImage} />
-    <meta name="twitter:site" content="@monet_bnk48" />
-
-    <meta name="theme-color" content="#ffffff" id="themeColorMeta" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta
-      name="apple-mobile-web-app-status-bar-style"
-      content="black-translucent"
-    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="google-site-verification" content="nVWvhyIP60uv985UsYOMtwbOjNhvWyVoHaxPBdwnfzc" />
+    
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="apple-mobile-web-app-title" content="Monet Fans" />
+    <meta name="application-name" content="Monet Fans" />
+    <meta name="msapplication-TileColor" content="#FAF6EC">
+    <meta name="theme-color" content="#FAF6EC" id="themeColorMeta" />
+    <meta name="twitter:site" content="@wishyoubestyour" />
+    <meta name="twitter:creator" content="@wishyoubestyour" />
+    <script is:inline>
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({
+          "gtm.start": new Date().getTime(),
+          event: "gtm.js",
+        });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != "dataLayer" ? "&l=" + l : "";
+        if (j instanceof HTMLScriptElement) {
+          j.async = true;
+          j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+        }
+        if (f && f.parentNode) {
+          f.parentNode.insertBefore(j, f);
+        }
+      })(window, document, "script", "dataLayer", "GTM-NMJ8RVZ6");
+    </script>
+    <meta property="og:image:alt" content={title} />
 
     <script
       is:inline
@@ -245,129 +275,30 @@ const schemaData = {
         }
       })();
     </script>
-
-    <link rel="canonical" href={canonicalURL} />
-    <link rel="alternate" hreflang="th" href={canonicalURL} />
-
-    <link rel="icon" href="/logo/logo 32x32.png" sizes="32x32" />
-    <link rel="apple-touch-icon" href="/logo/apple-touch-icon.png" />
-    <link rel="manifest" href="/site.webmanifest" />
-
-    <title>{title}</title>
-
-    <meta
-      name="google-site-verification"
-      content="jvFIlDAIZOYAECa80icojQE5lQrIAYu9Mmgg_sKxLA8"
-    />
-
     <!-- Schema Markup for SEO -->
-    <script
-      is:inline
-      type="application/ld+json"
-      set:html={JSON.stringify(schemaData.personSchema)}
-    />
-    <script
-      is:inline
-      type="application/ld+json"
-      set:html={JSON.stringify(schemaData.websiteSchema)}
-    />
-    <script
-      is:inline
-      type="application/ld+json"
-      set:html={JSON.stringify(schemaData.breadcrumbSchema)}
-    />
-    <script
-      is:inline
-      type="application/ld+json"
-      set:html={JSON.stringify(schemaData.organizationSchema)}
-    />
+    <script type="application/ld+json" is:inline>
+  {JSON.stringify(schemaData.personSchema)}
+</script>
+<script type="application/ld+json" is:inline>
+  {JSON.stringify(schemaData.websiteSchema)}
+</script>
+<script type="application/ld+json" is:inline>
+  {JSON.stringify(schemaData.breadcrumbSchema)}
+</script>
+<script type="application/ld+json" is:inline>
+  {JSON.stringify(schemaData.organizationSchema)}
+</script>
+
 
     <!-- Preconnect & DNS Prefetch critical resources -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
+    <link rel="dns-prefetch" href="https://ekiockkaoxakovrdssva.storage.supabase.co" />
+    <link rel="preconnect" href="https://ekiockkaoxakovrdssva.storage.supabase.co" crossorigin />
 
-    <link
-      rel="preload"
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-      as="style"
-      crossorigin="anonymous"
-    />
-
-    <!-- Fonts -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Noto+Sans+Thai:wght@100..900&display=swap"
-      rel="stylesheet"
-      media="print"
-      onload="this.setAttribute('media','all')"
-      crossorigin="anonymous"
-    />
-    <noscript>
-      <link
-        href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Noto+Sans+Thai:wght@100..900&display=swap"
-        rel="stylesheet"
-        crossorigin="anonymous"
-      />
-    </noscript>
-
-    <!-- Bootstrap CSS -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      media="print"
-      onload="this?.setAttribute('media','all')"
-      crossorigin="anonymous"
-      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-    />
-    <noscript>
-      <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-        crossorigin="anonymous"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-      />
-    </noscript>
-
-    <!-- Font Awesome -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"
-      integrity="sha256-4rTIfo5GQTi/7UJqoyUJQKzxW8VN/YBH31+Cy+vTZj4="
-      crossorigin="anonymous"
-      media="print"
-      onload="this?.setAttribute('media','all')"
-    />
-    <noscript>
-      <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.1.0/css/all.min.css"
-        crossorigin="anonymous"
-      />
-    </noscript>
-
-    <!-- ✅ Google Tag Manager (ใช้ GTM แบบเดียว ไม่มี gtag ซ้ำ) -->
-    <script is:inline>
-      (function (w, d, s, l, i) {
-        w[l] = w[l] || [];
-        w[l].push({
-          "gtm.start": new Date().getTime(),
-          event: "gtm.js",
-        });
-        var f = d.getElementsByTagName(s)[0],
-          j = d.createElement(s),
-          dl = l != "dataLayer" ? "&l=" + l : "";
-        if (j instanceof HTMLScriptElement) {
-          j.async = true;
-          j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
-        }
-        if (f && f.parentNode) {
-          f.parentNode.insertBefore(j, f);
-        }
-      })(window, document, "script", "dataLayer", "GTM-NMJ8RVZ6");
-    </script>
-    <!-- End Google Tag Manager -->
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" crossorigin="anonymous" />
     <!-- ✅ THEME VARIABLES INJECTION -->
     {theme && (
       <style is:global set:html={`
@@ -408,7 +339,6 @@ const schemaData = {
 
     <slot name="head" />
   </head>
-
   <body>
     <!-- ✅ Google Tag Manager (noscript) -->
     <noscript>

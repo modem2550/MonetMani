@@ -1,5 +1,4 @@
 ---
-// ./pages/index.astro
 import MainLayout from "@/app/layouts/MainLayout.astro";
 import EventCard from "@/shared/components/EventCard.astro";
 import { getSupabase } from "@/services/supabase/server";
@@ -7,15 +6,10 @@ import { categorizeEvents } from "@/shared/utils/dateUtils";
 import { toEventSlug } from "@/shared/utils/slug";
 import type { Event } from "@/types/event";
 
-// ── Cache ──────────────────────────────────────────────────────────────────────
-const CACHE_TTL_SECONDS = 300;
-const STALE_TTL_SECONDS = 86400;
 Astro.response.headers.set(
   "Cache-Control",
-  `public, max-age=0, s-maxage=${CACHE_TTL_SECONDS}, stale-while-revalidate=${STALE_TTL_SECONDS}`,
+  "public, max-age=0, s-maxage=300, stale-while-revalidate=86400",
 );
-
-// ── Data fetching ─────────────────────────────────────────────────────────────
 
 const supabase = getSupabase();
 let allEvents: Event[] = [];
@@ -28,23 +22,16 @@ if (supabase) {
       .order("date", { ascending: false });
     allEvents = data ?? [];
   } catch (e) {
-    // Error fetching upcoming events — allEvents will remain empty.
-    // Log it so this doesn't fail silently in production.
-    console.error("[index.astro] Error fetching upcoming events:", e);
+    console.error("Error fetching upcoming events:", e);
   }
 }
 
-// ── Categorize & process ──────────────────────────────────────────────────────
+const { upcoming } = categorizeEvents(allEvents);
 
-const { upcoming, past } = categorizeEvents(allEvents);
-
-const withSlug = (event: Event) => ({
+const processedUpcoming = upcoming.map((event: Event) => ({
   ...event,
   generated_slug: toEventSlug(event.title, event.id),
-});
-
-const processedUpcoming = upcoming.map(withSlug);
-const processedPast = past.map(withSlug);
+}));
 
 const eventSchemas = processedUpcoming.slice(0, 10).map((evt) => ({
   "@context": "https://schema.org",
@@ -96,7 +83,6 @@ const eventSchemas = processedUpcoming.slice(0, 10).map((evt) => ({
     ))
   }
 
-  <!-- ── Hero ── -->
   <section id="home">
     <div class="hero-container">
       <img
@@ -136,7 +122,6 @@ const eventSchemas = processedUpcoming.slice(0, 10).map((evt) => ({
     </div>
   </section>
 
-  <!-- ── Events ── -->
   <section
     id="event"
     style={processedUpcoming.length === 0 ? "display:none" : ""}

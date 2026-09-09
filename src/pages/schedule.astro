@@ -6,21 +6,16 @@ import { categorizeEvents } from "@/shared/utils/dateUtils";
 import { toEventSlug } from "@/shared/utils/slug";
 import type { Event } from "@/types/event";
 
-// ── Cache ──────────────────────────────────────────────────────────────────────
-const CACHE_TTL_SECONDS = 300;
-const STALE_TTL_SECONDS = 86400;
 Astro.response.headers.set(
     "Cache-Control",
-    `public, max-age=0, s-maxage=${CACHE_TTL_SECONDS}, stale-while-revalidate=${STALE_TTL_SECONDS}`,
+    "public, max-age=0, s-maxage=300, stale-while-revalidate=86400",
 );
-
-// ── Data ──────────────────────────────────────────────────────────────────────
 
 const supabase = getSupabase();
 let rawEvents: Event[] = [];
 
-try {
-    if (supabase) {
+if (supabase) {
+    try {
         const [upcomingRes, pastRes] = await Promise.all([
             supabase
                 .from("events_upcoming")
@@ -32,25 +27,16 @@ try {
                 .order("date", { ascending: false }),
         ]);
 
-        if (upcomingRes.error)
-            console.error(
-                "[Schedule] Supabase upcoming error:",
-                upcomingRes.error,
-            );
-        if (pastRes.error)
-            console.error("[Schedule] Supabase past error:", pastRes.error);
+        if (upcomingRes.error) console.error("Upcoming events error:", upcomingRes.error);
+        if (pastRes.error) console.error("Past events error:", pastRes.error);
 
         rawEvents = [...(upcomingRes.data ?? []), ...(pastRes.data ?? [])];
+    } catch (e) {
+        console.error("Error fetching events:", e);
     }
-} catch (e) {
-    // Error fetching events — rawEvents will remain empty and the UI will show an empty state.
-    // Log it so this doesn't fail silently in production.
-    console.error("[schedule.astro] Error fetching events:", e);
 }
 
-// ── Process ───────────────────────────────────────────────────────────────────
-
-const eventsWithSlug = (rawEvents ?? []).map((event: Event) => ({
+const eventsWithSlug = rawEvents.map((event: Event) => ({
     ...event,
     generated_slug: toEventSlug(event.title, event.id),
 }));
