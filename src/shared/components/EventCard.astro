@@ -18,14 +18,10 @@ function resolveImages(event: Event) {
             event.image_urls?.medium ??
             event.image_url,
     );
-    const hover = safeImageUrl(
-        event.image_urls?.storage_large ?? event.image_urls?.large,
-        medium,
-    );
-    return { bg: medium, hover };
+    return { bg: medium };
 }
 
-const { bg: backgroundImage, hover: hoverImage } = resolveImages(event);
+const { bg: backgroundImage } = resolveImages(event);
 // event.link มาจาก DB เช่นกัน — ถ้าไม่ใช่ http(s) URL ที่ถูกต้อง จะไม่ render เป็น href
 // (ป้องกัน scheme อันตราย เช่น javascript:)
 const eventLink = safeHref(event.link);

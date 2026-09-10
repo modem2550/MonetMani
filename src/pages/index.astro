@@ -1,69 +1,22 @@
 ---
 import MainLayout from "@/app/layouts/MainLayout.astro";
 import EventCard from "@/shared/components/EventCard.astro";
-import { getSupabase } from "@/services/supabase/server";
+import { fetchUpcomingEvents } from "@/services/events";
 import { categorizeEvents } from "@/shared/utils/dateUtils";
-import { toEventSlug } from "@/shared/utils/slug";
-import type { Event } from "@/types/event";
+import { buildEventSchemas } from "@/shared/utils/schema";
 
 Astro.response.headers.set(
   "Cache-Control",
   "public, max-age=0, s-maxage=300, stale-while-revalidate=86400",
 );
 
-const supabase = getSupabase();
-let allEvents: Event[] = [];
-
-if (supabase) {
-  try {
-    const { data } = await supabase
-      .from("events_upcoming")
-      .select("*")
-      .order("date", { ascending: false });
-    allEvents = data ?? [];
-  } catch (e) {
-    console.error("Error fetching upcoming events:", e);
-  }
-}
-
-const { upcoming } = categorizeEvents(allEvents);
-
-const processedUpcoming = upcoming.map((event: Event) => ({
-  ...event,
-  generated_slug: toEventSlug(event.title, event.id),
-}));
-
-const eventSchemas = processedUpcoming.slice(0, 10).map((evt) => ({
-  "@context": "https://schema.org",
-  "@type": "Event",
-  name: evt.title || "Monet BNK48 Event",
-  startDate: evt.date,
-  ...(evt.end_date ? { endDate: evt.end_date } : {}),
-  description: evt.description || `${evt.title || "Event"} - Monet BNK48`,
-  location: {
-    "@type": "Place",
-    name: evt.location || "Thailand",
-    address: evt.location || "Thailand",
-  },
-  ...(evt.image_url || evt.image_urls?.large
-    ? { image: [evt.image_urls?.large || evt.image_url] }
-    : {}),
-  performer: {
-    "@type": "Person",
-    name: "Monet BNK48",
-    url: "https://monimonetfans.vercel.app/#person",
-  },
-  organizer: {
-    "@type": "Organization",
-    name: "BNK48",
-    url: "https://www.bnk48.com/",
-  },
-}));
+const { upcoming } = categorizeEvents(await fetchUpcomingEvents());
+const eventSchemas = buildEventSchemas(upcoming);
 ---
 
 <MainLayout
   title="Monet BNK48 - Fan Website"
-  description="ติดตามและเป็นกำลังใจให้กับ Monet BNK48 ภาริตา ริเริ่มกุล ผ่านเว็บไซต์แฟนคลับอย่างเป็นทางการ ข่าวสารล่าสุด ตารางงาน กิจกรรม และคลังรูปภาพ Monet BNK48"
+  description="เว็บไซต์แฟนคลับของ โมเน่ต์ - ภาริตา ริเริ่มกุล (Monet BNK48) ที่รวบรวมข้อมูลข่าวสาร ไฮไลท์ผลงาน อัปเดตกิจกรรม และช่องทางการติดตาม"
 >
   <link
     rel="preload"
@@ -107,7 +60,7 @@ const eventSchemas = processedUpcoming.slice(0, 10).map((evt) => ({
               target="_blank"
               rel="noopener noreferrer"
               class="editorial-link"
-              style="color: white!important"
+              style="color: var(--c-light)!important"
             >
               <span>Special Fan Project &mdash; Monet 3rd One Last Time</span>
               <i class="fa-solid fa-arrow-right ms-2" aria-hidden="true"></i>
@@ -122,10 +75,7 @@ const eventSchemas = processedUpcoming.slice(0, 10).map((evt) => ({
     </div>
   </section>
 
-  <section
-    id="event"
-    style={processedUpcoming.length === 0 ? "display:none" : ""}
-  >
+  <section id="event" style={upcoming.length === 0 ? "display:none" : ""}>
     <section class="container" id="upcoming-events-section" style="padding:0">
       <div class="mb-5">
         <p class="section-label">Events &amp; Schedule</p>
@@ -136,7 +86,7 @@ const eventSchemas = processedUpcoming.slice(0, 10).map((evt) => ({
         class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-4 flex-nowrap overflow-x-scroll"
       >
         {
-          processedUpcoming.map((event) => (
+          upcoming.map((event) => (
             <div
               class="col d-flex justify-content-center"
               data-event-date={event.date}

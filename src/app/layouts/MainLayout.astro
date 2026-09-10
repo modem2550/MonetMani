@@ -1,23 +1,14 @@
 ---
 // MainLayout.astro
-
-import type { ThemeConfig } from "@/types/event";
-
 import "@/shared/styles/main.scss";
 import "@/shared/styles/schedule.scss";
 import IconSprite from "@/shared/components/IconSprite.astro";
 import { Image } from "astro:assets";
 import logoWhite from "@/shared/assets/logo/WHITE.png";
 import logoBlack from "@/shared/assets/logo/BLACK.png";
+// Removed unused import of SITE_URL and buildPageSchema
 
-interface Props {
-  title?: string;
-  description?: string;
-  theme?: ThemeConfig;
-  forcedTheme?: "light" | "dark";
-  socialImage?: string;
-  noindex?: boolean;
-}
+// ImportMetaEnv interface removed as it was unused
 
 const {
   title = "Monet BNK48 - Fan Website",
@@ -50,124 +41,7 @@ const isForcedLightMode = forcedTheme === "light";
 const isForcedDarkMode = forcedTheme === "dark";
 
 // Schema Markup Data สำหรับ SEO
-const schemaData = {
-  personSchema: {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    "@id": "https://monimonetfans.vercel.app/#person",
-    name: "Monet BNK48",
-    alternateName: [
-      "Monet",
-      "โมเน่ต์",
-      "โมเน่ต์ BNK48",
-      "โมเน่ต์ บีเอ็นเค48",
-      "Manimonet BNK48",
-      "Parita Rirermkul",
-      "ภาริตา ริเริ่มกุล",
-    ],
-    description: "สมาชิกวง BNK48 (Idol, Artist, Actress)",
-    jobTitle: "Idol / Artist",
-    image: "https://monimonetfans.vercel.app/img/profile.webp",
-    worksFor: {
-      "@type": "Organization",
-      name: "BNK48",
-      url: "https://www.bnk48.com/",
-    },
-    memberOf: {
-      "@type": "Organization",
-      "@id": "https://monimonetfans.vercel.app/#organization",
-    },
-    url: "https://monimonetfans.vercel.app/",
-    sameAs: [
-      "https://www.instagram.com/monet.bnk48official/",
-      "https://www.facebook.com/bnk48official.monet",
-      "https://www.tiktok.com/@monet.bnk48official",
-    ],
-  },
-  websiteSchema: {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "@id": "https://monimonetfans.vercel.app/#website",
-    name: "Monet BNK48 - Fan Website",
-    "alternateName": ["Monet BNK48 Fan Website", "โมเน่ต์ BNK48 แฟนคลับ", "Monet Fansite"],    description: description,
-    url: "https://monimonetfans.vercel.app/",
-    inLanguage: "th-TH",
-    publisher: {
-      "@type": "Organization",
-      "name": "Monet BNK48 Fan Website",
-      "logo": "https://monimonetfans.vercel.app/logo/android-chrome-512x512.png"
-    },
-    potentialAction: {
-      "@type": "SearchAction",
-      
-      target: {
-        "@type": "EntryPoint",
-        urlTemplate:
-          "https://monimonetfans.vercel.app/?search={search_term_string}",
-      },
-      "query-input": "required name=search_term_string",
-    },
-    author: {
-      "@type": "Person",
-      name: "Monet BNK48 Fan Community",
-    },
-  },
-  breadcrumbSchema: {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: "https://monimonetfans.vercel.app/",
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Events",
-        item: "https://monimonetfans.vercel.app/#event",
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: "About",
-        item: "https://monimonetfans.vercel.app/#info",
-      },
-      {
-        "@type": "ListItem",
-        position: 4,
-        name: "Social",
-        item: "https://monimonetfans.vercel.app/#social",
-      },
-      {
-        "@type": "ListItem",
-        position: 5,
-        name: "Highlights",
-        item: "https://monimonetfans.vercel.app/#library",
-      },
-      {
-        "@type": "ListItem",
-        position: 6,
-        name: "Schedule",
-        item: "https://monimonetfans.vercel.app/schedule",
-      },
-    ],
-  },
-  organizationSchema: {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "@id": "https://monimonetfans.vercel.app/#organization",
-    name: "Monet - Parita Rirermkul Fansite",
-    url: "https://monimonetfans.vercel.app/",
-    logo: "https://monimonetfans.vercel.app/logo/android-chrome-512x512.png",
-    description: "Monet - Parita Rirermkul Fansite",
-    founder: {
-      "@type": "Person",
-      name: "Monet BNK48",
-    },
-  },
-};
+
 ---
 
 <!doctype html>
@@ -186,14 +60,13 @@ const schemaData = {
         rel="stylesheet" crossorigin="anonymous" />
     </noscript>
     <link rel="canonical" href="https://monimonetfans.vercel.app" />
-    <meta name="description" content="เว็บไซต์แฟนคลับของ โมเน่ต์ - ภาริตา ริเริ่มกุล (Monet BNK48) ที่รวบรวมข้อมูลข่าวสาร ไฮไลท์ผลงาน อัปเดตกิจกรรม และช่องทางการติดตาม" />
+    <meta name="description" content={description} />
     
     <meta name="robots" content={noindex ? "noindex, follow" : "index, follow"} />
 
     <meta property="og:locale" content="th_TH" />
     <meta property="og:title" content={title} />
-    <meta property="og:description" 
-      content="เว็บไซต์แฟนคลับของ โมเน่ต์ - ภาริตา ริเริ่มกุล (Monet BNK48) ที่รวบรวมข้อมูลข่าวสาร ไฮไลท์ผลงาน อัปเดตกิจกรรม และช่องทางการติดตาม" />
+    <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:site_name" content="Monet BNK48 - Fan Website" />
     <meta property="og:image" content={resolvedSocialImage} />

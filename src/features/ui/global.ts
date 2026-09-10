@@ -2,15 +2,7 @@
 // CONFIGURATION
 // ============================================================
 
-// Make this file a module so `declare global` is valid
-export { };
-
-declare global {
-  interface Window {
-    openPopup: () => void;
-    closePopup: () => void;
-  }
-}
+export {};
 
 type Theme = 'light' | 'dark';
 
@@ -40,10 +32,7 @@ const ANIMATION_CONFIG: AnimConfig = {
   duration: 500,
 };
 const THEME_STORAGE_KEY = 'monet-theme';
-const THEME_COLORS: Record<Theme, string> = {
-  light: '#ffffff',
-  dark: '#10131a',
-};
+// THEME_COLORS: reserved for future use (e.g. meta theme-color per theme)
 
 // ============================================================
 // THEME (LIGHT / DARK)
@@ -197,7 +186,7 @@ function initHeader(): void {
 
   // Toggle menu
   toggle.addEventListener('click', () => {
-    isMenuOpen ? closeMenu() : openMenu();
+    if (isMenuOpen) closeMenu(); else openMenu();
   });
 
   // Close menu on backdrop click
@@ -265,12 +254,7 @@ function initActiveNav(): void {
       if (href === '/schedule' && path.startsWith('/schedule')) {
         link.classList.add('is-active');
       }
-      if (href === '/planner' && path.startsWith('/planner')) {
-        link.classList.add('is-active');
-      }
-      if (href === '/game' && (path.startsWith('/game') || path.startsWith('/ranking'))) {
-        link.classList.add('is-active');
-      }
+
     });
     return;
   }

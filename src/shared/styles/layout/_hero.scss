@@ -19,11 +19,11 @@
   z-index: 1;
   // Left dark panel for legibility + bottom fade into next section
   background:
-    linear-gradient(90deg,
+    linear-gradient(235deg,
       rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 0.3) 55%,
+      rgba(0, 0, 0, 0.3) 100%,
       transparent 100%),
-    linear-gradient(0deg,
+    linear-gradient(10deg,
       color-mix(in srgb, var(--c-primary) 80%, black) 0%,
       transparent 35%);
 }

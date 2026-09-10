@@ -17,17 +17,5 @@ export interface Event {
         storage_large?: string;
         synced_at?: string;
     };
-    [key: string]: any;
-}
-
-export interface ThemeConfig {
-    primary?: string;
-    primaryHover?: string;
-    bg?: string;
-    surface?: string;
-    surfaceAlt?: string;
-    border?: string;
-    content?: string;
-    textMuted?: string;
-    primaryGradient?: string;
+    [key: string]: unknown;
 }
