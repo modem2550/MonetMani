@@ -6,7 +6,7 @@
     "dev": "astro dev --host",
     "build": "astro build",
     "preview": "astro preview",
-    "lint": "eslint src --ext .ts,.tsx,.astro",
+    "lint": "eslint src",
     "format": "prettier --write src"
   },
   "dependencies": {

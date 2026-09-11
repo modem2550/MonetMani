@@ -96,6 +96,7 @@
     // ── Page layout & UX ──────────────────────────────────────────────────────
     --page-max-width: 1200px;
     --section-pad-y: clamp(4.5rem, 9vw, 7rem);
+    --section-pad-x: clamp(1.5rem, 3vw, 4rem);
     /* more breathing room */
     --shadow-soft: 0 4px 28px color-mix(in srgb, var(--c-dark) 7%, transparent);
     --shadow-card:

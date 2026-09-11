@@ -8,9 +8,8 @@ const ICON_SPEAKER_ON = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64
 <MainLayout
     title="404 - Page Not Found | Monet BNK48"
     noindex={true}
-    forcedTheme="dark"
 >
-    <div class="page-404" style="background-color: #000000;">
+    <div class="page-404">
         <div class="wrap">
             <div class="info">
                 <h1 class="fs-12 fw-400 mb-2">404 PAGE NOT FOUND</h1>
@@ -86,19 +85,10 @@ const ICON_SPEAKER_ON = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64
 
 <style is:global>
     body {
-        background: #000000 !important;
+        background: var(--c-dark) !important;
     }
-
-    main {
-        background: #000000 !important;
-    }
-
     header {
         display: none;
-    }
-
-    .page-404{
-        background: #000000 !important;
     }
 
     .page-404__credit {

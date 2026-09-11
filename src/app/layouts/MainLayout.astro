@@ -7,7 +7,7 @@ import { Image } from "astro:assets";
 import logoWhite from "@/shared/assets/logo/WHITE.png";
 import logoBlack from "@/shared/assets/logo/BLACK.png";
 // Removed unused import of SITE_URL and buildPageSchema
-
+import { buildPageSchema } from "@/shared/utils/schema"; 
 // ImportMetaEnv interface removed as it was unused
 
 const {
@@ -41,6 +41,7 @@ const isForcedLightMode = forcedTheme === "light";
 const isForcedDarkMode = forcedTheme === "dark";
 
 // Schema Markup Data สำหรับ SEO
+const schemaData = buildPageSchema(description); 
 
 ---
 

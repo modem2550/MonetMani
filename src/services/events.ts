@@ -1,4 +1,4 @@
-import { getSupabaseAdmin } from '@/services/supabase/admin';
+import { getSupabaseAdmin } from '@/services/supabase/admin';   // ← เปลี่ยนจาก admin.ts
 import { toEventSlug } from '@/shared/utils/slug';
 import type { Event } from '@/types/event';
 
@@ -10,15 +10,16 @@ function withSlugs(events: Event[]): Event[] {
 }
 
 export async function fetchUpcomingEvents(): Promise<Event[]> {
-  const supabase = getSupabaseAdmin();
+  const supabase = getSupabaseAdmin();   // ← ใช้ anon client, คืนค่า null ได้ ไม่ throw
   if (!supabase) return [];
 
   try {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('events_upcoming')
       .select('*')
       .order('date', { ascending: false });
-    console.log('Fetched upcoming events count:', data?.length);
+
+    if (error) console.error('Upcoming events error:', error);
     return withSlugs(data ?? []);
   } catch (e) {
     console.error('Error fetching upcoming events:', e);
@@ -27,7 +28,7 @@ export async function fetchUpcomingEvents(): Promise<Event[]> {
 }
 
 export async function fetchAllEvents(): Promise<Event[]> {
-  const supabase = getSupabaseAdmin();
+  const supabase = getSupabaseAdmin();   // ← ใช้ anon client
   if (!supabase) return [];
 
   try {
