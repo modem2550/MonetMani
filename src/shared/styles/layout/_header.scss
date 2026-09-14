@@ -21,12 +21,12 @@
     color: var(--c-content);
     box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.08), 0 4px 24px rgba(0, 0, 0, 0.06);
 
-    .logo-img--on-hero {
+    .logo-img-on-hero {
       opacity: 0;
       pointer-events: none;
     }
 
-    .logo-img--on-bar {
+    .logo-img-on-bar {
       opacity: 1;
       pointer-events: auto;
     }
@@ -35,17 +35,17 @@
       background: var(--c-content);
     }
 
-    .theme-toggle-icon--moon {
+    .theme-toggle-icon-moon {
       color: var(--c-bg);
     }
 
     [data-theme="dark"] & {
-      .logo-img--on-hero {
+      .logo-img-on-hero {
         opacity: 1;
         pointer-events: auto;
       }
 
-      .logo-img--on-bar {
+      .logo-img-on-bar {
         opacity: 0;
         pointer-events: none;
       }
@@ -61,7 +61,7 @@
     }
   }
 
-  &:not(.active) .nav-desktop .nav-link--app:first-of-type {
+  &:not(.active) .nav-desktop .nav-link-app:first-of-type {
     border-left-color: color-mix(in srgb, var(--c-light) 35%, transparent);
   }
 }
@@ -82,7 +82,7 @@
   font-size: 14px;
   color: var(--c-light);
 
-  &__mark {
+  &-mark {
     position: relative;
     width: 40px;
     height: 40px;
@@ -101,7 +101,7 @@
   }
 }
 
-.logo-img--on-bar {
+.logo-img-on-bar {
   opacity: 0;
   pointer-events: none;
 }
@@ -123,7 +123,7 @@
   gap: 2px;
   row-gap: 4px;
 
-  .nav-link--app:first-of-type {
+  .nav-link-app:first-of-type {
     margin-left: 6px;
     padding-left: 14px;
     border-left: 1px solid color-mix(in srgb, currentColor 22%, transparent);
@@ -206,22 +206,22 @@
   }
 }
 
-.theme-toggle-icon--sun {
+.theme-toggle-icon-sun {
   transition-delay: 150ms;
 }
 
-.theme-toggle-icon--moon {
+.theme-toggle-icon-moon {
   transform: scale(0) rotate(-45deg);
   opacity: 0;
 }
 
-.theme-toggle-input:checked+.theme-toggle-icon--sun {
+.theme-toggle-input:checked+.theme-toggle-icon-sun {
   transform: rotate(360deg) scale(0);
   opacity: 0;
   transition-delay: 0ms;
 }
 
-.theme-toggle-input:checked~.theme-toggle-icon--moon {
+.theme-toggle-input:checked~.theme-toggle-icon-moon {
   transition-delay: 150ms;
   transform: scale(1) rotate(360deg);
   opacity: 1;

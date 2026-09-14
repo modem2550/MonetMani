@@ -1,0 +1,108 @@
+---
+// ./components/GelleryCard.astro
+import { formatEventDate } from "@/shared/utils/dateUtils";
+import {
+    safeHref,
+    safeImageUrl,
+    isSafeHttpUrl,
+} from "@/shared/utils/urlSafety";
+import type {
+    GelleryKind,
+    GelleryItem,
+    PhotoItem,
+    VideoItem,
+} from "@/types/gallery";
+
+interface Props {
+    kind: GelleryKind;
+    item: GelleryItem;
+    priority?: boolean;
+}
+
+const { kind, item, priority = false } = Astro.props;
+const isVideo = kind === "video";
+
+const photo = item as PhotoItem;
+const video = item as VideoItem;
+
+// thumbnail_url / link_post / url มาจาก Supabase โดยตรง — ตรวจสอบก่อน render เสมอ
+// ไม่มีไฟล์ /img/placeholder.jpg จริงในโปรเจกต์ จึงเช็คให้ชัดก่อน แล้วโชว์ fallback ว่างแทน
+// (ตามที่ตกลง ไม่ใส่ icon ใด ๆ บนรูป)
+// storage_url = รูปที่ sync เข้า Supabase Storage ของเราเองแล้ว (path /assets/images/...) ให้ใช้ก่อนเสมอถ้ามี
+// เพราะเร็วกว่า/ไม่ผูกกับลิงก์ต้นทางภายนอกที่อาจหายไปภายหลัง
+const displaySrc = item.storage_url ?? item.thumbnail_url;
+const hasThumbnail = isSafeHttpUrl(displaySrc);
+const thumbnail = hasThumbnail ? safeImageUrl(displaySrc) : null;
+const targetHref = isVideo ? safeHref(video.url) : safeHref(photo.link_post);
+
+const dateRaw =
+    item.date_event ?? (isVideo ? video.date_upload : photo.time_upload);
+const formattedDate = dateRaw ? formatEventDate(dateRaw) : "";
+
+// ตามที่ตกลง: photo และ video ใช้ "event" เป็น caption เดียวกันเสมอ (video ไม่ใช้ title)
+const caption = item.event ?? "";
+
+const ariaLabel = isVideo
+    ? `เปิดวิดีโอ${item.event ? `: ${item.event}` : ""} (เปิดในหน้าต่างใหม่)`
+    : `เปิดโพสต์รูปภาพ${item.event ? `: ${item.event}` : ""} (เปิดในหน้าต่างใหม่)`;
+---
+
+<article class="gellery-card" data-kind={kind}>
+    <a
+        href={targetHref ?? "#"}
+        class="gellery-card-link"
+        target={targetHref ? "_blank" : undefined}
+        rel={targetHref ? "noopener noreferrer" : undefined}
+        aria-disabled={targetHref ? undefined : "true"}
+        onclick={targetHref ? undefined : "event.preventDefault()"}
+        aria-label={ariaLabel}
+    >
+        <div class="gellery-card-media">
+            {
+                thumbnail ? (
+                    priority ? (
+                        // eager: โหลดทันที มี src จริง
+                        <img
+                            src={thumbnail}
+                            alt=""
+                            aria-hidden="true"
+                            loading="eager"
+                            decoding="async"
+                            class="gellery-card-img"
+                        />
+                    ) : (
+                        // lazy: ยังไม่โหลด รอให้ JS swap data-src → src ตอนเข้า viewport
+                        <img
+                            data-src={thumbnail}
+                            alt=""
+                            aria-hidden="true"
+                            decoding="async"
+                            class="gellery-card-img"
+                        />
+                    )
+                ) : (
+                    <div class="gellery-card-fallback" aria-hidden="true" />
+                )
+            }
+
+            {
+                (item.place || formattedDate) && (
+                    <div class="gellery-card-overlay">
+                        {item.place && (
+                            <span class="gellery-card-overlay-line">
+                                {item.place}
+                            </span>
+                        )}
+                        {formattedDate && (
+                            <span class="gellery-card-overlay-line">
+                                {formattedDate}
+                            </span>
+                        )}
+                    </div>
+                )
+            }
+        </div>
+
+        {caption && <p class="gellery-card-caption">{caption}</p>}
+    </a>
+</article>

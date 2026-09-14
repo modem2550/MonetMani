@@ -5,7 +5,7 @@ import type { Event } from '@/types/event';
 function withSlugs(events: Event[]): Event[] {
   return events.map((event) => ({
     ...event,
-    generated_slug: toEventSlug(event.title, event.id),
+    generated_slug: toEventSlug(event.event, event.id),
   }));
 }
 

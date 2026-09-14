@@ -70,7 +70,7 @@ const eventSchemas = buildEventSchemas(upcoming);
       </div>
       <div class="hero-scroll-hint" aria-hidden="true">
         <span>Scroll</span>
-        <span class="hero-scroll-hint__line"></span>
+        <span class="hero-scroll-hint-line"></span>
       </div>
     </div>
   </section>
@@ -120,7 +120,7 @@ const eventSchemas = buildEventSchemas(upcoming);
       <div class="info-grid">
         <!-- Left: portrait -->
         <div class="info-portrait slide-right">
-          <div class="info-portrait__img-wrap">
+          <div class="info-portrait-img-wrap">
             <img
               alt="Monet BNK48 — profile"
               loading="lazy"
@@ -129,7 +129,7 @@ const eventSchemas = buildEventSchemas(upcoming);
               height="1080"
             />
           </div>
-          <div class="info-portrait__socials d-flex gap-3">
+          <div class="info-portrait-socials d-flex gap-3">
             <a
               href="https://www.facebook.com/monet.bnk48official"
               aria-label="Facebook"
@@ -194,7 +194,7 @@ const eventSchemas = buildEventSchemas(upcoming);
                 ตำแหน่ง <strong>Center</strong> จากการเลือกตั้ง BNK48 &amp; CGM48
                 Required Hour ในเพลง <a
                   href="https://music.apple.com/th/album/rumor-single/1801922426"
-                  >Rumor</a
+                  class="highlight-link">Rumor</a
                 >
               </li>
               <li>
@@ -254,10 +254,10 @@ const eventSchemas = buildEventSchemas(upcoming);
             },
           ].map(({ src, alt, caption }) => (
             <div class="info-media-card slide-right col">
-              <div class="info-media-card__img">
+              <div class="info-media-card-img">
                 <img src={src} alt={alt} loading="lazy" />
               </div>
-              <p class="info-media-card__caption">{caption}</p>
+              <p class="info-media-card-caption">{caption}</p>
             </div>
           ))
         }
@@ -443,7 +443,7 @@ const eventSchemas = buildEventSchemas(upcoming);
 
       <!-- Main video — featured split layout -->
       <div
-        class="slide-right mb-5 youtube-block youtube-block--featured"
+        class="slide-right mb-5 youtube-block youtube-block-featured"
         data-video-id="VlVJWXXZCOQ"
       >
         <div class="info">

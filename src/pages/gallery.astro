@@ -1,0 +1,636 @@
+---
+import MainLayout from "@/app/layouts/MainLayout.astro";
+import GelleryCard from "@/shared/components/GelleryCard.astro";
+import {
+    fetchPhotos,
+    fetchVideos,
+    fetchPhotosCount,
+    fetchVideosCount,
+    GALLERY_PAGE_SIZE,
+} from "@/services/gallery";
+import { getYearLabel } from "@/shared/utils/dateUtils";
+import type {
+    GelleryKind,
+    GelleryItem,
+    PhotoItem,
+    VideoItem,
+} from "@/types/gallery";
+
+Astro.response.headers.set(
+    "Cache-Control",
+    "public, max-age=0, s-maxage=300, stale-while-revalidate=86400",
+);
+
+// ── โหลดหน้าแรกของแต่ละแท็บ (ที่เหลือโหลดเพิ่มด้วย infinite scroll ฝั่ง client) ──
+const [photosPage, videosPage, photosCount, videosCount] = await Promise.all([
+    fetchPhotos(0, GALLERY_PAGE_SIZE),
+    fetchVideos(0, GALLERY_PAGE_SIZE),
+    fetchPhotosCount(),
+    fetchVideosCount(),
+]);
+
+const { items: photos, hasMore: photosHasMore } = photosPage;
+const { items: videos, hasMore: videosHasMore } = videosPage;
+
+// ── จัดกลุ่มเป็นช่วงปี ตามลำดับที่ได้มา (เรียงตามวันที่อยู่แล้ว ไม่ได้จัดกลุ่มตาม event) ──
+interface YearGroup {
+    year: string;
+    items: GelleryItem[];
+}
+
+function resolveDateRaw(item: GelleryItem, kind: GelleryKind): string | null {
+    if (item.date_event) return item.date_event;
+    return kind === "video"
+        ? ((item as VideoItem).date_upload ?? null)
+        : ((item as PhotoItem).time_upload ?? null);
+}
+
+function groupByYear(items: GelleryItem[], kind: GelleryKind): YearGroup[] {
+    const groups: YearGroup[] = [];
+    for (const item of items) {
+        const year = getYearLabel(resolveDateRaw(item, kind));
+        const last = groups[groups.length - 1];
+        if (last && last.year === year) {
+            last.items.push(item);
+        } else {
+            groups.push({ year, items: [item] });
+        }
+    }
+    return groups;
+}
+
+const photoGroups = groupByYear(photos, "photo");
+const videoGroups = groupByYear(videos, "video");
+
+let photoPriorityCount = 0;
+let videoPriorityCount = 0;
+---
+
+<MainLayout
+    title="Monet BNK48 - Gallery"
+    description="รวมรูปภาพและวิดีโอ โมเน่ต์ BNK48"
+>
+    <div class="gallery-page container">
+        <!-- ── Page header ── -->
+        <header class="gallery-header">
+            <p class="section-label">Media Library</p>
+            <h1 class="gallery-page-title">
+                Monét's <span class="gallery-title-sub">Gallery</span>
+            </h1>
+            <p class="gallery-page-subtitle">
+                รวมรูปภาพและวิดีโอไฮไลท์ของโมเน่ต์ BNK48 ( Credit <a
+                    class="highlight-link"
+                    href="https://x.com/stratusfoto"
+                    >stratusfotomoments.💭
+                </a> )
+            </p>
+        </header>
+
+        <!-- ── Tabs ── -->
+        <div class="gallery-tabs" role="tablist" aria-label="เลือกประเภทสื่อ">
+            <button
+                type="button"
+                id="gallery-tab-photo"
+                class="gallery-tab is-active"
+                role="tab"
+                aria-selected="true"
+                aria-controls="gallery-panel-photo"
+                data-tab="photo"
+            >
+                Photo
+                <span class="gallery-tab-count">{photosCount}</span>
+            </button>
+            <button
+                type="button"
+                id="gallery-tab-video"
+                class="gallery-tab"
+                role="tab"
+                aria-selected="false"
+                aria-controls="gallery-panel-video"
+                data-tab="video"
+            >
+                Video
+                <span class="gallery-tab-count">{videosCount}</span>
+            </button>
+            <span class="gallery-tabs-indicator" aria-hidden="true"></span>
+        </div>
+
+        <!-- ── Panels ── -->
+        <div class="gallery-viewport">
+            <section
+                id="gallery-panel-photo"
+                class="gallery-panel"
+                data-panel="photo"
+                data-offset={photos.length}
+                data-has-more={String(photosHasMore)}
+                data-loading="false"
+                role="tabpanel"
+                aria-labelledby="gallery-tab-photo"
+            >
+                {
+                    photos.length > 0 ? (
+                        <div class="gallery-timeline" data-timeline="photo">
+                            {photoGroups.map((group) => (
+                                <div
+                                    class="gallery-year-group"
+                                    data-year={group.year}
+                                >
+                                    <div class="gallery-year-label">
+                                        <span>{group.year}</span>
+                                    </div>
+                                    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3 g-md-4">
+                                        {group.items.map((photo) => {
+                                            const isPriority =
+                                                photoPriorityCount < 8;
+                                            photoPriorityCount += 1;
+                                            return (
+                                                <div class="col">
+                                                    <GelleryCard
+                                                        kind="photo"
+                                                        item={photo}
+                                                        priority={isPriority}
+                                                    />
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p class="gallery-empty">ยังไม่มีรูปภาพในขณะนี้</p>
+                    )
+                }
+                <div
+                    class="gallery-sentinel"
+                    data-sentinel="photo"
+                    aria-hidden="true"
+                >
+                </div>
+                <p
+                    class="gallery-loading"
+                    data-loading-indicator="photo"
+                    hidden
+                >
+                    กำลังโหลดเพิ่มเติม…
+                </p>
+            </section>
+
+            <section
+                id="gallery-panel-video"
+                class="gallery-panel"
+                data-panel="video"
+                data-offset={videos.length}
+                data-has-more={String(videosHasMore)}
+                data-loading="false"
+                role="tabpanel"
+                aria-labelledby="gallery-tab-video"
+                hidden
+            >
+                {
+                    videos.length > 0 ? (
+                        <div class="gallery-timeline" data-timeline="video">
+                            {videoGroups.map((group) => (
+                                <div
+                                    class="gallery-year-group"
+                                    data-year={group.year}
+                                >
+                                    <div class="gallery-year-label">
+                                        <span>{group.year}</span>
+                                    </div>
+                                    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3 g-md-4">
+                                        {group.items.map((video) => {
+                                            const isPriority =
+                                                videoPriorityCount < 6;
+                                            videoPriorityCount += 1;
+                                            return (
+                                                <div class="col">
+                                                    <GelleryCard
+                                                        kind="video"
+                                                        item={video}
+                                                        priority={isPriority}
+                                                    />
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p class="gallery-empty">ยังไม่มีวิดีโอในขณะนี้</p>
+                    )
+                }
+                <div
+                    class="gallery-sentinel"
+                    data-sentinel="video"
+                    aria-hidden="true"
+                >
+                </div>
+                <p
+                    class="gallery-loading"
+                    data-loading-indicator="video"
+                    hidden
+                >
+                    กำลังโหลดเพิ่มเติม…
+                </p>
+            </section>
+        </div>
+
+        <!-- ── Back home ── -->
+        <div class="my-5">
+            <a class="editorial-link" href="/">
+                <i class="fa-solid fa-arrow-left me-1" aria-hidden="true"></i>
+                กลับหน้าหลัก
+            </a>
+        </div>
+    </div>
+</MainLayout>
+
+<style>
+    .container {
+        max-width: 1320px !important;
+        margin: 0 auto;
+    }
+</style>
+
+<script>
+    // ============================================================
+    // GALLERY — Photo / Video tabs + per-card reveal + infinite scroll
+    // ============================================================
+
+    type TabKey = "photo" | "video";
+
+    interface RawGelleryItem {
+        id: number;
+        event?: string | null;
+        place?: string | null;
+        thumbnail_url?: string | null;
+        storage_url?: string | null; // รูปที่ sync เข้า Supabase Storage แล้ว — ใช้ก่อน thumbnail_url เสมอถ้ามี
+        date_event?: string | null;
+        time_upload?: string | null; // photo only
+        date_upload?: string | null; // video only
+        link_post?: string; // photo only
+        url?: string; // video only
+        title?: string; // video only (ไม่ใช้เป็น caption แล้ว)
+    }
+
+    const PAGE_SIZE = 24;
+    const MONTHS = [
+        "JAN",
+        "FEB",
+        "MAR",
+        "APR",
+        "MAY",
+        "JUN",
+        "JUL",
+        "AUG",
+        "SEP",
+        "OCT",
+        "NOV",
+        "DEC",
+    ];
+    const ROW_CLASS: Record<TabKey, string> = {
+        photo: "row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3 g-md-4",
+        video: "row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3 g-md-4",
+    };
+
+    const tabs = document.querySelectorAll<HTMLButtonElement>(".gallery-tab");
+    const indicator = document.querySelector<HTMLElement>(
+        ".gallery-tabs-indicator",
+    );
+    const panels: Record<TabKey, HTMLElement | null> = {
+        photo: document.getElementById("gallery-panel-photo"),
+        video: document.getElementById("gallery-panel-video"),
+    };
+
+    let activeKey: TabKey = "photo";
+
+    // ── Tabs (แค่ show/hide เฉย ๆ — animation จริงอยู่ที่ระดับการ์ด) ──────────
+    function setActiveTabUI(key: TabKey): void {
+        tabs.forEach((tab) => {
+            const isActive = tab.dataset.tab === key;
+            tab.classList.toggle("is-active", isActive);
+            tab.setAttribute("aria-selected", String(isActive));
+        });
+
+        const activeTab = document.querySelector<HTMLElement>(
+            `.gallery-tab[data-tab="${key}"]`,
+        );
+        if (activeTab && indicator) {
+            indicator.style.width = `${activeTab.offsetWidth}px`;
+            indicator.style.transform = `translateX(${activeTab.offsetLeft}px)`;
+        }
+    }
+
+    // Lock ป้องกันการกดซ้อนระหว่าง animation
+    let isSwitching = false;
+
+    function switchTab(key: TabKey): void {
+        if (key === activeKey || isSwitching) return;
+        const current = panels[activeKey];
+        const next = panels[key];
+        if (!current || !next) return;
+
+        isSwitching = true;
+
+        // ดึงการ์ดที่มองเห็นอยู่ในปัจจุบันของ panel เดิม
+        const currentCards = Array.from(
+            current.querySelectorAll<HTMLElement>(".gellery-card.is-visible"),
+        );
+
+        // เวลาออก 400ms + stagger 100ms = 500ms และเว้นว่าง (pause) 300ms (0.3s) ก่อนคลิปเปิด
+        const EXIT_DURATION_MS = 500;
+        const PAUSE_MS = 300;
+        const TOTAL_WAIT_MS =
+            currentCards.length > 0 ? EXIT_DURATION_MS + PAUSE_MS : 0;
+
+        // 1. Clip-path การ์ดใน view ออก (ขาไป: ล่างขึ้นบน)
+        if (currentCards.length > 0) {
+            currentCards.forEach((card, idx) => {
+                card.style.transitionDelay = `${Math.min(idx, 5) * 20}ms`;
+                card.classList.remove("is-visible");
+                card.classList.add("is-exiting");
+            });
+        }
+
+        // 2. รอจน clip-path ออกเสร็จ + เว้นว่าง 0.3s แล้วค่อยสลับ section และ clip-path เปิดการ์ดใหม่ (ขากลับ: ล่างขึ้นบน)
+        setTimeout(() => {
+            current.hidden = true;
+            next.hidden = false;
+
+            activeKey = key;
+            setActiveTabUI(key);
+
+            // เคลียร์ state ของการ์ดเดิม
+            currentCards.forEach((card) => {
+                card.style.transitionDelay = "";
+                card.classList.remove("is-exiting");
+            });
+
+            // Observe การ์ดใน panel ใหม่ เพื่อ clip-path เปิดเข้าเมื่อพร้อม
+            revealStep = 0;
+            observeCards(next);
+
+            // ปลดล็อคหลังจาก animation เปิดชุดใหม่เสร็จ
+            setTimeout(() => {
+                isSwitching = false;
+            }, 500);
+        }, TOTAL_WAIT_MS);
+    }
+
+    tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+            const key = tab.dataset.tab as TabKey | undefined;
+            if (key) switchTab(key);
+        });
+    });
+
+    setActiveTabUI("photo");
+
+    // ── Per-card reveal: รอรูปโหลดเสร็จก่อนค่อย animate ────────────────────
+    let revealStep = 0;
+
+    function revealCard(card: HTMLElement): void {
+        card.style.transitionDelay = `${(revealStep % 8) * 45}ms`;
+        card.classList.add("is-visible");
+        revealStep += 1;
+    }
+
+    function waitForImageThenReveal(card: HTMLElement): void {
+        const img = card.querySelector<HTMLImageElement>(
+            "img.gellery-card-img",
+        );
+        if (!img) {
+            revealCard(card);
+            return;
+        }
+
+        const dataSrc = img.dataset.src;
+
+        if (dataSrc) {
+            // lazy card: swap data-src → src แล้วรอโหลด
+            const doReveal = () => revealCard(card);
+            img.addEventListener("load", doReveal, { once: true });
+            img.addEventListener("error", doReveal, { once: true });
+            img.src = dataSrc;
+            delete img.dataset.src;
+        } else {
+            // eager card: รูปโหลดแล้วหรือกำลังโหลดอยู่
+            const doReveal = () => revealCard(card);
+            img.addEventListener("load", doReveal, { once: true });
+            img.addEventListener("error", doReveal, { once: true });
+            if (img.complete) {
+                img.removeEventListener("load", doReveal);
+                img.removeEventListener("error", doReveal);
+                doReveal();
+            }
+        }
+    }
+
+    const revealObserver = new IntersectionObserver(
+        (entries) => {
+            entries.forEach((entry) => {
+                if (!entry.isIntersecting) return;
+                const card = entry.target as HTMLElement;
+                revealObserver.unobserve(card);
+                waitForImageThenReveal(card);
+            });
+        },
+        { rootMargin: "0px 0px 0px 0px", threshold: 0 },
+    );
+
+    function observeCards(root: ParentNode): void {
+        root.querySelectorAll<HTMLElement>(
+            ".gellery-card:not(.is-visible)",
+        ).forEach((card) => {
+            revealObserver.observe(card);
+        });
+    }
+
+    // รอให้ browser layout เสร็จก่อนเริ่ม observe
+    requestAnimationFrame(() => observeCards(document));
+
+    // ── Infinite scroll (lazy load ทีละหน้า แทนการโหลดทั้งหมดครั้งเดียว) ────
+    function getYear(item: RawGelleryItem, kind: TabKey): string {
+        const raw =
+            item.date_event ??
+            (kind === "video" ? item.date_upload : item.time_upload);
+        if (!raw) return "ไม่ระบุปี";
+        const d = new Date(String(raw).replace(/-/g, "/").split("T")[0]);
+        return isNaN(d.getTime()) ? "ไม่ระบุปี" : String(d.getFullYear());
+    }
+
+    function formatDate(raw?: string | null): string {
+        if (!raw) return "";
+        const d = new Date(String(raw).replace(/-/g, "/").split("T")[0]);
+        if (isNaN(d.getTime())) return "";
+        return `${String(d.getDate()).padStart(2, "0")} ${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+    }
+
+    function escapeHtml(value: string): string {
+        return value
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+    }
+
+    function isSafeUrl(value: unknown): value is string {
+        if (typeof value !== "string" || value.trim() === "") return false;
+        if (value.startsWith("/")) return true;
+        try {
+            return ["http:", "https:"].includes(new URL(value).protocol);
+        } catch {
+            return false;
+        }
+    }
+
+    function buildCardHtml(kind: TabKey, item: RawGelleryItem): string {
+        const isVideo = kind === "video";
+        const rawHref = isVideo ? item.url : item.link_post;
+        const hasHref = isSafeUrl(rawHref);
+        const dateRaw =
+            item.date_event ?? (isVideo ? item.date_upload : item.time_upload);
+        const formattedDate = formatDate(dateRaw);
+        const caption = item.event ?? "";
+        const ariaLabel = isVideo
+            ? `เปิดวิดีโอ${item.event ? `: ${item.event}` : ""} (เปิดในหน้าต่างใหม่)`
+            : `เปิดโพสต์รูปภาพ${item.event ? `: ${item.event}` : ""} (เปิดในหน้าต่างใหม่)`;
+
+        const displaySrc = item.storage_url ?? item.thumbnail_url;
+        const hasThumb = isSafeUrl(displaySrc);
+        const media = hasThumb
+            ? `<img data-src="${escapeHtml(displaySrc as string)}" alt="" aria-hidden="true" decoding="async" class="gellery-card-img" />`
+            : `<div class="gellery-card-fallback" aria-hidden="true"></div>`;
+
+        const overlayLines = [
+            item.place
+                ? `<span class="gellery-card-overlay-line">${escapeHtml(item.place)}</span>`
+                : "",
+            formattedDate
+                ? `<span class="gellery-card-overlay-line">${escapeHtml(formattedDate)}</span>`
+                : "",
+        ].join("");
+        const overlay = overlayLines
+            ? `<div class="gellery-card-overlay">${overlayLines}</div>`
+            : "";
+        const captionHtml = caption
+            ? `<p class="gellery-card-caption">${escapeHtml(caption)}</p>`
+            : "";
+
+        const linkAttrs = hasHref
+            ? `href="${escapeHtml(rawHref as string)}" target="_blank" rel="noopener noreferrer"`
+            : `href="#" aria-disabled="true" onclick="event.preventDefault()"`;
+
+        return `<div class="col"><article class="gellery-card" data-kind="${kind}"><a ${linkAttrs} class="gellery-card-link" aria-label="${escapeHtml(ariaLabel)}"><div class="gellery-card-media">${media}${overlay}</div>${captionHtml}</a></article></div>`;
+    }
+
+    function appendItems(
+        timeline: HTMLElement,
+        kind: TabKey,
+        items: RawGelleryItem[],
+    ): void {
+        let lastGroup = timeline.querySelector<HTMLElement>(
+            ".gallery-year-group:last-of-type",
+        );
+        let lastYear = lastGroup?.dataset.year ?? null;
+        let lastRow = lastGroup?.querySelector<HTMLElement>(".row") ?? null;
+
+        items.forEach((item) => {
+            const year = getYear(item, kind);
+            if (year !== lastYear || !lastRow) {
+                const group = document.createElement("div");
+                group.className = "gallery-year-group";
+                group.dataset.year = year;
+                group.innerHTML = `<div class="gallery-year-label"><span>${escapeHtml(year)}</span></div><div class="${ROW_CLASS[kind]}"></div>`;
+                timeline.appendChild(group);
+                lastGroup = group;
+                lastRow = group.querySelector<HTMLElement>(".row");
+                lastYear = year;
+            }
+            lastRow?.insertAdjacentHTML("beforeend", buildCardHtml(kind, item));
+        });
+    }
+
+    async function loadMore(kind: TabKey): Promise<void> {
+        const panel = panels[kind];
+        if (!panel) return;
+        if (
+            panel.dataset.loading === "true" ||
+            panel.dataset.hasMore === "false"
+        )
+            return;
+
+        const timeline = panel.querySelector<HTMLElement>(
+            `[data-timeline="${kind}"]`,
+        );
+        const loadingEl = panel.querySelector<HTMLElement>(
+            `[data-loading-indicator="${kind}"]`,
+        );
+        const offset = Number(panel.dataset.offset ?? "0");
+
+        panel.dataset.loading = "true";
+        if (loadingEl) loadingEl.hidden = false;
+
+        try {
+            const endpoint =
+                kind === "photo"
+                    ? "/api/gallery/photos"
+                    : "/api/gallery/videos";
+            const res = await fetch(
+                `${endpoint}?offset=${offset}&limit=${PAGE_SIZE}`,
+            );
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = (await res.json()) as {
+                items?: RawGelleryItem[];
+                hasMore?: boolean;
+            };
+            const items = Array.isArray(data.items) ? data.items : [];
+
+            if (items.length > 0) {
+                let timelineEl = timeline;
+                if (!timelineEl) {
+                    // กรณีไม่มีข้อมูลเลยตอนแรก (แสดง empty state ไว้) แล้วเพิ่งมีข้อมูลมาทีหลัง
+                    const emptyEl =
+                        panel.querySelector<HTMLElement>(".gallery-empty");
+                    emptyEl?.remove();
+                    timelineEl = document.createElement("div");
+                    timelineEl.className = "gallery-timeline";
+                    timelineEl.dataset.timeline = kind;
+                    panel.insertBefore(
+                        timelineEl,
+                        panel.querySelector("[data-sentinel]"),
+                    );
+                }
+                appendItems(timelineEl, kind, items);
+                observeCards(timelineEl);
+            }
+
+            panel.dataset.offset = String(offset + items.length);
+            panel.dataset.hasMore = String(Boolean(data.hasMore));
+        } catch (e) {
+            console.error("โหลดข้อมูลแกลเลอรีเพิ่มเติมไม่สำเร็จ:", e);
+        } finally {
+            panel.dataset.loading = "false";
+            if (loadingEl) loadingEl.hidden = true;
+        }
+    }
+
+    const sentinelObserver = new IntersectionObserver(
+        (entries) => {
+            entries.forEach((entry) => {
+                if (!entry.isIntersecting) return;
+                const kind = (entry.target as HTMLElement).dataset.sentinel as
+                    TabKey | undefined;
+                if (kind) loadMore(kind);
+            });
+        },
+        { rootMargin: "600px 0px" },
+    );
+
+    document.querySelectorAll<HTMLElement>("[data-sentinel]").forEach((el) => {
+        sentinelObserver.observe(el);
+    });
+</script>

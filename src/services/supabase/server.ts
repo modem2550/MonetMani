@@ -14,7 +14,7 @@ export function getSupabase(): SupabaseClient | null {
   if (supabaseInstance) return supabaseInstance;
 
   const url = import.meta.env.SUPABASE_URL;
-  const key = import.meta.env.SUPABASE_ANON_KEY;
+  const key = import.meta.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!url || !key) {
     // Supabase environment variables not found — returning null as fallback

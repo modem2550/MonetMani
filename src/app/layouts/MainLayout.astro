@@ -2,6 +2,7 @@
 // MainLayout.astro
 import "@/shared/styles/main.scss";
 import "@/shared/styles/schedule.scss";
+import "@/shared/styles/gallery.scss";
 import IconSprite from "@/shared/components/IconSprite.astro";
 import { Image } from "astro:assets";
 import logoWhite from "@/shared/assets/logo/WHITE.png";
@@ -155,18 +156,11 @@ const schemaData = buildPageSchema(description);
       })();
     </script>
     <!-- Schema Markup for SEO -->
-    <script type="application/ld+json" is:inline>
-  {JSON.stringify(schemaData.personSchema)}
-</script>
-<script type="application/ld+json" is:inline>
-  {JSON.stringify(schemaData.websiteSchema)}
-</script>
-<script type="application/ld+json" is:inline>
-  {JSON.stringify(schemaData.breadcrumbSchema)}
-</script>
-<script type="application/ld+json" is:inline>
-  {JSON.stringify(schemaData.organizationSchema)}
-</script>
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(schemaData.personSchema)} />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(schemaData.websiteSchema)} />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(schemaData.breadcrumbSchema)} />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(schemaData.organizationSchema)} />
+
 
 
     <!-- Preconnect & DNS Prefetch critical resources -->
@@ -242,18 +236,18 @@ const schemaData = buildPageSchema(description);
           class="logo-brand d-flex align-items-center"
           aria-label="Monet BNK48 — Home"
         >
-          <span class="logo-brand__mark" aria-hidden="true">
+          <span class="logo-brand-mark" aria-hidden="true">
             <Image
               src={logoWhite}
               alt=""
-              class="logo-img logo-img--on-hero"
+              class="logo-img logo-img-on-hero"
               width={100}
               loading="eager"
             />
             <Image
               src={logoBlack}
               alt=""
-              class="logo-img logo-img--on-bar"
+              class="logo-img logo-img-on-bar"
               width={100}
               loading="eager"
             />
@@ -276,6 +270,10 @@ const schemaData = buildPageSchema(description);
             <i class="fa-solid fa-calendar nav-icon" aria-hidden="true"></i>
             Schedule
           </a>
+          <a href="/gallery" class="nav-link nav-link--app">
+            <i class="fa-solid fa-images nav-icon" aria-hidden="true"></i>
+            Gallery
+          </a>
 
           {!forcedTheme && (
             <label class="theme-toggle-v2">
@@ -285,7 +283,7 @@ const schemaData = buildPageSchema(description);
                 data-theme-toggle
                 aria-label="Switch theme"
               />
-              <div class="theme-toggle-icon theme-toggle-icon--sun">
+              <div class="theme-toggle-icon theme-toggle-icon-sun">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
@@ -296,7 +294,7 @@ const schemaData = buildPageSchema(description);
                   ></path>
                 </svg>
               </div>
-              <div class="theme-toggle-icon theme-toggle-icon--moon">
+              <div class="theme-toggle-icon theme-toggle-icon-moon">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
@@ -323,7 +321,7 @@ const schemaData = buildPageSchema(description);
                 data-theme-toggle
                 aria-label="Switch theme"
               />
-              <div class="theme-toggle-icon theme-toggle-icon--sun">
+              <div class="theme-toggle-icon theme-toggle-icon-sun">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
@@ -334,7 +332,7 @@ const schemaData = buildPageSchema(description);
                   ></path>
                 </svg>
               </div>
-              <div class="theme-toggle-icon theme-toggle-icon--moon">
+              <div class="theme-toggle-icon theme-toggle-icon-moon">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
@@ -389,6 +387,10 @@ const schemaData = buildPageSchema(description);
         <a href="/schedule" class="nav-link-mobile d-flex align-items-center">
           <i class="fa-solid fa-calendar nav-icon" aria-hidden="true"></i>
           <span>Schedule</span>
+        </a>
+        <a href="/gallery" class="nav-link-mobile d-flex align-items-center">
+          <i class="fa-solid fa-images nav-icon" aria-hidden="true"></i>
+          <span>Gallery</span>
         </a>
       </nav>
 

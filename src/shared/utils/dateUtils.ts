@@ -44,6 +44,18 @@ export function formatEventDate(
   return `${s.day}–${e.day} ${s.month} ${s.year}`;
 }
 
+// ── Gallery helpers ───────────────────────────────────────────────────────────
+
+/**
+ * คืนค่าปี (พ.ศ./ค.ศ. ตามค่าดิบใน DB) ของวันที่ที่ให้มา ใช้สำหรับทำ
+ * sticky year divider ใน gallery — ทั้งฝั่ง server (Astro) และฝั่ง client (fetch เพิ่ม)
+ * ต้องคำนวณด้วยตรรกะเดียวกันเป๊ะ ๆ เพื่อไม่ให้ปีเพี้ยนตอน infinite scroll
+ */
+export function getYearLabel(dateString?: string | null): string {
+  const date = dateString ? parseDate(dateString) : null;
+  return date ? String(date.getFullYear()) : 'ไม่ระบุปี';
+}
+
 // ── Status helpers ────────────────────────────────────────────────────────────
 
 function startOfToday(): number {

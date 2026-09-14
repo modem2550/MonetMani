@@ -4,7 +4,7 @@ import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
   site: 'https://monimonetfans.vercel.app',
-  output: 'server',
+  output: 'static',
   trailingSlash: 'never',
   adapter: vercel({
     webAnalytics: { enabled: true },

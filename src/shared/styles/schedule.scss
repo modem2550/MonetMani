@@ -17,7 +17,7 @@
 }
 
 .schedule-page {
-    &__title {
+    &-title {
         font-size: clamp(2.5rem, 7vw, 5rem);
         font-weight: 900;
         line-height: 0.95;
@@ -26,7 +26,7 @@
         letter-spacing: -0.03em;
     }
 
-    &__subtitle {
+    &-subtitle {
         font-size: var(--fs-label);
         font-weight: 600;
         letter-spacing: 0.12em;
@@ -94,7 +94,6 @@ main {
     width: 100%;
     position: relative;
     overflow: hidden;
-    background: var(--c-bg);
     border-radius: var(--r-base);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0, 1);
     will-change: transform;
