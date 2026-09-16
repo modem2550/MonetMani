@@ -138,7 +138,7 @@ let videoPriorityCount = 0;
                                     <div class="gallery-year-label">
                                         <span>{group.year}</span>
                                     </div>
-                                    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3 g-md-4">
+                                    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3 g-md-4">
                                         {group.items.map((photo) => {
                                             const isPriority =
                                                 photoPriorityCount < 8;
@@ -198,7 +198,7 @@ let videoPriorityCount = 0;
                                     <div class="gallery-year-label">
                                         <span>{group.year}</span>
                                     </div>
-                                    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3 g-md-4">
+                                    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3 g-md-4">
                                         {group.items.map((video) => {
                                             const isPriority =
                                                 videoPriorityCount < 6;
@@ -291,8 +291,8 @@ let videoPriorityCount = 0;
         "DEC",
     ];
     const ROW_CLASS: Record<TabKey, string> = {
-        photo: "row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3 g-md-4",
-        video: "row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-3 g-md-4",
+        photo: "row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3 g-md-4",
+        video: "row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3 g-md-4",
     };
 
     const tabs = document.querySelectorAll<HTMLButtonElement>(".gallery-tab");

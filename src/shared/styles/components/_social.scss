@@ -2,6 +2,10 @@
    SOCIAL EMBEDS — Instagram & TikTok — Editorial Layout
    ═══════════════════════════════════════════════════════════════════════════ */
 
+.css-ekq38o {
+  width: 100% !important;
+}
+
 .ig-banner,
 .tiktok-banner {
   padding: 1.5rem var(--r-large);
@@ -30,27 +34,11 @@
   background: var(--c-dark);
 }
 
-// ── Embed row: IG featured (60%) + TikTok sidebar (40%) ──────────────────
-
-.embed-row {
-  width: 100%;
-  padding: 0;
-  gap: 20px;
-  overflow: hidden;
-  display: flex;
-  align-items: stretch;
-  margin-bottom: 3rem;
-}
-
 .embed-block {
   background-color: var(--c-light);
   border-radius: var(--r-base);
   border: 1px solid var(--c-border);
-  overflow: hidden;
-  max-height: 582px;
-  margin-bottom: 20px;
-  display: flex;
-  flex-direction: column;
+  max-height: 542px;
 
   &[data-embed-type="instagram"] {
     flex: 5; // 60%
@@ -103,44 +91,35 @@
 
 // ── Social links — editorial separator list ───────────────────────────────
 
-.social-editorial-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  margin-bottom: 3rem;
+.social-box.social-link {
+  border-bottom: 1px solid var(--c-border) !important;
+  padding: 1.25rem 0.5rem;
+  background: transparent;
+  transition: padding-left 0.25s ease;
+  position: relative;
+  z-index: 1;
 
-  .social-box {
-    margin-bottom: 0;
-    border-radius: 0;
-    border: none;
-    border-bottom: 1px solid var(--c-border);
-    padding: 1.25rem 0.5rem;
-    background: transparent;
-    transition: padding-left 0.25s ease;
-    position: relative;
-    z-index: 1;
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    -webkit-mask-image: linear-gradient(to right, black 0%, transparent 100%);
+    mask-image: linear-gradient(to right, black 0%, transparent 100%);
+    opacity: 0;
+    z-index: -1;
+    transition: opacity 0.25s ease;
+  }
+
+  &:first-child {
+    border-top: 1px solid var(--c-border);
+  }
+
+  &:hover {
+    padding-left: 1rem;
 
     &::before {
-      content: '';
-      position: absolute;
-      inset: 0;
       background: var(--bg);
-      -webkit-mask-image: linear-gradient(to right, black 0%, transparent 100%);
-      mask-image: linear-gradient(to right, black 0%, transparent 100%);
-      opacity: 0;
-      z-index: -1;
-      transition: opacity 0.25s ease;
-    }
-
-    &:first-child {
-      border-top: 1px solid var(--c-border);
-    }
-
-    &:hover {
-      padding-left: 1rem;
-      &::before {
-        opacity: 1;
-      }
+      opacity: 1;
     }
   }
 }
@@ -148,10 +127,6 @@
 // ── Responsive embeds ─────────────────────────────────────────────────────
 
 @media (max-width: 768px) {
-  .embed-row {
-    flex-direction: column;
-  }
-
   .embed-block {
 
     &[data-embed-type="instagram"],

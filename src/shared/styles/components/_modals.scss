@@ -68,15 +68,12 @@
 
 .promo-popup-container {
   position: relative;
-  width: 380px;
+  max-width: 450px !important;
+  width: 100%;
   max-width: 90vw;
-  background: var(--c-bg);
   border-radius: var(--r-base);
   overflow: hidden;
   animation: promoSlideIn 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4);
 }
 
 @keyframes promoSlideIn {
@@ -84,6 +81,7 @@
     opacity: 0;
     transform: scale(0.92) translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
@@ -99,8 +97,8 @@
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-radius: 50%;
-  width: 28px;
-  height: 28px;
+  width: 40px;
+  height: 40px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -120,19 +118,19 @@
   left: 0;
   right: 0;
   padding: 12px;
-  background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6) 0%, transparent 100%);
 
   .btn {
     font-size: 0.8rem;
-    color: rgba(255,255,255,0.85);
-    border-color: rgba(255,255,255,0.35);
+    color: rgba(255, 255, 255, 0.85);
+    border-color: rgba(255, 255, 255, 0.35);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
 
     &:hover {
-      background: rgba(255,255,255,0.15);
+      background: rgba(255, 255, 255, 0.15);
       color: #fff;
-      border-color: rgba(255,255,255,0.6);
+      border-color: rgba(255, 255, 255, 0.6);
     }
   }
 }

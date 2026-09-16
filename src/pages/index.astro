@@ -71,7 +71,7 @@ const eventSchemas = buildEventSchemas(upcoming);
       </div>
 
       <div
-        class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-4 flex-nowrap overflow-x-scroll"
+        class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 g-4 flex-nowrap overflow-x-scroll"
       >
         {
           upcoming.map((event) => (
@@ -259,77 +259,87 @@ const eventSchemas = buildEventSchemas(upcoming);
       <p class="section-label">Follow Monet</p>
       <h2 class="section-title mb-5">Social Media</h2>
 
-      <div class="embed-row">
+      <div class="row overflow-hidden w-100 p-0 mb-3">
         <!-- Instagram embed -->
-        <div class="slide-right embed-block" data-embed-type="instagram">
-          <a
-            href="https://www.instagram.com/monet.bnk48official/"
-            target="_blank"
-            class="social-link"
-            style="color:inherit"
-          >
-            <div class="ig-banner">
-              <div class="fw-bold h5">
-                <i class="fa-brands fa-instagram front platform-icon"></i>
-                <i class="fa-brands fa-instagram back platform-icon"></i>
-                Instagram
+        <div
+          class="slide-right overflow-hidden mb-3 col-12 col-lg-6"
+          data-embed-type="instagram"
+        >
+          <div class="embed-block overflow-hidden">
+            <a
+              href="https://www.instagram.com/monet.bnk48official/"
+              target="_blank"
+              class="social-link"
+              style="color:inherit"
+            >
+              <div class="ig-banner">
+                <div class="fw-bold h5">
+                  <i class="fa-brands fa-instagram front platform-icon"></i>
+                  <i class="fa-brands fa-instagram back platform-icon"></i>
+                  Instagram
+                </div>
+                <div class="fw-bold h3">
+                  monet.bnk48official <i
+                    class="fa-solid fa-arrow-right arrow-icon ms-1"></i>
+                </div>
               </div>
-              <div class="fw-bold h3">
-                monet.bnk48official <i
-                  class="fa-solid fa-arrow-right arrow-icon ms-1"></i>
-              </div>
+            </a>
+            <div class="embed-ig">
+              <iframe
+                data-src="https://www.instagram.com/monet.bnk48official/embed/?cr=1&v=14"
+                title="Instagram feed"
+                height="559"
+                loading="lazy"
+                frameborder="0"
+                scrolling="no"
+                allowtransparency="true"
+                style="background-color:#fff;width:100%"
+                data-lazy-iframe></iframe>
             </div>
-          </a>
-          <div class="embed-ig">
-            <iframe
-              data-src="https://www.instagram.com/monet.bnk48official/embed/?cr=1&v=14"
-              title="Instagram feed"
-              height="559"
-              loading="lazy"
-              frameborder="0"
-              scrolling="no"
-              allowtransparency="true"
-              style="background-color:#fff;width:100%"
-              data-lazy-iframe></iframe>
           </div>
         </div>
 
         <!-- TikTok embed -->
-        <div class="slide-right embed-block" data-embed-type="tiktok">
-          <a
-            href="https://www.tiktok.com/@monet.bnk48official"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="social-link"
-            style="color:inherit"
-          >
-            <div class="tiktok-banner">
-              <div class="fw-bold h5">
-                <i class="fa-brands fa-tiktok front platform-icon"></i>
-                <i class="fa-brands fa-tiktok back platform-icon"></i>
-                TikTok
-              </div>
-              <div class="fw-bold h3">
-                monét <i class="fa-solid fa-arrow-right arrow-icon ms-1"></i>
-              </div>
-            </div>
-          </a>
-          <div class="embed-tiktok">
-            <blockquote
-              class="tiktok-embed"
-              cite="https://www.tiktok.com/@monet.bnk48official"
-              data-unique-id="monet.bnk48official"
-              data-embed-type="creator"
+        <div
+          class="slide-right overflow-hidden mb-3 col-12 col-lg-6"
+          data-embed-type="tiktok"
+        >
+          <div class="embed-block overflow-hidden">
+            <a
+              href="https://www.tiktok.com/@monet.bnk48official"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="social-link"
+              style="color:inherit"
             >
-              <section>
-                <a
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  href="https://www.tiktok.com/@monet.bnk48official?refer=creator_embed"
-                  >@monet.bnk48official</a
-                >
-              </section>
-            </blockquote>
+              <div class="tiktok-banner">
+                <div class="fw-bold h5">
+                  <i class="fa-brands fa-tiktok front platform-icon"></i>
+                  <i class="fa-brands fa-tiktok back platform-icon"></i>
+                  TikTok
+                </div>
+                <div class="fw-bold h3">
+                  monét <i class="fa-solid fa-arrow-right arrow-icon ms-1"></i>
+                </div>
+              </div>
+            </a>
+            <div class="embed-tiktok">
+              <blockquote
+                class="tiktok-embed"
+                cite="https://www.tiktok.com/@monet.bnk48official"
+                data-unique-id="monet.bnk48official"
+                data-embed-type="creator"
+              >
+                <section>
+                  <a
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href="https://www.tiktok.com/@monet.bnk48official?refer=creator_embed"
+                    >@monet.bnk48official</a
+                  >
+                </section>
+              </blockquote>
+            </div>
           </div>
         </div>
       </div>
@@ -337,7 +347,7 @@ const eventSchemas = buildEventSchemas(upcoming);
       <script is:inline async src="https://www.tiktok.com/embed.js"></script>
 
       <!-- Social links — editorial separator style -->
-      <div class="social-editorial-list">
+      <div class="d-flex flex-column gap-0 mb-5">
         {
           [
             {
@@ -357,7 +367,7 @@ const eventSchemas = buildEventSchemas(upcoming);
           ].map(({ href, cls, icon, label, name }) => (
             <a
               href={href}
-              class={`slide-right social-box ${cls} social-link`}
+              class={`slide-right social-box ${cls} social-link mb-0 rounded-0 border-0`}
               target="_blank"
               title={label}
             >
@@ -390,7 +400,7 @@ const eventSchemas = buildEventSchemas(upcoming);
         <!-- iAM48 -->
         <a
           href="https://app.bnk48.com/member-profile/88"
-          class="slide-right social-box -iam48 social-link"
+          class="slide-right social-box -iam48 social-link mb-0 rounded-0 border-0"
           target="_blank"
           title="iAM48"
         >
@@ -431,10 +441,10 @@ const eventSchemas = buildEventSchemas(upcoming);
 
       <!-- Main video — featured split layout -->
       <div
-        class="slide-right mb-5 youtube-block youtube-block-featured"
+        class="slide-right mb-4 youtube-block youtube-block-featured"
         data-video-id="VlVJWXXZCOQ"
       >
-        <div class="info">
+        <div class="info p-4">
           <p class="video-badge">
             <i class="fa-solid fa-star" aria-hidden="true"></i>
             Center Position
@@ -460,25 +470,25 @@ const eventSchemas = buildEventSchemas(upcoming);
         {
           [
             {
+              videoId: "IGs_wYY3uYk",
+              embed: "IGs_wYY3uYk?si=OK8y5WRmkLGq9bvZ",
+              badge: "SENBATSU",
+              title: "BNK48 16th Single Senbatsu General Election",
+              sub: `BNK48 16<sup>th</sup> Single Song`,
+            },
+            {
+              videoId: "5Z-gvAGQueA",
+              embed: "5Z-gvAGQueA?si=GU95dNTql3WM3BEu",
+              badge: "SENBATSU",
+              title: "Kiss Me! (ให้ฉันได้รู้)",
+              sub: "BNK48 16<sup>th</sup> Single Song",
+            },
+            {
               videoId: "g3RrDbY7FEk",
               embed: "g3RrDbY7FEk?si=u-PQfSMUySXjGpIW",
               badge: "SENBATSU",
               title: "Ponytail to Shushu",
               sub: "BNK48 6<sup>th</sup> ALBUM LEAD",
-            },
-            {
-              videoId: "ymTOSdkUWBs",
-              embed: "ymTOSdkUWBs?si=2oFdElnq6lkmvU8l",
-              badge: "SENBATSU",
-              title: "#Sukinanda",
-              sub: `BNK48 5<sup>th</sup> Album Lead Song`,
-            },
-            {
-              videoId: "5Z-gvAGQueA",
-              embed: "5Z-gvAGQueA?si=YsV8wPStFoQkmrHN",
-              badge: "SENBATSU",
-              title: "Kiss Me! (ให้ฉันได้รู้)",
-              sub: "BNK48 16<sup>th</sup> Single Song",
             },
             {
               videoId: "vFkKaOmLEoY",
@@ -489,7 +499,7 @@ const eventSchemas = buildEventSchemas(upcoming);
             },
           ].map(({ videoId, embed, badge, title, sub }) => (
             <div class="slide-right col-sm-12 col-md-6" data-video-id={videoId}>
-              <div class="youtube-block h-100">
+              <div class="youtube-block h-100 d-flex flex-column justify-content-between">
                 <div class="info p-3">
                   <p class="video-badge mb-1">
                     <i class="fa-solid fa-star" aria-hidden="true" />
@@ -524,11 +534,11 @@ const eventSchemas = buildEventSchemas(upcoming);
       <p class="section-label">Community</p>
       <h2 class="section-title mb-5">Monet's Fan Community</h2>
 
-      <div class="social-editorial-list">
+      <div class="d-flex flex-column gap-0 mb-5">
         <!-- LINE OpenChat -->
         <a
           href="https://line.me/ti/g2/MYo3l6qJus2XwQ4ZEU2Id93CiclaiTRQfNPVsA?utm_source=invitation&utm_medium=link_copy&utm_campaign=default"
-          class="slide-right social-box -line social-link"
+          class="slide-right social-box -line social-link mb-0 rounded-0 border-0"
           target="_blank"
           rel="noopener noreferrer"
           title="LINE OpenChat - โมนี่ของโมเน่ต์"
@@ -563,7 +573,7 @@ const eventSchemas = buildEventSchemas(upcoming);
         <!-- X (Twitter) Fanclub -->
         <a
           href="https://x.com/MonetBNK48FC"
-          class="slide-right social-box -x-twitter social-link"
+          class="slide-right social-box -x-twitter social-link mb-0 rounded-0 border-0"
           target="_blank"
           rel="noopener noreferrer"
           title="X (Twitter) - MonetBNK48FC"
@@ -627,10 +637,12 @@ const eventSchemas = buildEventSchemas(upcoming);
         class="promo-footer d-flex justify-content-center p-3 position-absolute"
       >
         <button
-          class="btn btn-outline-secondary rounded-pill"
+          class="editorial-link p-0"
+          style="border: none; background: none; color:#fff"
           onclick="neverShowPromoPopup()"
         >
           ไม่แสดงอีก (Do not show again)
+          <i class="fa-solid fa-arrow-right ms-2" aria-hidden="true"></i>
         </button>
       </div>
     </div>

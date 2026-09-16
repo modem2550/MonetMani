@@ -188,51 +188,77 @@
 
 .social-box:hover {
     .svg-inline--fa.back {
-        transform: scale(2) rotate(15deg) translateX(9.5rem) translateY(-1.9rem);
+        transform: scale(2) rotate(15deg) translateX(400%) translateY(-90%);
 
-        @include bp-max(1400px) {
-            transform: scale(2) rotate(15deg) translateX(8.5rem) translateY(-1.7rem);
+        @include bp-min(576px) {
+            transform: scale(2) rotate(15deg) translateX(12.8rem) translateY(-3rem);
         }
 
-        @include bp-max(1200px) {
-            transform: scale(2) rotate(15deg) translateX(17rem) translateY(-3.9rem);
+        @include bp-min(768px) {
+            transform: scale(2) rotate(15deg) translateX(17rem) translateY(-4.1rem);
+        }
+
+        @include bp-min(992px) {
+            transform: scale(2) rotate(15deg) translateX(24.5rem) translateY(-6.1rem);
+        }
+
+        @include bp-min(1200px) {
+            transform: scale(2) rotate(15deg) translateX(29.5rem) translateY(-7.4rem);
+        }
+
+        @include bp-min(1400px) {
+            transform: scale(2) rotate(15deg) translateX(34.5rem) translateY(-8.7rem);
         }
     }
 
     .fa-iam48.back {
-        transform: scale(2) rotate(30deg) translateX(8.5rem) translateY(-3.7rem);
+        transform: scale(2) rotate(30deg) translateX(375%) translateY(-185%);
 
-        @include bp-max(1400px) {
-            transform: scale(2) rotate(30deg) translateX(7.5rem) translateY(-3.4rem);
+        @include bp-min(576px) {
+            transform: scale(2) rotate(30deg) translateX(12rem) translateY(-6rem);
         }
 
-        @include bp-max(1200px) {
-            transform: scale(2) rotate(30deg) translateX(16rem) translateY(-8.3rem);
-        }
-    }
 
-    .fa-iam48.back.live {
-        transform: scale(2) rotate(30deg) translateX(14.5rem) translateY(-7.4rem);
-
-        @include bp-max(1400px) {
-            transform: scale(2) rotate(30deg) translateX(12.5rem) translateY(-6.4rem);
+        @include bp-min(768px) {
+            transform: scale(2) rotate(30deg) translateX(15.5rem) translateY(-8rem);
         }
 
-        @include bp-max(1200px) {
-            transform: scale(2) rotate(30deg) translateX(16rem) translateY(-8.3rem);
+        @include bp-min(992px) {
+            transform: scale(2) rotate(30deg) translateX(22.5rem) translateY(-12rem);
+        }
+
+        @include bp-min(1200px) {
+            transform: scale(2) rotate(30deg) translateX(27rem) translateY(-14.5rem);
+        }
+
+        @include bp-min(1400px) {
+            transform: scale(2) rotate(30deg) translateX(31.5rem) translateY(-17.1rem);
         }
     }
 }
 
 .ig-banner:hover .platform-icon.back,
 .tiktok-banner:hover .platform-icon.back {
-    transform: scale(5.6) rotate(15deg) translateX(5.5rem) translateY(-0.8rem);
+    transform: scale(5) rotate(15deg) translateX(400%) translateY(-60%);
 
-    @include bp-max(1400px) {
-        transform: scale(5.6) rotate(15deg) translateX(4.5rem) translateY(-0.7rem);
+
+    @include bp-min(576px) {
+        transform: scale(5) rotate(15deg) translateX(4.9rem) translateY(-0.88rem);
     }
 
-    @include bp-max(1200px) {
-        transform: scale(5.6) rotate(15deg) translateX(6rem) translateY(-1.1rem);
+    @include bp-min(768px) {
+        transform: scale(5) rotate(13deg) translateX(6.7rem) translateY(-1.1rem);
+    }
+
+    @include bp-min(992px) {
+        transform: scale(5) rotate(11.8deg) translateX(4rem) translateY(-0.34rem);
+    }
+
+    @include bp-min(1200px) {
+        transform: scale(5.6) rotate(15deg) translateX(4.5rem) translateY(-0.83rem);
+    }
+
+    @include bp-min(1400px) {
+        transform: scale(5.6) rotate(15deg) translateX(5.2rem) translateY(-1rem);
     }
 }
