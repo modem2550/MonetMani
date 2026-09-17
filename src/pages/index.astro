@@ -37,7 +37,7 @@ const eventSchemas = buildEventSchemas(upcoming);
   }
 
   <section id="home">
-    <div class="hero-container">
+    <div class="hero-container-xxl p-0">
       <img
         src="/img/BG-img.webp"
         alt="Monet BNK48 Hero Background"
@@ -64,7 +64,11 @@ const eventSchemas = buildEventSchemas(upcoming);
   </section>
 
   <section id="event" style={upcoming.length === 0 ? "display:none" : ""}>
-    <section class="container" id="upcoming-events-section" style="padding:0">
+    <section
+      class="container-xxl p-0"
+      id="upcoming-events-section"
+      style="padding:0"
+    >
       <div class="mb-5">
         <p class="section-label">Events &amp; Schedule</p>
         <h2 class="section-title">Monet' Events</h2>
@@ -95,7 +99,7 @@ const eventSchemas = buildEventSchemas(upcoming);
 
   <!-- ── Info ── -->
   <section id="info">
-    <div class="container">
+    <div class="container-xxl p-0">
       <!-- Header row -->
       <div class="info-header">
         <p class="section-label">About</p>
@@ -255,14 +259,14 @@ const eventSchemas = buildEventSchemas(upcoming);
 
   <!-- ── Social ── -->
   <section id="social">
-    <div class="container">
+    <div class="container-xxl p-0">
       <p class="section-label">Follow Monet</p>
       <h2 class="section-title mb-5">Social Media</h2>
 
-      <div class="row overflow-hidden w-100 p-0 mb-3">
+      <div class="row overflow-hidden mx-auto w-100 p-0 mb-3">
         <!-- Instagram embed -->
         <div
-          class="slide-right overflow-hidden mb-3 col-12 col-lg-6"
+          class="slide-right overflow-hidden ps-0 mb-3 col-12 col-lg-6"
           data-embed-type="instagram"
         >
           <div class="embed-block overflow-hidden">
@@ -301,7 +305,7 @@ const eventSchemas = buildEventSchemas(upcoming);
 
         <!-- TikTok embed -->
         <div
-          class="slide-right overflow-hidden mb-3 col-12 col-lg-6"
+          class="slide-right overflow-hidden pe-0 mb-3 col-12 col-lg-6"
           data-embed-type="tiktok"
         >
           <div class="embed-block overflow-hidden">
@@ -435,7 +439,7 @@ const eventSchemas = buildEventSchemas(upcoming);
 
   <!-- ── Library ── -->
   <section id="library">
-    <div class="container">
+    <div class="container-xxl p-0">
       <p class="section-label">Selected Work</p>
       <h2 class="section-title mb-5">Highlights</h2>
 
@@ -530,7 +534,7 @@ const eventSchemas = buildEventSchemas(upcoming);
 
   <!-- ── Community ── -->
   <section id="community">
-    <div class="container">
+    <div class="container-xxl p-0">
       <p class="section-label">Community</p>
       <h2 class="section-title mb-5">Monet's Fan Community</h2>
 
@@ -608,7 +612,7 @@ const eventSchemas = buildEventSchemas(upcoming);
 
   <!-- Promo Popup -->
   <div id="promo-popup-overlay">
-    <div class="promo-popup-container p-0">
+    <div class="promo-popup-container p-0 p-0">
       <button
         class="promo-popup-close"
         onclick="closePromoPopup()"

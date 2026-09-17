@@ -106,8 +106,6 @@
   pointer-events: none;
 }
 
-// .logo-img--on-hero is default (shown)
-
 .logo-text {
   padding-left: 8px;
   border-left: 2px solid currentColor;
@@ -279,7 +277,10 @@
   transition: background 0.2s, color 0.2s;
 
   &:hover {
-    color: var(--c-primary);
+    span {
+      color: var(--c-primary);
+      text-decoration: underline;
+    }
   }
 }
 

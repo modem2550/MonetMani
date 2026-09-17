@@ -1,40 +1,10 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    SECTION BLOCKS — Editorial
    ═══════════════════════════════════════════════════════════════════════════ */
-
-// .section-intro — Bootstrap mx-auto mb-5 handles centering & spacing
-.section-intro {
-  max-width: 40rem;
-
-  &__title {
-    font-size: clamp(2.2rem, 5vw, 3.5rem);
-    font-weight: 900;
-    color: var(--c-content);
-    margin: 0 0 0.5rem;
-    letter-spacing: -0.03em;
-    line-height: 1;
-  }
-
-  &__lead {
-    margin: 0;
-    font-size: var(--fs-label);
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--c-content-muted);
-  }
-}
-
 section {
   padding: var(--section-pad-y) var(--section-pad-x);
   background-color: var(--c-bg);
   color: var(--c-content);
-}
-
-// ── Editorial section heading ─────────────────────────────────────────────
-
-.section-heading {
-  color: var(--c-section-text) !important;
 }
 
 // ── Section label (small caps above big title) ────────────────────────────
@@ -49,6 +19,8 @@ section {
   text-transform: uppercase;
   color: var(--c-content-muted);
   margin-bottom: 0.75rem;
+  padding-right: calc(var(--bs-gutter-x) * .5);
+  padding-left: calc(var(--bs-gutter-x) * .5);
 
   &::before {
     content: '';
@@ -67,7 +39,6 @@ section {
   font-weight: 900;
   letter-spacing: -0.025em;
   line-height: 1.05;
-  margin-bottom: 0;
 }
 
 // Section variants

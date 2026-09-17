@@ -2,7 +2,7 @@
 // CONFIGURATION
 // ============================================================
 
-export {};
+export { };
 
 type Theme = 'light' | 'dark';
 
@@ -514,57 +514,6 @@ function initMobileEnhancements(): void {
   }
 }
 
-// ============================================================
-// POPUP MANAGEMENT - IMPROVED
-// ============================================================
-
-function openPopup(): void {
-  const overlay = document.getElementById('popup-overlay');
-  if (!overlay) return;
-
-  overlay.classList.add('active');
-  document.body.style.overflow = 'hidden';
-  document.body.style.paddingRight = (window.innerWidth - document.documentElement.clientWidth) + 'px';
-
-  // Focus first interactive element in popup
-  const firstFocusable = overlay.querySelector<HTMLElement>('a, button, input');
-  if (firstFocusable) firstFocusable.focus();
-}
-
-function closePopup(): void {
-  const overlay = document.getElementById('popup-overlay');
-  if (!overlay) return;
-
-  overlay.classList.remove('active');
-  document.body.style.overflow = '';
-  document.body.style.paddingRight = '';
-}
-
-// Handle popup close button
-document.addEventListener('DOMContentLoaded', () => {
-  const closeBtn = document.getElementById('closePopupBtn');
-  if (closeBtn) {
-    closeBtn.addEventListener('click', closePopup);
-  }
-
-  // Close on Escape key
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      closePopup();
-    }
-  });
-
-  // Close on backdrop click
-  const overlay = document.getElementById('popup-overlay');
-  if (overlay) {
-    overlay.addEventListener('click', (e) => {
-      if (e.target === overlay) {
-        closePopup();
-      }
-    });
-  }
-});
-
 // Re-apply theme after Astro client-side navigation.
 // This ensures forcedTheme on /planner/[event] always wins over previous page theme.
 document.addEventListener('astro:page-load', () => {
@@ -597,12 +546,3 @@ document.addEventListener('DOMContentLoaded', () => {
     document.head.appendChild(preloadLink);
   }
 });
-
-// ============================================================
-// EXPORTS
-// ============================================================
-
-if (typeof window !== 'undefined') {
-  window.openPopup = openPopup;
-  window.closePopup = closePopup;
-}

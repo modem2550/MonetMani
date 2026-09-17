@@ -17,11 +17,6 @@
     --anim-offset-x: 30px;
     --anim-offset-y: 16px;
   }
-
-  .bio-info-box {
-    padding: 90px 25px 50px !important;
-    margin-top: -75px;
-  }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -29,9 +24,3 @@
    Bootstrap handles .col-xl-6, .col-lg-4 and .embed-block via its grid;
    only project-specific overrides remain here.
    ═══════════════════════════════════════════════════════════════════════════ */
-
-@include bp-max(1199px) {
-  .embed-row {
-    flex-direction: column;
-  }
-}

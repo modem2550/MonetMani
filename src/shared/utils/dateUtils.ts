@@ -71,18 +71,6 @@ export function isPastEvent(eventDate: string, endDate?: string | null): boolean
   return check.getTime() < startOfToday();
 }
 
-export const isUpcomingEvent = (eventDate: string, endDate?: string | null) =>
-  !isPastEvent(eventDate, endDate);
-
-export function getEventStatus(eventDate: string, endDate?: string | null) {
-  const past = isPastEvent(eventDate, endDate);
-  return {
-    isPast: past,
-    label: past ? 'Past Event' : 'Upcoming Event',
-    labelTh: past ? 'อีเวนต์ที่ผ่านมา' : 'อีเวนต์ที่กำลังจะมา',
-  };
-}
-
 // ── Categorize ────────────────────────────────────────────────────────────────
 
 export function categorizeEvents<T extends Event>(events: T[]): { upcoming: T[]; past: T[] } {

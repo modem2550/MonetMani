@@ -5,22 +5,6 @@
 @use 'sass:map';
 @use '../utilities/mixins' as *;
 
-// ── Social circle ─────────────────────────────────────────────────────────────
-
-.social-circle {
-    gap: 15px;
-    justify-content: start;
-
-    span {
-        padding: 1px;
-        width: 36px;
-        height: 36px;
-        text-align: center;
-        justify-content: center;
-        font-size: 1.25rem;
-    }
-}
-
 // ── Social box base ───────────────────────────────────────────────────────────
 
 .social-box {

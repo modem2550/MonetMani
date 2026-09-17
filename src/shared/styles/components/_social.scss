@@ -1,11 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    SOCIAL EMBEDS — Instagram & TikTok — Editorial Layout
    ═══════════════════════════════════════════════════════════════════════════ */
-
-.css-ekq38o {
-  width: 100% !important;
-}
-
 .ig-banner,
 .tiktok-banner {
   padding: 1.5rem var(--r-large);
@@ -82,12 +77,6 @@
   }
 }
 
-.instagram-media {
-  border-radius: 0 0 var(--r-base) var(--r-base) !important;
-  display: block;
-  width: 100%;
-  max-height: 478px;
-}
 
 // ── Social links — editorial separator list ───────────────────────────────
 
@@ -151,7 +140,7 @@
 
   // ── Featured: info left + video right ─────────────────────────────────
 
-  &.youtube-block--featured {
+  &.youtube-block-featured {
     display: flex;
     flex-direction: row;
     align-items: stretch;
@@ -212,9 +201,4 @@
     color: var(--c-content-muted);
     margin-bottom: 0;
   }
-}
-
-.bnk48-color {
-  fill: var(--c-bnk) !important;
-  color: var(--c-bnk) !important;
 }
