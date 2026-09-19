@@ -55,7 +55,7 @@ export function buildPageSchema(description: string, site = SITE_URL) {
       publisher: {
         '@type': 'Organization',
         name: 'Monet BNK48 Fan Website',
-        logo: `${base}/logo/android-chrome-512x512.png`,
+        logo: `${base}/android-chrome-512x512.png`,
       },
       potentialAction: {
         '@type': 'SearchAction',
@@ -88,7 +88,7 @@ export function buildPageSchema(description: string, site = SITE_URL) {
       '@id': `${base}/#organization`,
       name: 'Monet - Parita Rirermkul Fansite',
       url: `${base}/`,
-      logo: `${base}/logo/android-chrome-512x512.png`,
+      logo: `${base}/android-chrome-512x512.png`,
       description: 'Monet - Parita Rirermkul Fansite',
       founder: {
         '@type': 'Person',

@@ -1,6 +1,6 @@
 {
-  "name": "Monimonetfans",
-  "short_name": "Monimonetfans",
+  "name": "Monet BNK48 - Fan Website",
+  "short_name": "Monet Fans",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
@@ -10,7 +10,8 @@
     {
       "src": "/android-chrome-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "/apple-touch-icon.png",
@@ -18,7 +19,7 @@
       "type": "image/png"
     }
   ],
-  "theme_color": "#fc809f",
-  "background_color": "#ffffff",
+  "theme_color": "#1E3A8A",
+  "background_color": "#1E3A8A",
   "display": "standalone"
 }
