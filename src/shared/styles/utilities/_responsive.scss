@@ -1,0 +1,26 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE — Mobile (≤ 767.98px)
+   ═══════════════════════════════════════════════════════════════════════════ */
+@use 'mixins' as *;
+
+@include bp-max(767.98px) {
+  .profile {
+    margin: 0 auto !important;
+  }
+
+  .container {
+    padding: 0 !important;
+  }
+
+
+  :root {
+    --anim-offset-x: 30px;
+    --anim-offset-y: 16px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE — Tablet & Up (≤ 1200px)
+   Bootstrap handles .col-xl-6, .col-lg-4 and .embed-block via its grid;
+   only project-specific overrides remain here.
+   ═══════════════════════════════════════════════════════════════════════════ */

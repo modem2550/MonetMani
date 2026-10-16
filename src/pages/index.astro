@@ -1,0 +1,680 @@
+---
+import MainLayout from "@/app/layouts/MainLayout.astro";
+import EventCard from "@/shared/components/EventCard.astro";
+import { fetchUpcomingEvents } from "@/services/events";
+import { categorizeEvents } from "@/shared/utils/dateUtils";
+import { buildEventSchemas } from "@/shared/utils/schema";
+
+Astro.response.headers.set(
+  "Cache-Control",
+  "public, max-age=0, s-maxage=300, stale-while-revalidate=86400",
+);
+
+const { upcoming } = categorizeEvents(await fetchUpcomingEvents());
+const eventSchemas = buildEventSchemas(upcoming);
+---
+
+<MainLayout
+  title="Monet BNK48 - Fan Website"
+  description="เว็บไซต์แฟนคลับของ โมเน่ต์ - ภาริตา ริเริ่มกุล (Monet BNK48) ที่รวบรวมข้อมูลข่าวสาร ไฮไลท์ผลงาน อัปเดตกิจกรรม และช่องทางการติดตาม"
+>
+  <link
+    rel="preload"
+    as="image"
+    href="/img/BG-img.webp"
+    fetchpriority="high"
+    slot="head"
+  />
+  {
+    eventSchemas.map((schema) => (
+      <script
+        is:inline
+        type="application/ld+json"
+        set:html={JSON.stringify(schema)}
+        slot="head"
+      />
+    ))
+  }
+
+  <section id="home">
+    <div class="hero-container-xxl p-0">
+      <img
+        src="/img/BG-img.webp"
+        alt="Monet BNK48 Hero Background"
+        class="w-100 h-100 position-absolute top-0 start-0"
+        style="object-fit:cover; object-position: center top;"
+        width="1440"
+        height="1920"
+        fetchpriority="high"
+        decoding="async"
+      />
+      <div class="overlay"></div>
+      <div class="hero-text-wrapper">
+        <div class="hero-title">
+          <p class="hero-eyebrow">BNK48 &mdash; Fan Site</p>
+          <strong class="hero-name">Monét</strong>
+          <span class="hero-sub">Parita Rirermkul &nbsp;/&nbsp; BNK48</span>
+        </div>
+      </div>
+      <div class="hero-scroll-hint" aria-hidden="true">
+        <span>Scroll</span>
+        <span class="hero-scroll-hint-line"></span>
+      </div>
+    </div>
+  </section>
+
+  <section id="event" style={upcoming.length === 0 ? "display:none" : ""}>
+    <section
+      class="container-xxl p-0"
+      id="upcoming-events-section"
+      style="padding:0"
+    >
+      <div class="mb-5">
+        <p class="section-label">Events &amp; Schedule</p>
+        <h2 class="section-title">Monet' Events</h2>
+      </div>
+
+      <div
+        class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 g-4 flex-nowrap overflow-x-scroll"
+      >
+        {
+          upcoming.map((event) => (
+            <div
+              class="col d-flex justify-content-center"
+              data-event-date={event.date}
+            >
+              <EventCard event={event} />
+            </div>
+          ))
+        }
+      </div>
+      <div class="mt-5">
+        <a class="editorial-link" href="schedule" id="moreEventsBtn">
+          View all events
+          <i class="fa-solid fa-arrow-right ms-2" aria-hidden="true"></i>
+        </a>
+      </div>
+    </section>
+  </section>
+
+  <!-- ── Info ── -->
+  <section id="info">
+    <div class="container-xxl p-0">
+      <!-- Header row -->
+      <div class="info-header">
+        <p class="section-label">About</p>
+        <h2 class="section-title">
+          Monet<br /><span class="info-title-sub">Parita Rirermkul</span>
+        </h2>
+      </div>
+
+      <!-- 2-column split -->
+      <div class="info-grid">
+        <!-- Left: portrait -->
+        <div class="info-portrait slide-right">
+          <div class="info-portrait-img-wrap">
+            <img
+              alt="Monet BNK48 — profile"
+              loading="lazy"
+              src="/img/profile.webp"
+              width="1080"
+              height="1080"
+            />
+          </div>
+          <div class="info-portrait-socials d-flex gap-3">
+            <a
+              href="https://www.facebook.com/monet.bnk48official"
+              aria-label="Facebook"
+              class="info-social-icon -facebook"
+            >
+              <i class="fa-brands fa-facebook-f"></i>
+            </a>
+            <a
+              href="https://www.instagram.com/monet.bnk48official/"
+              aria-label="Instagram"
+              class="info-social-icon -instagram"
+            >
+              <i class="fa-brands fa-instagram"></i>
+            </a>
+            <a
+              href="https://www.tiktok.com/@monet.bnk48.official"
+              aria-label="TikTok"
+              class="info-social-icon -tiktok"
+            >
+              <i class="fa-brands fa-tiktok"></i>
+            </a>
+          </div>
+          <p class="info-contact">
+            &#x2661; contact for work<br />
+            <span
+              id="contact-phone"
+              data-phone-1="083"
+              data-phone-2="525"
+              data-phone-3="3564">&nbsp;</span
+            > &nbsp;&middot;&nbsp; @iamofficialartist
+          </p>
+          <script is:inline>
+            // Assemble the phone number on the client instead of shipping it
+            // as plain text, to make it a bit harder for scrapers/bots to
+            // harvest it straight from the HTML source.
+            document.addEventListener("DOMContentLoaded", () => {
+              const el = document.getElementById("contact-phone");
+              if (!el) return;
+              const { phone1, phone2, phone3 } = el.dataset;
+              if (phone1 && phone2 && phone3) {
+                el.textContent = `${phone1}-${phone2}-${phone3}`;
+              }
+            });
+          </script>
+        </div>
+
+        <!-- Right: content -->
+        <div class="info-content slide-right d-flex flex-column gap-4">
+          <p class="info-intro">
+            สวัสดีค่ะ ชื่อโมเน่ต์ นะคะ ถ้าหนูยื่นมือให้ทุกคน ให้ทุกคนพูดว่า
+            โมเน่ต์ โมเน่ต์นะคะ ทุกคนอย่าเพิ่งไปไหน มานี่ก่อน มานี่ มานี่
+            โมเน่ต์ โมเน่ต์ มานี่มานี่ โมเน่ต์ โมเน่ต์ อีกรอบนะคะ มานี่ มานี่
+            มานี่ โมเน่ต์ โมเน่ต์
+          </p>
+
+          <div class="info-achievements d-flex flex-column gap-0">
+            <p class="section-label" style="margin-bottom:1.25rem">
+              Achievements
+            </p>
+            <ol class="info-achieve-list">
+              <li>
+                ตำแหน่ง <strong>Center</strong> จากการเลือกตั้ง BNK48 &amp; CGM48
+                Required Hour ในเพลง <a
+                  href="https://music.apple.com/th/album/rumor-single/1801922426"
+                  class="highlight-link">Rumor</a
+                >
+              </li>
+              <li>
+                <strong>นักแสดงในบท</strong> ภายภาพยนตร์เรื่อง
+                <a
+                  href="https://www.netflix.com/watch/81677623?source=35"
+                  class="highlight-link"
+                  >"14 อีกครั้ง I Love You Two Thousand"</a
+                >
+              </li>
+              <li>
+                <strong>นักแสดงหลักในบท</strong> ภายในซีรี่ย์ Girls love <a
+                  href="https://www.youtube.com/watch?v=B26d-oTWt4A&list=PLPW9IgM1jwdvR5rvRpj5C9ESrtpoV12qV"
+                  class="highlight-link">"Shock Me Girls รักช็อตใจยัยช็อตฟิล"</a
+                >
+              </li>
+              <li>
+                Senbatsu อันดับที่ <strong>13<sup>th</sup></strong> จากการเลือกตั้ง
+                BNK48 &amp; CGM48 Senbatsu General Election 2023
+              </li>
+              <li>
+                เซ็มบัตสึในซิงเกิลและอัลบั้มของ <a
+                  href="https://tpop.fandom.com/wiki/Monet_(BNK48)"
+                  class="highlight-link">BNK48</a
+                > อย่างต่อเนื่อง
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+
+      <!-- Media cards row -->
+      <div
+        class="info-media-row row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-3"
+      >
+        {
+          [
+            {
+              src: "/img/GE-2023.jpg",
+              alt: "General Election 2023",
+              caption: "General Election 2023 — อันดับที่ 13",
+            },
+            {
+              src: "/img/ILoveYouTwoThousand.jpg",
+              alt: "I Love You Two Thousand",
+              caption: 'นักแสดง "ซาร่า" — I Love You Two Thousand',
+            },
+            {
+              src: "/img/ShockMeGirls.jpg",
+              alt: "Shock Me Girls",
+              caption: 'นักแสดงหลัก "จอจี้" — Shock Me Girls',
+            },
+            {
+              src: "/img/Rumor.jpg",
+              alt: "Rumor Center",
+              caption: "Center Position — Rumor",
+            },
+          ].map(({ src, alt, caption }) => (
+            <div class="info-media-card slide-right col">
+              <div class="info-media-card-img">
+                <img src={src} alt={alt} loading="lazy" />
+              </div>
+              <p class="info-media-card-caption">{caption}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Social ── -->
+  <section id="social">
+    <div class="container-xxl p-0">
+      <p class="section-label">Follow Monet</p>
+      <h2 class="section-title mb-5">Social Media</h2>
+
+      <div class="row overflow-hidden mx-auto w-100 p-0 mb-3">
+        <!-- Instagram embed -->
+        <div
+          class="slide-right overflow-hidden mb-3 col-12 col-lg-6"
+          data-embed-type="instagram"
+        >
+          <div class="embed-block overflow-hidden">
+            <a
+              href="https://www.instagram.com/monet.bnk48official/"
+              target="_blank"
+              class="social-link"
+              style="color:inherit"
+            >
+              <div class="ig-banner">
+                <div class="fw-bold h5">
+                  <i class="fa-brands fa-instagram front platform-icon"></i>
+                  <i class="fa-brands fa-instagram back platform-icon"></i>
+                  Instagram
+                </div>
+                <div class="fw-bold h3">
+                  monet.bnk48official <i
+                    class="fa-solid fa-arrow-right arrow-icon ms-1"></i>
+                </div>
+              </div>
+            </a>
+            <div class="embed-ig">
+              <iframe
+                data-src="https://www.instagram.com/monet.bnk48official/embed/?cr=1&v=14"
+                title="Instagram feed"
+                height="559"
+                loading="lazy"
+                frameborder="0"
+                scrolling="no"
+                allowtransparency="true"
+                style="background-color:#fff;width:100%"
+                data-lazy-iframe></iframe>
+            </div>
+          </div>
+        </div>
+
+        <!-- TikTok embed -->
+        <div
+          class="slide-right overflow-hidden mb-3 col-12 col-lg-6"
+          data-embed-type="tiktok"
+        >
+          <div class="embed-block overflow-hidden">
+            <a
+              href="https://www.tiktok.com/@monet.bnk48official"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="social-link"
+              style="color:inherit"
+            >
+              <div class="tiktok-banner">
+                <div class="fw-bold h5">
+                  <i class="fa-brands fa-tiktok front platform-icon"></i>
+                  <i class="fa-brands fa-tiktok back platform-icon"></i>
+                  TikTok
+                </div>
+                <div class="fw-bold h3">
+                  monét <i class="fa-solid fa-arrow-right arrow-icon ms-1"></i>
+                </div>
+              </div>
+            </a>
+            <div class="embed-tiktok">
+              <blockquote
+                class="tiktok-embed"
+                cite="https://www.tiktok.com/@monet.bnk48official"
+                data-unique-id="monet.bnk48official"
+                data-embed-type="creator"
+              >
+                <section>
+                  <a
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href="https://www.tiktok.com/@monet.bnk48official?refer=creator_embed"
+                    >@monet.bnk48official</a
+                  >
+                </section>
+              </blockquote>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script is:inline async src="https://www.tiktok.com/embed.js"></script>
+
+      <!-- Social links — editorial separator style -->
+      <div class="d-flex flex-column gap-0 mb-5">
+        {
+          [
+            {
+              href: "https://www.instagram.com/monet.bnk48official/",
+              cls: "-instagram",
+              icon: "icon-instagram",
+              label: "Instagram",
+              name: "monet.bnk48official",
+            },
+            {
+              href: "https://www.facebook.com/bnk48official.monet",
+              cls: "-facebook",
+              icon: "icon-facebook",
+              label: "Facebook",
+              name: "Monet BNK48",
+            },
+          ].map(({ href, cls, icon, label, name }) => (
+            <a
+              href={href}
+              class={`slide-right social-box ${cls} social-link mb-0 rounded-0 border-0`}
+              target="_blank"
+              title={label}
+            >
+              <svg
+                class="svg-inline--fa front"
+                viewBox="0 0 448 512"
+                role="img"
+                aria-hidden="true"
+              >
+                <use href={`#${icon}`} />
+              </svg>
+              <svg
+                class="svg-inline--fa back"
+                viewBox="0 0 448 512"
+                role="img"
+                aria-hidden="true"
+              >
+                <use href={`#${icon}`} />
+              </svg>
+              <div>
+                <div class="fw-bold social-label h6">
+                  {label} <i class="fa-solid fa-arrow-right arrow-icon" />
+                </div>
+                <div class="fw-bold social-label h4">{name}</div>
+              </div>
+            </a>
+          ))
+        }
+
+        <!-- iAM48 -->
+        <a
+          href="https://app.bnk48.com/member-profile/88"
+          class="slide-right social-box -iam48 social-link mb-0 rounded-0 border-0"
+          target="_blank"
+          title="iAM48"
+        >
+          <svg
+            viewBox="0 0 512 512"
+            class="svg-inline--fa fa-iam48 front"
+            role="img"
+            aria-hidden="true"
+          >
+            <path
+              d="M 146.29372,3.75e-7 124.34009,5.1686694 5.995921e-7,366.34064 3.5268006,381.1544 211.05007,330.63881 c 0,0 6.56149,22.98403 13.12297,49.74399 12.95894,52.69908 17.716,65.50445 31.00301,82.57827 30.67492,40.05788 80.70623,57.46007 129.2612,45.14719 43.44872,-16.5308 52.81111,-23.86406 78.08164,-56.96753 7.70974,-13.29789 14.5993,-33.9835 16.40371,-50.89318 7.21763,-63.37022 -37.40045,-122.47201 -100.22664,-132.81481 -6.56148,-0.98504 -12.30278,-2.13422 -12.63086,-2.46256 -0.32807,-0.16419 4.26497,-5.58185 10.17031,-11.82036 23.29325,-24.62575 32.15126,-57.95257 24.11344,-89.47349 -4.59304,-18.0589 -11.97471,-31.19261 -25.42574,-44.65468 -19.0283,-19.372256 -41.50138,-28.565856 -69.71576,-28.565856 -46.75056,0 -84.9712,30.371736 -96.9459,76.832296 -3.93689,15.76046 -3.93687,27.74498 0.16403,43.66963 4.59304,18.05888 12.13875,31.19259 25.42576,44.65468 12.63084,12.6412 28.87053,21.99898 44.7821,25.61077 4.59304,1.14918 8.3659,2.62673 8.20186,3.11926 -0.32808,0.65668 -5.24918,4.76098 -11.15452,9.19359 -9.67818,7.22354 -19.66531,8.47674 -19.66531,8.47674 l -32.00636,8.1046 z M 134.60881,27.578094 205.80089,315.20668 18.142491,362.65225 Z m 170.08456,76.276826 c 5.3107,-0.0206 10.60226,0.71963 17.4098,2.19717 62.99023,13.2979 86.77561,93.24947 41.50138,139.54585 -33.1355,33.81932 -84.80717,33.81932 -118.27073,-0.16419 -45.76633,-46.29639 -21.98096,-125.42708 41.82945,-139.21748 6.88956,-1.55962 12.21941,-2.34081 17.5301,-2.36135 z m 47.71839,175.01238 c 9.65511,-0.20008 19.59969,0.79623 29.72898,3.01255 27.0661,6.07434 55.28048,28.23751 68.73152,54.17662 22.80115,44.32633 15.74756,95.3837 -17.716,128.7105 -21.81693,21.67065 -42.64963,31.02843 -72.66841,32.50597 -10.66242,0.49252 -21.65289,0 -27.88631,-1.31336 -40.18908,-7.88024 -74.47282,-41.53542 -83.98698,-82.90665 -3.77284,-15.76046 -3.49685,-41.48294 2.13249,-57.14265 4.75708,-14.28292 13.94315,-32.00252 25.42574,-43.65868 20.91473,-21.42442 47.27361,-32.78405 76.23897,-33.3843 z m -99.92591,40.16729 c 0,0 -5.26957,6.02265 -10.18671,15.85352 -4.91715,9.83086 -7.79176,18.2422 -7.79176,18.24219 l -7.02079,-27.26068 z"
+              fill="currentColor"></path>
+          </svg>
+          <svg
+            viewBox="0 0 512 512"
+            class="svg-inline--fa back fa-iam48"
+            role="img"
+            aria-hidden="true"
+          >
+            <use href="#icon-iam48"></use>
+          </svg>
+          <div>
+            <div class="fw-bold social-label h6">
+              iAM48 <i class="fa-solid fa-arrow-right arrow-icon ms-1"></i>
+            </div>
+            <div class="fw-bold social-label h4">Monet</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Library ── -->
+  <section id="library">
+    <div class="container-xxl p-0">
+      <p class="section-label">Selected Work</p>
+      <h2 class="section-title mb-5">Highlights</h2>
+
+      <!-- Main video — featured split layout -->
+      <div
+        class="slide-right mb-4 youtube-block youtube-block-featured"
+        data-video-id="VlVJWXXZCOQ"
+      >
+        <div class="info p-4">
+          <p class="video-badge">
+            <i class="fa-solid fa-star" aria-hidden="true"></i>
+            Center Position
+          </p>
+          <h3 class="video-title h1">RUMOR</h3>
+          <p class="video-sub">BNK48 Special Single</p>
+        </div>
+        <div class="ratio ratio-16x9">
+          <iframe
+            data-src="https://www.youtube.com/embed/Pcbp5MYnHJA?si=p9HNfoCaMnNwOIgk"
+            allowfullscreen
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            loading="lazy"
+            title="Rumor — Center Position"
+            data-lazy-iframe
+            style="background:#111"></iframe>
+        </div>
+      </div>
+
+      <!-- Sub videos -->
+      <div class="mb-4 row g-4">
+        {
+          [
+            {
+              videoId: "IGs_wYY3uYk",
+              embed: "IGs_wYY3uYk?si=OK8y5WRmkLGq9bvZ",
+              badge: "SENBATSU",
+              title: "BNK48 16th Single Senbatsu General Election",
+              sub: `BNK48 16<sup>th</sup> Single Song`,
+            },
+            {
+              videoId: "5Z-gvAGQueA",
+              embed: "5Z-gvAGQueA?si=GU95dNTql3WM3BEu",
+              badge: "SENBATSU",
+              title: "Kiss Me! (ให้ฉันได้รู้)",
+              sub: "BNK48 16<sup>th</sup> Single Song",
+            },
+            {
+              videoId: "g3RrDbY7FEk",
+              embed: "g3RrDbY7FEk?si=u-PQfSMUySXjGpIW",
+              badge: "SENBATSU",
+              title: "Ponytail to Shushu",
+              sub: "BNK48 6<sup>th</sup> ALBUM LEAD",
+            },
+            {
+              videoId: "vFkKaOmLEoY",
+              embed: "vFkKaOmLEoY?si=3nJhY0NYHBZCzjvm",
+              badge: "First Time Senbatsu",
+              title: "Iiwake Maybe",
+              sub: "BNK48 13<sup>th</sup> Single Song",
+            },
+          ].map(({ videoId, embed, badge, title, sub }) => (
+            <div class="slide-right col-sm-12 col-md-6" data-video-id={videoId}>
+              <div class="youtube-block h-100 d-flex flex-column justify-content-between">
+                <div class="info p-3">
+                  <p class="video-badge mb-1">
+                    <i class="fa-solid fa-star" aria-hidden="true" />
+                    {badge}
+                  </p>
+                  <h3 class="video-title h5">{title}</h3>
+                  <p class="video-sub" set:html={sub} />
+                </div>
+                <div class="ratio ratio-16x9">
+                  <iframe
+                    data-src={`https://www.youtube.com/embed/${embed}`}
+                    allowfullscreen
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    loading="lazy"
+                    title={title}
+                    data-lazy-iframe
+                    style="background:#111"
+                  />
+                </div>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Community ── -->
+  <section id="community">
+    <div class="container-xxl p-0">
+      <p class="section-label">Community</p>
+      <h2 class="section-title mb-5">Monet's Fan Community</h2>
+
+      <div class="d-flex flex-column gap-0 mb-5">
+        <!-- LINE OpenChat -->
+        <a
+          href="https://line.me/ti/g2/MYo3l6qJus2XwQ4ZEU2Id93CiclaiTRQfNPVsA?utm_source=invitation&utm_medium=link_copy&utm_campaign=default"
+          class="slide-right social-box -line social-link mb-0 rounded-0 border-0"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="LINE OpenChat - โมนี่ของโมเน่ต์"
+        >
+          <svg
+            class="svg-inline--fa front"
+            viewBox="0 0 512 512"
+            role="img"
+            aria-hidden="true"
+          >
+            <use href="#icon-line"></use>
+          </svg>
+          <svg
+            class="svg-inline--fa back"
+            viewBox="0 0 512 512"
+            role="img"
+            aria-hidden="true"
+          >
+            <use href="#icon-line"></use>
+          </svg>
+          <div>
+            <div class="fw-bold social-label h6">
+              LINE OpenChat <i class="fa-solid fa-arrow-right arrow-icon ms-1"
+              ></i>
+            </div>
+            <div class="fw-bold social-label h4">
+              โมนี่ของโมเน่ต์ - Monet BNK48 Supporters
+            </div>
+          </div>
+        </a>
+
+        <!-- X (Twitter) Fanclub -->
+        <a
+          href="https://x.com/MonetBNK48FC"
+          class="slide-right social-box -x-twitter social-link mb-0 rounded-0 border-0"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="X (Twitter) - MonetBNK48FC"
+        >
+          <svg
+            class="svg-inline--fa front"
+            viewBox="0 0 512 512"
+            role="img"
+            aria-hidden="true"
+          >
+            <use href="#icon-x-twitter"></use>
+          </svg>
+          <svg
+            class="svg-inline--fa back"
+            viewBox="0 0 512 512"
+            role="img"
+            aria-hidden="true"
+          >
+            <use href="#icon-x-twitter"></use>
+          </svg>
+          <div>
+            <div class="fw-bold social-label h6">
+              X (Twitter) Fanclub <i
+                class="fa-solid fa-arrow-right arrow-icon ms-1"></i>
+            </div>
+            <div class="fw-bold social-label h4">@MonetBNK48FC</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Promo Popup -->
+  <div id="promo-popup-overlay">
+    <div class="promo-popup-container p-0 p-0">
+      <button
+        class="promo-popup-close"
+        onclick="closePromoPopup()"
+        id="promoCloseBtn"
+      >
+        <svg
+          viewBox="0 0 460.775 460.775"
+          height="15.5px"
+          width="16px"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M285.08,230.397L456.218,59.27c6.076-6.077,6.076-15.911,0-21.986L423.511,4.565c-2.913-2.911-6.866-4.55-10.992-4.55c-4.127,0-8.08,1.639-10.993,4.55l-171.138,171.14L59.25,4.565c-2.913-2.911-6.866-4.55-10.993-4.55c-4.126,0-8.08,1.639-10.992,4.55L4.558,37.284c-6.077,6.075-6.077,15.909,0,21.986l171.138,171.128L4.575,401.505c-6.074,6.077-6.074,15.911,0,21.986l32.709,32.719c2.911,2.911,6.865,4.55,10.992,4.55c4.127,0,8.08-1.639,10.994-4.55l171.117-171.12l171.118,171.12c2.913,2.911,6.866,4.55,10.993,4.55c4.128,0,8.081-1.639,10.992-4.55l32.709-32.719c6.074-6.075,6.074-15.909,0-21.986L285.08,230.397z"
+          ></path>
+        </svg>
+      </button>
+      <div class="promo-image-wrapper">
+        <img
+          src="https://pbs.twimg.com/media/HOoSsuGawAAQkoR?format=jpg&name=large"
+          alt="Monet BNK48 Special Announcement"
+          class="img-fluid w-100"
+          style="object-fit: cover;"
+        />
+      </div>
+      <div
+        class="promo-footer d-flex justify-content-center p-3 position-absolute"
+      >
+        <button
+          class="editorial-link p-0"
+          style="border: none; background: none; color:#fff"
+          onclick="neverShowPromoPopup()"
+        >
+          ไม่แสดงอีก (Do not show again)
+          <i class="fa-solid fa-arrow-right ms-2" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script is:inline>
+    document.addEventListener("DOMContentLoaded", () => {
+      const promoOverlay = document.getElementById("promo-popup-overlay");
+      if (!promoOverlay) return;
+
+      // Check local storage and date
+      const hidePromo = localStorage.getItem("hidePromoPopup");
+      const currentDate = new Date();
+      // Set expiry date to 12 November 2026, 23:59:59
+      const expiryDate = new Date("2026-11-12T23:59:59+07:00");
+
+      if (!hidePromo && currentDate <= expiryDate) {
+        promoOverlay.classList.add("active");
+      }
+
+      window.closePromoPopup = () => {
+        promoOverlay.classList.remove("active");
+      };
+
+      window.neverShowPromoPopup = () => {
+        localStorage.setItem("hidePromoPopup", "true");
+        promoOverlay.classList.remove("active");
+      };
+    });
+  </script>
+</MainLayout>

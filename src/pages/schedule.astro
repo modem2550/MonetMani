@@ -1,0 +1,148 @@
+---
+import MainLayout from "@/app/layouts/MainLayout.astro";
+import EventCard from "@/shared/components/EventCard.astro";
+import { fetchAllEvents } from "@/services/events";
+import { categorizeEvents } from "@/shared/utils/dateUtils";
+import { buildEventSchemas } from "@/shared/utils/schema";
+
+Astro.response.headers.set(
+    "Cache-Control",
+    "public, max-age=0, s-maxage=300, stale-while-revalidate=86400",
+);
+
+const { upcoming, past } = categorizeEvents(await fetchAllEvents());
+const eventSchemas = buildEventSchemas(upcoming);
+---
+
+<MainLayout
+    title="Monet BNK48 - Schedule & Events"
+    description="อัปเดตตารางงาน กิจกรรม งานแฟนมีต และตารางออกงานล่าสุดของ Monet BNK48"
+>
+    {
+        eventSchemas.map((schema) => (
+            <script
+                is:inline
+                type="application/ld+json"
+                set:html={JSON.stringify(schema)}
+                slot="head"
+            />
+        ))
+    }
+    <div class="schedule-page container">
+        <!-- ── Page header ── -->
+        <header class="schedule-header">
+            <p class="section-label">All Events</p>
+            <h1 class="schedule-page-title">
+                Monét's <span class="schedule-title-sub">Event Schedule</span>
+            </h1>
+            <p class="schedule-page-subtitle">
+                ตารางงานและกิจกรรมของโมเน่ต์ BNK48
+            </p>
+        </header>
+
+        <div class="page-shell page-main">
+            <!-- ── Upcoming ── -->
+            {
+                upcoming.length > 0 && (
+                    <section
+                        id="upcoming-events-section"
+                        class="events-section"
+                        style="padding: 0;"
+                        aria-labelledby="upcoming-heading"
+                    >
+                        <div class="mb-4">
+                            <p class="section-label">Upcoming</p>
+                            <h2 id="upcoming-heading" class="section-title">
+                                Next Events
+                            </h2>
+                        </div>
+                        <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 g-4 flex-nowrap overflow-x-scroll">
+                            {" "}
+                            {upcoming.map((event) => (
+                                <div class="col d-flex justify-content-center">
+                                    <EventCard event={event} isPast={false} />
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+                )
+            }
+
+            <!-- ── Back home ── -->
+            <div class="my-5">
+                <a class="editorial-link" href="/">
+                    <i class="fa-solid fa-arrow-left me-1" aria-hidden="true"
+                    ></i>
+                    กลับหน้าหลัก
+                </a>
+            </div>
+
+            <!-- ── Past ── -->
+            <section
+                id="past-events-section"
+                class="events-section"
+                aria-labelledby="past-heading"
+            >
+                <div class="mb-4">
+                    <p class="section-label">Archive</p>
+                    <h2 id="past-heading" class="section-title">
+                        Past Events
+                        {
+                            past.length > 0 && (
+                                <span class="schedule-count">
+                                    {past.length}
+                                </span>
+                            )
+                        }
+                    </h2>
+                </div>
+
+                {
+                    past.length > 0 ? (
+                        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4 event-past">
+                            {past.map((event) => (
+                                <div class="col d-flex justify-content-center">
+                                    <EventCard
+                                        event={event}
+                                        isPast={true}
+                                        variant="compact"
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div class="empty-state" />
+                    )
+                }
+            </section>
+        </div>
+    </div>
+</MainLayout>
+
+<style>
+    .container {
+        max-width: 1320px !important;
+        margin: 0 auto;
+    }
+</style>
+<script>
+    // Scroll-to-top button
+    const scrollToTopBtn = Object.assign(document.createElement("button"), {
+        id: "scroll-to-top",
+        className: "btn btn-outline-secondary btn-sm",
+        innerHTML: "↑",
+        title: "กลับสู่ด้านบน",
+    });
+    scrollToTopBtn.setAttribute("aria-label", "กลับสู่ด้านบน");
+    document.body.appendChild(scrollToTopBtn);
+
+    const setVisible = (visible: boolean) => {
+        scrollToTopBtn.style.opacity = visible ? "1" : "0";
+        scrollToTopBtn.style.pointerEvents = visible ? "auto" : "none";
+    };
+
+    window.addEventListener("scroll", () => setVisible(window.scrollY > 300));
+    scrollToTopBtn.addEventListener("click", () =>
+        window.scrollTo({ top: 0, behavior: "smooth" }),
+    );
+</script>

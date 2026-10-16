@@ -1,0 +1,303 @@
+/* =============================================================================
+   GALLERY PAGE — Editorial Layout (Photo / Video)
+   ============================================================================= */
+
+.gallery-page {
+    background-color: var(--c-bg);
+    padding: 0 var(--section-pad-x) 5rem !important;
+    min-height: 100svh;
+}
+
+// ── Page header ───────────────────────────────────────────────────────────
+
+.gallery-header {
+    padding: calc(70px + clamp(2.5rem, 6vw, 5rem)) 0 clamp(2rem, 4vw, 3rem);
+    border-bottom: 1px solid var(--c-border);
+    margin-bottom: clamp(1.75rem, 4vw, 2.5rem);
+}
+
+.gallery-page-title {
+    font-size: clamp(2.5rem, 7vw, 5rem);
+    font-weight: 900;
+    line-height: 0.95;
+    color: var(--c-content);
+    margin: 0.5rem 0 0.75rem;
+    letter-spacing: -0.03em;
+}
+
+.gallery-title-sub {
+    font-size: clamp(1.6rem, 4.5vw, 3.5rem);
+    font-weight: 300;
+    letter-spacing: 0.02em;
+    color: var(--c-content-secondary);
+}
+
+.gallery-page-subtitle {
+    font-size: var(--fs-label);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--c-content-muted);
+    margin: 0;
+}
+
+/* =============================================================================
+   TABS — Photo / Video switch
+   ============================================================================= */
+
+.gallery-tabs {
+    position: relative;
+    display: inline-flex;
+    gap: clamp(1.5rem, 4vw, 3rem);
+    margin-bottom: clamp(1.75rem, 4vw, 2.5rem);
+    border-bottom: 1px solid var(--c-border);
+}
+
+.gallery-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    padding: 0 0 0.85rem;
+    font-size: var(--fs-label);
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--c-content-muted);
+    cursor: pointer;
+    transition: color 0.25s ease;
+
+    i {
+        font-size: 0.85rem;
+    }
+
+    &:hover {
+        color: var(--c-content);
+    }
+
+    &.is-active {
+        color: var(--c-content);
+    }
+}
+
+.gallery-tab-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: var(--c-content-muted);
+    border: 1.5px solid var(--c-border);
+    border-radius: 100px;
+    padding: 1px 7px;
+    line-height: 1.6;
+}
+
+.gallery-tabs-indicator {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    height: 2px;
+    width: 0;
+    background: var(--c-primary);
+    transition:
+        transform 0.3s cubic-bezier(0.65, 0, 0.35, 1),
+        width 0.3s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* =============================================================================
+   PANELS — เนื้อหาแต่ละแท็บ (ไม่มี padding ของตัวเอง — section padding: 0)
+   การเปลี่ยนแท็บใช้แค่ show/hide เฉย ๆ เพราะ animation อยู่ที่ระดับการ์ดแล้ว
+   ============================================================================= */
+
+.gallery-viewport {
+    position: relative;
+    // clip-path แทน overflow: hidden เพื่อ clip absolute panel ระหว่าง transition
+    // โดยไม่ทำลาย position: sticky ของ .gallery-year-label
+    clip-path: inset(0);
+}
+
+.gallery-panel {
+    // section (จาก _sections.scss) มี padding เริ่มต้น — ที่นี่ต้องเป็น 0 ทั้งคู่
+    padding: 0;
+    background: transparent;
+
+    &[hidden] {
+        display: none;
+    }
+}
+
+.gallery-empty {
+    color: var(--c-content-muted);
+    font-size: var(--fs-body);
+    padding: 3rem 0;
+    text-align: center;
+}
+
+/* =============================================================================
+   YEAR DIVIDER — ตัวเลขปีคั่นกลุ่ม พร้อม sticky ตอนเลื่อนผ่านกลุ่มนั้น
+   ============================================================================= */
+
+.gallery-year-group {
+    position: relative;
+
+    &+& {
+        margin-top: clamp(2rem, 4vw, 3.5rem);
+    }
+}
+
+.gallery-year-label {
+    position: sticky;
+    top: 66px;
+    z-index: 5;
+    display: block;
+    padding: 0.9rem 0;
+    margin-bottom: clamp(1rem, 2.5vw, 1.5rem);
+    background: var(--c-bg);
+
+    span {
+        display: inline-block;
+        font-size: clamp(1.6rem, 4vw, 2.5rem);
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        line-height: 1;
+        color: var(--c-content);
+    }
+}
+
+/* =============================================================================
+   GELLERY CARD — Photo / Video (16:9, no border, event-only sub-caption,
+   รายละเอียดอื่น ๆ โผล่ตอน hover แบบเลื่อนขึ้น ไม่ซูมรูป)
+   ============================================================================= */
+
+.gellery-card {
+    // Clip-path ล้วน ต่อการ์ด (ไม่มี transform: translate และไม่มี opacity/fade)
+    clip-path: inset(100% 0 0 0);
+    transition: clip-path 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+    will-change: clip-path;
+
+    &.is-visible {
+        clip-path: inset(0 0 0 0);
+    }
+
+    // ตอน exit: clip จากล่างขึ้นบน (bottom inset โตจาก 0% เป็น 100%)
+    &.is-exiting {
+        clip-path: inset(0 0 100% 0);
+    }
+
+    &-link {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    &-media {
+        position: relative;
+        aspect-ratio: 16 / 9;
+        overflow: hidden;
+        background: var(--c-surface-alt);
+        border: none;
+        box-shadow: none;
+    }
+
+    &-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: top;
+        display: block;
+    }
+
+    &-fallback {
+        width: 100%;
+        height: 100%;
+        background: var(--c-surface-alt);
+    }
+
+    // รายละเอียด (event ที่หรือวันที่) เลื่อนขึ้นมาจากด้านล่างตอน hover — ไม่มี zoom รูป
+    &-overlay {
+        position: absolute;
+        inset: auto 0 0 0;
+        display: flex;
+        flex-direction: column-reverse;
+        gap: 2px;
+        height: 100%;
+        padding: 0.65rem 0.75rem;
+        background: rgba(0, 0, 0, 0.45);
+        color: var(--c-light);
+        transform: translateY(100%);
+        opacity: 0;
+        transition:
+            transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+            opacity 0.3s ease;
+        pointer-events: none;
+    }
+
+    &-overlay-line {
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        line-height: 1.35;
+    }
+
+    &:hover &-overlay,
+    &:focus-within &-overlay {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    // Caption: มีแค่ event เป็น sub เบา ๆ ไม่เด่น
+    &-caption {
+        font-size: 0.7rem;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        color: var(--c-content-muted);
+        margin: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .gellery-card {
+        transition: none;
+        clip-path: inset(0 0 0 0) !important;
+    }
+
+    .gellery-card-overlay {
+        transition: none;
+    }
+}
+
+/* =============================================================================
+   INFINITE SCROLL — sentinel + loading indicator
+   ============================================================================= */
+
+.gallery-sentinel {
+    height: 1px;
+}
+
+.gallery-loading {
+    text-align: center;
+    padding: 2rem 0;
+    font-size: var(--fs-label);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--c-content-muted);
+
+    &[hidden] {
+        display: none;
+    }
+}
+
+@media (max-width: 992px) {
+    .gallery-page {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+}

@@ -1,0 +1,143 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   HERO SECTION — Editorial Layout
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@use '../utilities/mixins' as *;
+// ── Overlay: left-side darkening + bottom fade ─────────────────────────────
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  // Left dark panel for legibility + bottom fade into next section
+  background:
+    linear-gradient(235deg,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.3) 100%,
+      transparent 100%),
+    linear-gradient(10deg,
+      color-mix(in srgb, var(--c-primary) 80%, black) 0%,
+      transparent 35%);
+}
+
+// ── Text wrapper — bottom-left editorial ──────────────────────────────────
+
+.hero-text-wrapper {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  padding: 0 clamp(1.5rem, 6vw, 5rem) clamp(3rem, 7vh, 5.5rem);
+}
+
+// ── Editorial title block ──────────────────────────────────────────────────
+
+.hero-title {
+  color: var(--c-light) !important;
+  text-align: left;
+  font-weight: 400 !important;
+  margin-bottom: 0;
+  line-height: 1;
+
+  strong {
+    font-weight: 900 !important;
+  }
+}
+
+.hero-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: var(--fs-label);
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--c-light) 70%, transparent);
+  margin-bottom: 1rem;
+
+  &::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 1px;
+    background: color-mix(in srgb, var(--c-light) 60%, transparent);
+    flex-shrink: 0;
+  }
+}
+
+.hero-name {
+  font-size: var(--fs-editorial);
+  font-weight: 900;
+  line-height: 0.88;
+  letter-spacing: -0.02em;
+  color: var(--c-light);
+  text-shadow: 0 4px 40px rgba(0, 0, 0, 0.4);
+  display: block;
+  margin-bottom: 1.25rem;
+}
+
+.hero-sub {
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--c-light) 75%, transparent);
+  display: block;
+}
+
+// ── Special Project CTA button ─────────────────────────────────────────────
+
+// ── Scroll hint ────────────────────────────────────────────────────────────
+
+.hero-scroll-hint {
+  position: absolute;
+  bottom: 2.5rem;
+  right: clamp(1.5rem, 5vw, 4rem);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: color-mix(in srgb, var(--c-light) 55%, transparent);
+  font-size: var(--fs-label);
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+
+  &__line {
+    width: 1px;
+    height: 48px;
+    background: color-mix(in srgb, var(--c-light) 40%, transparent);
+    animation: hero-line-pulse 2s ease-in-out infinite;
+    transform-origin: top;
+  }
+}
+
+@keyframes hero-line-pulse {
+
+  0%,
+  100% {
+    transform: scaleY(1);
+    opacity: 0.5;
+  }
+
+  50% {
+    transform: scaleY(0.5);
+    opacity: 1;
+  }
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────
+
+@include bp-max(600px) {
+  .hero-scroll-hint {
+    display: none;
+  }
+
+  .hero-text-wrapper {
+    padding-bottom: 5rem;
+  }
+}
+
+// ── .sf-hero (Shared styles — schedule & other pages) ─────────────────────

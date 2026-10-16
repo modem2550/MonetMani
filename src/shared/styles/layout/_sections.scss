@@ -1,0 +1,58 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   SECTION BLOCKS — Editorial
+   ═══════════════════════════════════════════════════════════════════════════ */
+section {
+  padding: var(--section-pad-y) var(--section-pad-x);
+  background-color: var(--c-bg);
+  color: var(--c-content);
+}
+
+// ── Section label (small caps above big title) ────────────────────────────
+
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--fs-label);
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--c-content-muted);
+  margin-bottom: 0.75rem;
+  padding-right: calc(var(--bs-gutter-x) * .5);
+  padding-left: calc(var(--bs-gutter-x) * .5);
+
+  &::before {
+    content: '';
+    display: block;
+    width: 28px;
+    height: 1.5px;
+    background: currentColor;
+    flex-shrink: 0;
+  }
+}
+
+// ── Section big title ─────────────────────────────────────────────────────
+
+.section-title {
+  font-size: clamp(2rem, 4.5vw, 3.25rem);
+  font-weight: 900;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+}
+
+// Section variants
+#home {
+  padding: 0;
+  height: 100lvh;
+}
+
+#event {
+  background: var(--c-bg);
+  color: var(--c-content);
+  border-top: 2px solid var(--c-border);
+}
+
+#library {
+  background-color: var(--c-surface);
+}

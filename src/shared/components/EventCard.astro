@@ -1,0 +1,123 @@
+---
+// ./components/EventCard.astro
+import { formatEventDate } from "@/shared/utils/dateUtils";
+import { safeHref, safeImageUrl, cssUrlEscape } from "@/shared/utils/urlSafety";
+import type { Event } from "@/types/event";
+
+interface Props {
+    event: Event;
+    isPast?: boolean;
+    variant?: "default" | "compact";
+}
+
+const { event, isPast = false, variant = "default" } = Astro.props;
+
+function resolveImages(event: Event) {
+    const medium = safeImageUrl(
+        event.storage_url ??
+            event.image_urls?.storage_large ??
+            event.image_urls?.storage_medium ??
+            event.image_urls?.large ??
+            event.image_urls?.medium ??
+            event.image_url ??
+            event.thumbnail_url,
+    );
+    return { bg: medium };
+}
+
+const title = event.title ?? event.event ?? "";
+const location = event.location ?? event.place;
+const { bg: backgroundImage } = resolveImages(event);
+// event.link มาจาก DB เช่นกัน — ถ้าไม่ใช่ http(s) URL ที่ถูกต้อง จะไม่ render เป็น href
+// (ป้องกัน scheme อันตราย เช่น javascript:)
+const eventLink = safeHref(event.link);
+const formattedDate = formatEventDate(event.date, event.end_date);
+
+const cardClasses = [
+    "event-card-wrapper",
+    isPast && "is-past-event",
+    variant === "compact" && "is-compact",
+]
+    .filter(Boolean)
+    .join(" ");
+
+const statusLabel = isPast ? "อีเวนต์ที่ผ่านมา" : "อีเวนต์ที่กำลังจะมา";
+---
+
+<article
+    class={cardClasses}
+    data-event-id={event.id}
+    aria-label={`${statusLabel}: ${title}`}
+>
+    <!-- ภาพปกหลัก -->
+    <a
+        href={eventLink ?? "#"}
+        class="card-detail-link"
+        target={eventLink ? "_blank" : undefined}
+        rel={eventLink ? "noopener noreferrer" : undefined}
+        aria-disabled={eventLink ? undefined : "true"}
+        onclick={eventLink ? undefined : "event.preventDefault()"}
+        aria-label={`ดูรายละเอียดเพิ่มเติม: ${title} (เปิดในหน้าต่างใหม่)`}
+    >
+        <div
+            class="card-cover-img"
+            style={`background-image:url('${cssUrlEscape(backgroundImage)}')`}
+            role="img"
+            aria-label={`ภาพปกอีเวนต์: ${title}`}
+        >
+        </div>
+
+        <!-- ข้อมูลอีเวนต์ -->
+        <div
+            class="card-info position-relative z-1"
+            style="transition: background 0.2s ease;"
+        >
+            <div class="card-content d-flex flex-column py-4">
+                <h3 class="h5 event-title fw-bold">
+                    {title}
+                </h3>
+
+                {
+                    location && (
+                        <div class="card-meta-row d-grid gap-2 align-items-baseline">
+                            <i
+                                class="fa-solid fa-location-dot text-center"
+                                aria-hidden="true"
+                            />
+                            <p class="mb-0 fw-semibold m-0">
+                                <span class="visually-hidden">สถานที่: </span>
+                                {location}
+                            </p>
+                        </div>
+                    )
+                }
+
+                <div class="card-meta-row d-grid gap-2 align-items-baseline">
+                    <i
+                        class="fa-solid fa-calendar text-center"
+                        aria-hidden="true"></i>
+                    <p class="mb-0 fw-semibold m-0">
+                        <span class="visually-hidden">วันที่: </span>{
+                            formattedDate
+                        }
+                    </p>
+                </div>
+
+                {
+                    event.live && (
+                        <div class="card-meta-row d-grid gap-2 align-items-baseline">
+                            <i
+                                class="fa-solid fa-play text-center"
+                                aria-hidden="true"
+                            />
+                            <p class="mb-0 fw-semibold m-0">
+                                <span class="visually-hidden">ถ่ายทอดสด: </span>
+                                {event.live}
+                            </p>
+                        </div>
+                    )
+                }
+            </div>
+        </div>
+    </a>
+</article>

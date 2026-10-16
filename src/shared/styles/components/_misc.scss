@@ -1,0 +1,266 @@
+// =============================================================================
+// COMPONENTS — Social boxes (map), icons, back-icon hover effects
+// =============================================================================
+
+@use 'sass:map';
+@use '../utilities/mixins' as *;
+
+// ── Social box base ───────────────────────────────────────────────────────────
+
+.social-box {
+    --bg: rgb(246, 247, 255);
+    --text: var(--c-dark);
+    --bg-hover: var(--c-dark);
+    --text-hover: var(--c-light);
+    padding: 15px 20px;
+    border-radius: var(--r-round);
+    background: var(--bg);
+    color: var(--text) !important;
+    fill: var(--text);
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    transition: var(--t-duration);
+    position: relative;
+    overflow: hidden;
+
+    &:hover {
+        background: var(--bg-hover);
+        color: var(--text) !important;
+        fill: var(--text);
+        text-decoration: none;
+
+        .icon-tiktok {
+            fill: var(--text);
+            transition: var(--t-duration);
+        }
+    }
+
+    svg {
+        width: 48px;
+        height: 48px;
+    }
+
+    .social-label {
+        margin-bottom: 0 !important;
+    }
+
+    // ── Platform colour themes via SCSS map ───────────────────────────────────
+
+    $_ig-bg: linear-gradient(45deg, rgba(240, 148, 51, .15) 0%, rgba(230, 104, 60, .15) 25%, rgba(220, 39, 67, .15) 50%, rgba(204, 35, 102, .15) 75%, rgba(188, 24, 136, .15) 100%);
+    $_ig-bg-hover: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    $_iam-bg: linear-gradient(45deg, rgba(203, 150, 194, .15) 0%, rgba(104, 190, 177, .15) 100%);
+    $_iam-bg-hover: linear-gradient(45deg, rgba(203, 150, 194, 1) 0%, rgba(104, 190, 177, 1) 100%);
+    $_line-bg: linear-gradient(45deg, rgba(0, 255, 0, .15) 0%, rgba(0, 255, 0, .15) 100%);
+    $_line-bg-hover: linear-gradient(45deg, rgba(0, 255, 0, 1) 0%, rgba(0, 255, 0, 1) 100%);
+    $_spotify-bg: linear-gradient(45deg, rgba(30, 215, 96, .15) 0%, rgba(30, 215, 96, .15) 100%);
+    $_spotify-bg-hover: linear-gradient(45deg, rgba(30, 215, 96, 1) 0%, rgba(30, 215, 96, 1) 100%);
+    $_apple-music-bg: linear-gradient(45deg, rgba(250, 35, 60, .15) 0%, rgba(250, 35, 60, .15) 100%);
+    $_apple-music-bg-hover: linear-gradient(45deg, rgba(250, 35, 60, 1) 0%, rgba(250, 35, 60, 1) 100%);
+    
+    $_yt-bg: linear-gradient(45deg, rgba(255, 0, 0, .15) 0%, rgba(255, 0, 0, .15) 100%);
+    $_yt-bg-hover: linear-gradient(45deg, rgba(255, 0, 0, 1) 0%, rgba(255, 0, 0, 1) 100%);
+    $_joox-bg: linear-gradient(45deg, rgba(0, 203, 54, .15) 0%, rgba(0, 203, 54, .15) 100%);
+    $_joox-bg-hover: linear-gradient(45deg, rgba(0, 203, 54, 1) 0%, rgba(0, 203, 54, 1) 100%);
+    $_tidal-bg: linear-gradient(45deg, rgba(255, 255, 255, .15) 0%, rgba(255, 255, 255, .15) 100%);
+    $_tidal-bg-hover: linear-gradient(45deg, #ffffff 0%, #ffffff 100%);
+    $themes: (
+        'instagram': (bg: $_ig-bg, text: #dc2743, bg-hover: $_ig-bg-hover, text-hover: var(--c-light)),
+        'facebook': (bg: #1877f226, text: #1877F2, bg-hover: #1877F2, text-hover: var(--c-light)),
+        'iam48': (bg: $_iam-bg, text: rgb(203, 150, 194), bg-hover: $_iam-bg-hover, text-hover: var(--c-light)),
+        'youtube': (bg: #FF000026, text: #FF0000, bg-hover: #FF0000, text-hover: var(--c-light)),
+        'line': (bg: $_line-bg, text: rgb(3, 104, 114), bg-hover: $_line-bg-hover, text-hover: var(--c-light)),
+        'spotify': (bg: $_spotify-bg, text: rgb(30, 215, 96), bg-hover: $_spotify-bg-hover, text-hover: var(--c-light)),
+        'youtube-music': (bg: $_yt-bg, text: rgb(255, 0, 0), bg-hover: $_yt-bg-hover, text-hover: var(--c-light)),
+        'apple-music': (bg: #FA233C26, text: #FA233C, bg-hover: #FA233C, text-hover: var(--c-light)),
+        'joox': (bg: $_joox-bg, text: rgb(0, 203, 54), bg-hover: $_joox-bg-hover, text-hover: var(--c-light)),
+        'tidal': (bg: $_tidal-bg, text: rgb(255, 255, 255), bg-hover: $_tidal-bg-hover, text-hover: var(--c-light)),
+
+    );
+
+@each $name, $theme in $themes {
+    &.-#{$name} {
+        --bg: #{map.get($theme, bg)};
+        --text: #{map.get($theme, text)};
+        --bg-hover: #{map.get($theme, bg-hover)};
+        --text-hover: #{map.get($theme, text-hover)};
+    }
+}
+
+@each $name in tiktok, x-twitter {
+    &.-#{$name} {
+        --bg: rgba(0, 0, 0, 0.15);
+        --text: var(--c-dark);
+        --bg-hover: var(--c-dark);
+        --text-hover: var(--c-light);
+    }
+}
+
+// ── Dark theme overrides ──────────────────────────────────────────────────
+[data-theme="dark"] & {
+    background: var(--bg-hover);
+    color: var(--text-hover) !important;
+    fill: var(--text-hover);
+
+    &:hover {
+        opacity: 0.9;
+    }
+
+    &.-iam48 {
+        svg path {
+            fill: var(--text-hover);
+        }
+
+        &:hover svg path {
+            fill: var(--text-hover) !important;
+        }
+    }
+}
+
+
+
+// iAM48 SVG path inherits theme color
+&.-iam48 {
+    svg path {
+        fill: var(--text);
+        transition: var(--t-duration);
+    }
+
+    &:hover svg path {
+        fill: var(--text);
+    }
+}
+}
+
+// ── Icon helpers ──────────────────────────────────────────────────────────────
+
+.svg-inline--fa {
+    box-sizing: content-box;
+    display: var(--fa-display, inline-block);
+    overflow: visible;
+
+    &.back {
+        position: absolute;
+        opacity: 0;
+        z-index: 0;
+    }
+
+    &.front {
+        position: relative;
+        z-index: 1;
+    }
+}
+
+.arrow-icon {
+    transform: rotate(-45deg);
+    height: 1em;
+}
+
+.platform-icon {
+    height: 1em;
+    fill: var(--c-light);
+    transition: all var(--t-ease-smooth);
+
+    &.back {
+        position: absolute;
+        opacity: 0;
+        z-index: 0;
+    }
+
+    &.front {
+        position: relative;
+        z-index: 1;
+    }
+}
+
+// ── Back-icon hover — shared opacity/transition trigger ───────────────────────
+
+.social-box:hover .svg-inline--fa.back,
+.social-box:hover .fa-iam48.back,
+.social-box:hover .fa-iam48.back.live,
+.ig-banner:hover .platform-icon.back,
+.tiktok-banner:hover .platform-icon.back {
+    opacity: var(--op-hover-back);
+    transition: var(--t-ease-smooth);
+}
+
+// ── Back-icon transforms (desktop → ≤1400px → ≤1200px) ───────────────────────
+
+.social-box:hover {
+    .svg-inline--fa.back {
+        transform: scale(2) rotate(15deg) translateX(400%) translateY(-90%);
+
+        @include bp-min(576px) {
+            transform: scale(2) rotate(15deg) translateX(12.8rem) translateY(-3rem);
+        }
+
+        @include bp-min(768px) {
+            transform: scale(2) rotate(15deg) translateX(17rem) translateY(-4.1rem);
+        }
+
+        @include bp-min(992px) {
+            transform: scale(2) rotate(15deg) translateX(24.5rem) translateY(-6.1rem);
+        }
+
+        @include bp-min(1200px) {
+            transform: scale(2) rotate(15deg) translateX(29.5rem) translateY(-7.4rem);
+        }
+
+        @include bp-min(1400px) {
+            transform: scale(2) rotate(15deg) translateX(34.5rem) translateY(-8.7rem);
+        }
+    }
+
+    .fa-iam48.back {
+        transform: scale(2) rotate(30deg) translateX(375%) translateY(-185%);
+
+        @include bp-min(576px) {
+            transform: scale(2) rotate(30deg) translateX(12rem) translateY(-6rem);
+        }
+
+
+        @include bp-min(768px) {
+            transform: scale(2) rotate(30deg) translateX(15.5rem) translateY(-8rem);
+        }
+
+        @include bp-min(992px) {
+            transform: scale(2) rotate(30deg) translateX(22.5rem) translateY(-12rem);
+        }
+
+        @include bp-min(1200px) {
+            transform: scale(2) rotate(30deg) translateX(27rem) translateY(-14.5rem);
+        }
+
+        @include bp-min(1400px) {
+            transform: scale(2) rotate(30deg) translateX(31.5rem) translateY(-17.1rem);
+        }
+    }
+}
+
+.ig-banner:hover .platform-icon.back,
+.tiktok-banner:hover .platform-icon.back {
+    transform: scale(5) rotate(15deg) translateX(400%) translateY(-60%);
+
+
+    @include bp-min(576px) {
+        transform: scale(5) rotate(15deg) translateX(4.9rem) translateY(-0.88rem);
+    }
+
+    @include bp-min(768px) {
+        transform: scale(5) rotate(13deg) translateX(6.7rem) translateY(-1.1rem);
+    }
+
+    @include bp-min(992px) {
+        transform: scale(5) rotate(11.8deg) translateX(4rem) translateY(-0.34rem);
+    }
+
+    @include bp-min(1200px) {
+        transform: scale(5.6) rotate(15deg) translateX(4.5rem) translateY(-0.83rem);
+    }
+
+    @include bp-min(1400px) {
+        transform: scale(5.6) rotate(15deg) translateX(5.2rem) translateY(-1rem);
+    }
+}
